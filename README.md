@@ -1,2 +1,2 @@
 # DHermes
-distributed A/B testing application
+A distributed A/B testing application
