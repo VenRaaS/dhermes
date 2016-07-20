@@ -30,13 +30,10 @@ public class HermesController {
 //TODO... check conf/
 		int h = c.get(Calendar.HOUR_OF_DAY);
 		
-		String clientID = String.format("%s_%s_%s", opt.getToken(), opt.getVen_guid(), opt.getVen_session());
-		HashFunction hf = Hashing.murmur3_128();
-		HashCode hc = hf.newHasher()
-		       .putString(clientID, Charsets.US_ASCII)
-		       .putInt(h)
-		       .hash();
-		Long l = hc.asLong();
+		String clientID = String.format("%s_%s_%s", opt.getToken(), opt.getVen_guid(), opt.getVen_session());			
+		RoutingHash rh = new RoutingHash();
+		Long l = rh.hash(clientID, h);
+		
 //TODO... numGrps		
 		Long grp_i= Math.abs(l % 5);		
  
