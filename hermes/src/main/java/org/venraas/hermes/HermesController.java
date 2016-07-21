@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.venraas.hermes.apollo.hermes.ConfClient;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.option.RecOption;
 
@@ -29,10 +30,7 @@ public class HermesController {
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)
-	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {
-		Calendar c = Calendar.getInstance();
-//TODO... check conf/
-		int h = c.get(Calendar.HOUR_OF_DAY);		
+	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {		
 		
 		String clientID = String.format("%s_%s_%s", 
 				paramMap.get(EnumOptionBase.token.name()), 
@@ -40,6 +38,14 @@ public class HermesController {
 				paramMap.get(EnumOptionBase.ven_session.name()));
 				
 		RoutingHash rh = new RoutingHash();
+		
+		Calendar c = Calendar.getInstance();
+		ConfClient conf = new ConfClient();
+		String interval = conf.get_routing_reset_interval("gohappy");
+		
+		//TODO... check conf
+		int h = c.get(Calendar.HOUR_OF_DAY);
+				
 		Long l = rh.hash(clientID, h);
 		
 //TODO... numGrps		
