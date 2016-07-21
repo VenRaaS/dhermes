@@ -1,20 +1,24 @@
 package org.venraas.hermes;
 
+import java.lang.reflect.Type;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.option.RecOption;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 
 @RestController
@@ -25,27 +29,47 @@ public class HermesController {
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)
-	public Object get_goods_rank_GET(RecOption opt) {		
+	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {
 		Calendar c = Calendar.getInstance();
 //TODO... check conf/
-		int h = c.get(Calendar.HOUR_OF_DAY);
+		int h = c.get(Calendar.HOUR_OF_DAY);		
 		
-		String clientID = String.format("%s_%s_%s", opt.getToken(), opt.getVen_guid(), opt.getVen_session());			
+		String clientID = String.format("%s_%s_%s", 
+				paramMap.get(EnumOptionBase.token.name()), 
+				paramMap.get(EnumOptionBase.ven_guid.name()), 
+				paramMap.get(EnumOptionBase.ven_session.name()));
+				
 		RoutingHash rh = new RoutingHash();
 		Long l = rh.hash(clientID, h);
 		
 //TODO... numGrps		
 		Long grp_i= Math.abs(l % 5);		
  
-		return grp_i;
+		return clientID;
 	}
 	
 	@CrossOrigin
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)
-	public Object hello()
-	{
-		return "hello world";
+	public Map<String, Object> hello(@RequestParam Map<String, Object> m)
+	{		
+		return m;
 	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/hello", method = RequestMethod.POST)	
+	public Map<String, Object> hello(@RequestBody String jsonStr)
+	{
+		Gson gson = new Gson();
+		Type type = new TypeToken<Map<String, Object>>(){}.getType();
+		Map<String, Object> m = gson.fromJson(jsonStr, type);
+
+//		Map<String, String> m = gson.fromJson(s, Map);
+
+		return m;
+	}
+	
+
+	
 	
 
 }
