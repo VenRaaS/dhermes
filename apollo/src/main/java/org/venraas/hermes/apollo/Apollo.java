@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venraas.hermes.common.Utility;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.client.transport.TransportClient.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -48,13 +49,13 @@ public class Apollo {
 		try
 		{
 	        Settings settings = 
-	        		Settings.settingsBuilder()        	
-	            		.put("client.transport.sniff", true)
-	            		.put("cluster.name", "hermes_cluster")
-	            		.build();
-	        
-			client = new Builder().settings(settings).build()
-					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));					
+	        		Settings.settingsBuilder()
+//	        		.put("client.transport.sniff", true)
+//	            	.put("cluster.name", "hermes_cluster")
+	            	.build();	       	        
+
+			client = TransportClient.builder().settings(settings).build()
+					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es2x-node-01"), 9300));					
 						
 		} catch(Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
