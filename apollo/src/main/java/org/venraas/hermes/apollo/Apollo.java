@@ -47,9 +47,10 @@ public class Apollo {
 		
 		try
 		{			
-//	        Settings settings = Settings.settingsBuilder().put("client.transport.sniff", true).build();
-//	            	.put("cluster.name", "hermes_cluster")
-//	            	.build();	       	        
+	        Settings settings = Settings.settingsBuilder()
+	        		.put("client.transport.sniff", true)
+	            	.put("cluster.name", "hermes_cluster")
+	            	.build();	       	        
 	 
 			client = TransportClient.builder().build()
 					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es2x-node-01"), 9300));			

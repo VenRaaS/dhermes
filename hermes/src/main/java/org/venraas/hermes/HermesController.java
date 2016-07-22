@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,6 +38,7 @@ public class HermesController {
 		RoutingHash rh = new RoutingHash();
 		
 		Calendar c = Calendar.getInstance();
+		
 		ConfClient conf = new ConfClient();
 		String interval = conf.get_routing_reset_interval("gohappy");
 		
