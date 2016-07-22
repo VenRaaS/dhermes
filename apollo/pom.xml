@@ -21,6 +21,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<elasticsearch.version>2.3.2</elasticsearch.version>
 	</properties>
 
 	<dependencies>
@@ -47,7 +48,6 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>2.3.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

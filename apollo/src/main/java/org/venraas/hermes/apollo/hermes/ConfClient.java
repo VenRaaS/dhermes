@@ -42,6 +42,7 @@ public class ConfClient {
 
 //	@Cacheable(value="cache_conf", key="{#token}")
 	public String get_routing_reset_interval(String codeName) {
+		
 		VEN_LOGGER.info("caching get_routing_reset_interval({})", codeName);
 		
 		String interval = "";
