@@ -52,7 +52,7 @@ public class Apollo {
 	            	.put("cluster.name", "hermes_cluster")
 	            	.build();	       	        
 	 
-			client = TransportClient.builder().build()
+			client = TransportClient.builder().settings(settings).build()
 					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es2x-node-01"), 9300));			
 						
 		} catch(Exception ex) {
