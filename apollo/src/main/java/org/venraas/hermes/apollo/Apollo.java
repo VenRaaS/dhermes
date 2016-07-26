@@ -53,7 +53,7 @@ public class Apollo {
 	            	.build();	       	        
 	 
 			client = TransportClient.builder().settings(settings).build()
-					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es2x-node-01"), 9300));			
+					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));			
 						
 		} catch(Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
