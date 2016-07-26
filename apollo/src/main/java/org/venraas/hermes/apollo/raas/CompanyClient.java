@@ -14,7 +14,6 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
-import org.venraas.hermes.apollo.EnumClient;
 import org.venraas.hermes.apollo.mappings.EnumCompany;
 import org.venraas.hermes.common.Utility;
 

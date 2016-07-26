@@ -17,10 +17,12 @@ public class RoutingHash {
 	public long hash(String putString, int putInt) {
 		
 		HashFunction hf = Hashing.murmur3_128();
+		
 		HashCode hc = hf.newHasher()
 		       .putString(putString, Charsets.US_ASCII)
 		       .putInt(putInt)
 		       .hash();
+		
 		Long l = hc.asLong();
 		
 		return l;
