@@ -1,5 +1,7 @@
 package org.venraas.hermes.apollo.hermes;
 
+import java.util.Calendar;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -14,8 +16,6 @@ import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.data_entity.Conf;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -41,11 +41,11 @@ public class ConfClient {
 	
 
 //	@Cacheable(value="cache_conf", key="{#token}")
-	public String get_routing_reset_interval(String codeName) {
+	public int get_routing_reset_interval(String codeName) {
 		
 		VEN_LOGGER.info("caching get_routing_reset_interval({})", codeName);
-		
-		String interval = "";
+				
+		int interval = Calendar.HOUR_OF_DAY;
 		
 		if(null == codeName || codeName.isEmpty()) return interval;
 		
@@ -66,20 +66,31 @@ public class ConfClient {
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);	        		        	
 	        	String jsonStr = h.getSourceAsString();
-///	        	JsonReader r = Json.createReader(new StringReader(jsonStr));
-///	        	JsonArray comps = r.readObject().getJsonArray("companies");
 	        	
 	        	JsonParser jsonParser = new JsonParser();
-	        	JsonArray comps = jsonParser.parse(jsonStr).getAsJsonArray();
+	        	JsonObject o = jsonParser.parse(jsonStr).getAsJsonObject();
 	        	
-	        	Gson g = new Gson();
-	        	for (JsonElement e : comps) {	        		
-	        		JsonObject o = (JsonObject)e;
-	        		Conf con = g.fromJson(e, Conf.class);
-	        		interval = con.getRouting_reset_interval();
+	        	Gson g = new Gson();	        	    	        		
+	        	Conf con = g.fromJson(o, Conf.class);
+	        	String val = con.getRouting_reset_interval();
+	        	
+	        	switch (val) {	        		
+	        		case "DAY":
+	        			interval = Calendar.DAY_OF_MONTH;	        			
+	        			break;
+	        		case "WEEK":
+	        			interval = Calendar.WEEK_OF_MONTH;
+	        			break;
+	        		case "MONTH":
+	        			interval = Calendar.MONTH;
+	        			break;
+	        		case "HOUR":
+	        		default:
+	        			interval = Calendar.HOUR_OF_DAY;
+	        			break;	        			
 	        	}
-	        	
 	        }
+	        
 		} catch(Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 			VEN_LOGGER.error(ex.getMessage());
