@@ -34,17 +34,15 @@ public class HermesController {
 				paramMap.get(EnumOptionBase.token.name()), 
 				paramMap.get(EnumOptionBase.ven_guid.name()), 
 				paramMap.get(EnumOptionBase.ven_session.name()));
-				
-		RoutingHash rh = new RoutingHash();
-		
-		Calendar c = Calendar.getInstance();
+					
 		
 		ConfClient conf = new ConfClient();
-		String interval = conf.get_routing_reset_interval("gohappy");
+		int interval = conf.get_routing_reset_interval("gohappy");		
 		
-		//TODO... check conf
-		int h = c.get(Calendar.HOUR_OF_DAY);
-				
+		Calendar c = Calendar.getInstance();
+		int h = c.get(interval);
+	
+		RoutingHash rh = new RoutingHash();
 		Long l = rh.hash(clientID, h);
 		
 //TODO... numGrps		
