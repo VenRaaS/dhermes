@@ -2,16 +2,16 @@ package org.venraas.hermes.apollo.mappings;
 
 public class Com_pkgs {
 	
-	public static String webServerTime = "webServerTime"; 
+	public static final String webServerTime = "webServerTime"; 
 	
-	public static String token = "companies.token";
+	public static final String token = "companies.token";
 	
-	public static String codeName = "companies.codeName";
+	public static final String codeName = "companies.codeName";
 	
-	public static String domainName = "companies.domainName"; 
+	public static final String domainName = "companies.domainName"; 
 	
-	public static String companyName = "companies.companyName";
+	public static final String companyName = "companies.companyName";
 	
-	public static String companyEnabled = "companies.companyEnabled";
+	public static final String companyEnabled = "companies.companyEnabled";
 
 }
