@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.ConfClient;
+import org.venraas.hermes.apollo.raas.CompanyClient;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.option.RecOption;
 
@@ -29,24 +30,28 @@ public class HermesController {
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)
 	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {		
-		
+									
 		String clientID = String.format("%s_%s_%s", 
 				paramMap.get(EnumOptionBase.token.name()), 
 				paramMap.get(EnumOptionBase.ven_guid.name()), 
 				paramMap.get(EnumOptionBase.ven_session.name()));
-					
-		
+
+		CompanyClient comClient = new CompanyClient();
+		String token = (String)paramMap.get("token");
+		String codeName = comClient.getCodeName(token);
 		ConfClient conf = new ConfClient();
-		int interval = conf.get_routing_reset_interval("gohappy");		
-		
+		int interval = conf.get_routing_reset_interval(codeName);		
+
 		Calendar c = Calendar.getInstance();
-		int h = c.get(interval);
-	
+		int t = c.get(interval);
+
 		RoutingHash rh = new RoutingHash();
-		Long l = rh.hash(clientID, h);
+		Long l = rh.hash(clientID, t);
 		
-//TODO... numGrps		
-		Long grp_i= Math.abs(l % 5);		
+		double pctNormal = conf.get_traffic_percent_normal(codeName);
+		
+//TODO... numGrps
+		Long grp_i= Math.abs(l % 5);
  
 		return clientID;
 	}
