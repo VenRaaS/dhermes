@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.common.Utility;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.data_entity.Conf;
 
 import com.google.gson.Gson;
@@ -74,7 +75,10 @@ public class ConfClient {
 	        	Conf con = g.fromJson(o, Conf.class);
 	        	String val = con.getRouting_reset_interval();
 	        	
-	        	switch (val) {	        		
+	        	switch (val) {
+	        		case "MINUTE":
+	        			interval = Calendar.MINUTE;	        			
+	        			break;
 	        		case "DAY":
 	        			interval = Calendar.DAY_OF_MONTH;	        			
 	        			break;
@@ -87,7 +91,7 @@ public class ConfClient {
 	        		case "HOUR":
 	        		default:
 	        			interval = Calendar.HOUR_OF_DAY;
-	        			break;	        			
+	        			break;
 	        	}
 	        }
 	        
@@ -97,5 +101,48 @@ public class ConfClient {
 		} 
         
         return interval;        
+	}
+	
+//	@Cacheable(value="cache_conf", key="{#token}")	
+	public double get_traffic_percent_normal(String codeName) {
+		
+		VEN_LOGGER.info("caching get_traffic_percent_normal({})", codeName);
+		
+		double pct = Constant.TRAFFIC_PERCENT_NORMAL;
+	
+		if(null == codeName || codeName.isEmpty()) return pct;
+		
+		String indexName = String.format("%s_hermes", codeName);
+		
+		try {
+			QueryBuilder qb = QueryBuilders.matchAllQuery();
+			
+	        SearchResponse resp = _apo.esClient().prepareSearch(indexName)
+	                .setTypes(TYPE_NAME)
+	                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+	                .setQuery(qb)	                	                
+	                .addSort(EnumConf.update_dt.name(), SortOrder.DESC)
+	                .setSize(1)
+	                .execute()
+	                .actionGet();
+	        	        
+	        if (0 < resp.getHits().getTotalHits()) {
+	        	SearchHit h = resp.getHits().getAt(0);	        		        	
+	        	String jsonStr = h.getSourceAsString();
+	        	
+	        	JsonParser jsonParser = new JsonParser();
+	        	JsonObject o = jsonParser.parse(jsonStr).getAsJsonObject();
+	        	
+	        	Gson g = new Gson();	        	    	        		
+	        	Conf con = g.fromJson(o, Conf.class);
+	        	pct = con.getTraffic_pct_normal();	        
+	        }
+	        
+		} catch(Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		} 
+        
+        return pct;        
 	}
 }
