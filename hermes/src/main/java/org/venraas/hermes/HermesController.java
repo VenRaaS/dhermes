@@ -1,7 +1,6 @@
 package org.venraas.hermes;
 
 import java.lang.reflect.Type;
-import java.util.Calendar;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.venraas.hermes.apollo.hermes.ConfClient;
 import org.venraas.hermes.apollo.raas.CompanyClient;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.option.RecOption;
@@ -37,23 +35,15 @@ public class HermesController {
 				paramMap.get(EnumOptionBase.ven_session.name()));
 
 		CompanyClient comClient = new CompanyClient();
-		String token = (String)paramMap.get("token");
+		String token = (String)paramMap.get(EnumOptionBase.token.name());
 		String codeName = comClient.getCodeName(token);
-		ConfClient conf = new ConfClient();
-		int interval = conf.get_routing_reset_interval(codeName);		
-
-		Calendar c = Calendar.getInstance();
-		int t = c.get(interval);
-
-		RoutingHash rh = new RoutingHash();
-		Long l = rh.hash(clientID, t);
+						
+		GroupRoute gr = new GroupRoute();
+		String grpKey = gr.routing(codeName, clientID);
 		
-		double pctNormal = conf.get_traffic_percent_normal(codeName);
 		
-//TODO... numGrps
-		Long grp_i= Math.abs(l % 5);
  
-		return clientID;
+		return grpKey;
 	}
 	
 	@CrossOrigin
