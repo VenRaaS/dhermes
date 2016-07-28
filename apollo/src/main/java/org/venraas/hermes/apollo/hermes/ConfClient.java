@@ -76,6 +76,9 @@ public class ConfClient {
 	        	String val = con.getRouting_reset_interval();
 	        	
 	        	switch (val) {
+	        		case "SECOND":
+	        			interval = Calendar.SECOND;	        			
+	        			break;
 	        		case "MINUTE":
 	        			interval = Calendar.MINUTE;	        			
 	        			break;
