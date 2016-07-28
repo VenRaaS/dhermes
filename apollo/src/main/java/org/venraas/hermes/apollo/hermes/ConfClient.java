@@ -66,13 +66,10 @@ public class ConfClient {
 	        	        
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);	        		        	
-	        	String jsonStr = h.getSourceAsString();
-	        	
-	        	JsonParser jsonParser = new JsonParser();
-	        	JsonObject o = jsonParser.parse(jsonStr).getAsJsonObject();
+	        	String jsonStr = h.getSourceAsString();	        
 	        	
 	        	Gson g = new Gson();	        	    	        		
-	        	Conf con = g.fromJson(o, Conf.class);
+	        	Conf con = g.fromJson(jsonStr, Conf.class);
 	        	String val = con.getRouting_reset_interval();
 	        	
 	        	switch (val) {
