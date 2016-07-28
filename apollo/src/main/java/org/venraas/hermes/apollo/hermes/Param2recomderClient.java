@@ -1,7 +1,9 @@
 package org.venraas.hermes.apollo.hermes;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -17,9 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Utility;
+import org.venraas.hermes.data_entity.Conf;
 import org.venraas.hermes.data_entity.Param2recomder;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class Param2recomderClient {
 
@@ -88,41 +92,50 @@ public class Param2recomderClient {
 	}
 
 //	@Cacheable(value="cache_category", key="{#codeName, #categoryCode}")
-	public Param2recomder getApiURL (String codeName, String grpKey) {
+	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
+		
 		VEN_LOGGER.info("caching getApiURL({},{})", codeName, grpKey);
 		
-		Param2recomder c = new Param2recomder();
+		List<Map<String, Object>> mappings = new ArrayList<Map<String, Object>>(20);		
 
-		if (codeName == null || codeName.isEmpty() || 
-			null == grpKey || grpKey.isEmpty())
-			return c;
-						
-		String indexName = String.format("%s_hermes", codeName);
+		if (codeName == null || codeName.isEmpty() || null == grpKey || grpKey.isEmpty()) return mappings;			
+
+		String indexName = String.format("%s_hermes", codeName);				
 
 		try {
-			SearchRequestBuilder searchReq = 		
-				_apo.esClient()
-				.prepareSearch(indexName)
-				.setTypes(TYPE_NAME)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setQuery(QueryBuilders.termsQuery(EnumParam2recomder.group_key.name(), grpKey));
+			QueryBuilder qb = 
+					QueryBuilders.boolQuery().filter(
+						QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
+					).filter(
+						QueryBuilders.termQuery(EnumParam2recomder.group_key.name(), grpKey)
+					);
+			
+			SearchRequestBuilder searchReq = 
+					_apo.esClient()
+					.prepareSearch(indexName)
+					.setTypes(TYPE_NAME)
+					.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+					.setQuery(qb);
 
 			SearchResponse resp = searchReq.execute().actionGet();
-
-			Gson gson = new Gson();
-			
+						
 			if (0 < resp.getHits().getTotalHits()) {
-				SearchHit h = resp.getHits().getAt(0);				
-				String json = h.getSourceAsString();
-				c = gson.fromJson(json, Param2recomder.class);
+				SearchHit[] hits = resp.getHits().getHits();
+				Gson gson = new Gson();
+				
+				for (SearchHit h : hits) {				
+					String json = h.getSourceAsString();
+					Type type = new TypeToken<Map<String, Object>>(){}.getType();					
+					Map<String, Object> m = gson.fromJson(json, type);
+					mappings.add(m);
+				}				
 			}
-			
 		} catch (Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 			VEN_LOGGER.error(ex.getMessage());
 		}
 		
-		return c;
+		return mappings;
 	}
 
 	

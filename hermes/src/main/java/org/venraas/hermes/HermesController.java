@@ -1,6 +1,7 @@
 package org.venraas.hermes;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.venraas.hermes.apollo.hermes.Param2recomderClient;
+import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyClient;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.option.RecOption;
@@ -39,9 +42,36 @@ public class HermesController {
 		String codeName = comClient.getCodeName(token);
 						
 		GroupRoute gr = new GroupRoute();
-		String grpKey = gr.routing(codeName, clientID);		
+		String grpKey = gr.routing(codeName, clientID);
+		
+		Map<String, Object> mapping = null;
+		
+		Param2recomderClient p2r = new Param2recomderClient();
+		List<Map<String, Object>> maps = p2r.getGroupMapping(codeName, grpKey);		
+		for (Map<String, Object> m : maps) {			
+			boolean matchAllKeys = true;
+			
+			List<String> fields = (List<String>) m.get(EnumParam2recomder.keys2recomder.name());						
+			for (String f : fields) {
+				String inputV = (String) paramMap.get(f);
+				String regV = (String) m.get(f);
+				
+				if (null == inputV || null == regV || 
+					inputV.isEmpty() || regV.isEmpty() || 
+					!inputV.equals(regV)) 
+				{
+					matchAllKeys = false;
+					break;
+				}
+			}
+			
+			if (matchAllKeys) {
+				mapping = m;
+				break;
+			} 
+		}
  
-		return grpKey;
+		return mapping;
 	}
 	
 	@CrossOrigin
