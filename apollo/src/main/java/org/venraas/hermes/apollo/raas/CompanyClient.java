@@ -52,7 +52,8 @@ public class CompanyClient {
 		try {			
 			BoolQueryBuilder bq = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(Com_pkgs.token, token));
 			
-	        SearchResponse resp = _apo.esClient().prepareSearch(VENRAAS_INDEX_NAME)
+	        SearchResponse resp = _apo.esClient()
+	        		.prepareSearch(VENRAAS_INDEX_NAME)
 	                .setTypes(TYPE_NAME)
 	                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 ///	                .setQuery(QueryBuilders.termQuery(Com_pkgs.token, token))	                	                
