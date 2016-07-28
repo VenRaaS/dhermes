@@ -20,5 +20,7 @@ public enum EnumParam2recomder {
 	
 	output_params,
 	
+	availability,
+	
 	update_dt
 }
