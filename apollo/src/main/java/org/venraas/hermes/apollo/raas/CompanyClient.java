@@ -1,7 +1,9 @@
 package org.venraas.hermes.apollo.raas;
 
+import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
@@ -45,14 +47,16 @@ public class CompanyClient {
 		
 		String codeName = "";
 		
-		if(null == token || token.isEmpty())	return codeName;
+		if(null == token || token.isEmpty())	return codeName;				
 		
-		try {	        
+		try {			
+			BoolQueryBuilder bq = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(Com_pkgs.token, token));
 			
 	        SearchResponse resp = _apo.esClient().prepareSearch(VENRAAS_INDEX_NAME)
 	                .setTypes(TYPE_NAME)
 	                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-	                .setQuery(QueryBuilders.termQuery(Com_pkgs.token, token))	                	                
+///	                .setQuery(QueryBuilders.termQuery(Com_pkgs.token, token))	                	                
+	                .setQuery(bq)
 	                .addSort(Com_pkgs.webServerTime, SortOrder.DESC)
 	                .setSize(1)
 	                .execute()
