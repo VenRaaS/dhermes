@@ -47,7 +47,7 @@ public class GroupRoute {
 		Param2recomderClient p2rClient = new Param2recomderClient();
 		List<String> grps = p2rClient.getDistinctGroups(codeName);		
 		int num_testGrps = grps.size() - 1;
-		if (0 <= num_testGrps) {
+		if (0 < num_testGrps) {
 			
 			ConfClient conf = new ConfClient();			
 			double pctNormal = conf.get_traffic_percent_normal(codeName);
