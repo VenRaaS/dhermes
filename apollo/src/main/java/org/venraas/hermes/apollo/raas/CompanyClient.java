@@ -56,7 +56,6 @@ public class CompanyClient {
 	        		.prepareSearch(VENRAAS_INDEX_NAME)
 	                .setTypes(TYPE_NAME)
 	                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-///	                .setQuery(QueryBuilders.termQuery(Com_pkgs.token, token))	                	                
 	                .setQuery(bq)
 	                .addSort(Com_pkgs.webServerTime, SortOrder.DESC)
 	                .setSize(1)

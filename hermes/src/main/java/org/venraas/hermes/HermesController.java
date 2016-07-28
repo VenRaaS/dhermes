@@ -39,9 +39,7 @@ public class HermesController {
 		String codeName = comClient.getCodeName(token);
 						
 		GroupRoute gr = new GroupRoute();
-		String grpKey = gr.routing(codeName, clientID);
-		
-		
+		String grpKey = gr.routing(codeName, clientID);		
  
 		return grpKey;
 	}

@@ -1,7 +1,6 @@
 package org.venraas.hermes;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
