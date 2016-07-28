@@ -39,6 +39,7 @@ public class GroupRoute {
 	}
 	
 	public String routing(String codeName, String clientID) {
+		
 		String grouppKey = Constant.NORMAL_GROUP_KEY;
 		
 		if (null == codeName || codeName.isEmpty() || null == clientID || clientID.isEmpty())
