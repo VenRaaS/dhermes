@@ -1,7 +1,11 @@
-# DHermes
-A distributed A/B testing application
+## Overview
+DHermes is a distributed A/B testing application.  
+It splits incoming traffic into pre-defined restful API group.
 
-# Routing Hash
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s)
+
+
+## Routing Hash
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmteWQ0YXJHdTliQ2M)
 
 #### Reference
