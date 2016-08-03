@@ -49,11 +49,13 @@ public class Apollo {
 		{			
 	        Settings settings = Settings.settingsBuilder()
 	        		.put("client.transport.sniff", true)
-	            	.put("cluster.name", "hermes_cluster")
+	            	.put("cluster.name", "hermes-cluster")
 	            	.build();	       	        
-	 
-			client = TransportClient.builder().settings(settings).build()
-					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));			
+	        	        
+	        String hostname = InetAddress.getLocalHost().getHostName();
+	        client = TransportClient.builder().settings(settings).build()
+					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(hostname), 9300));
+	        
 						
 		} catch(Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
