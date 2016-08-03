@@ -78,9 +78,10 @@ public class HermesController {
 				break;
 			} 
 		}
-
+///TODO... bug fix mapping == null
+		
 		HashMap<String, Object> outParamMap = new HashMap<String, Object> (paramMap);
-		String apiURL = (String) mapping.get(EnumParam2recomder.api_url.name());
+		List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
 		List<String> fields = (List<String>) mapping.get(EnumParam2recomder.output_params.name());
 		for (String f : fields) {
 			String v = (String) mapping.get(f);
@@ -92,6 +93,8 @@ public class HermesController {
 		
 		String resp = "";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
+///TODO... LB and select an Available RecAPI
+		String apiURL = apiURLs.get(0);
 		HttpPost post = new HttpPost(apiURL);
 		try {
 			StringEntity input = new StringEntity(outParam);
@@ -122,7 +125,9 @@ public class HermesController {
 			VEN_LOGGER.error(ex.getMessage());
 		}	
  
-		return resp;
+		Type type = new TypeToken<Map<String, Object>>(){}.getType();
+		Map<String, Object> m = g.fromJson(resp, type);		
+		return m;
 	}
 	
 	@CrossOrigin
