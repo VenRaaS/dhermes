@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.Param2recomderClient;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyClient;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.common.option.RecOption;
@@ -51,7 +52,7 @@ public class HermesController {
 		String codeName = comClient.getCodeName(token);
 						
 		GroupRoute gr = new GroupRoute();
-		String grpKey = gr.routing(codeName, clientID);
+		String grpKey = gr.routing(codeName, clientID);		
 		
 		Map<String, Object> mapping = null;		
 		Param2recomderClient p2r = new Param2recomderClient();
@@ -78,53 +79,58 @@ public class HermesController {
 				break;
 			} 
 		}
-///TODO... bug fix mapping == null
-		
-		HashMap<String, Object> outParamMap = new HashMap<String, Object> (paramMap);
-		List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
-		List<String> fields = (List<String>) mapping.get(EnumParam2recomder.output_params.name());
-		for (String f : fields) {
-			String v = (String) mapping.get(f);
-			outParamMap.put(f, v);			
-		}
-		Gson g = new Gson();
-		String outParam = g.toJson(outParamMap);		
-		System.out.println(outParam);
-		
+			
 		String resp = "";
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		Gson g = new Gson();
+		if (null != mapping) {
+			HashMap<String, Object> outParamMap = new HashMap<String, Object> (paramMap);
+			List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
+			List<String> fields = (List<String>) mapping.get(EnumParam2recomder.output_params.name());
+			for (String f : fields) {
+				String v = (String) mapping.get(f);
+				outParamMap.put(f, v);			
+			}			
+			String outParam = g.toJson(outParamMap);		
+			System.out.println(outParam);
+					
+			CloseableHttpClient httpClient = HttpClients.createDefault();
 ///TODO... LB and select an Available RecAPI
-		String apiURL = apiURLs.get(0);
-		HttpPost post = new HttpPost(apiURL);
-		try {
-			StringEntity input = new StringEntity(outParam);
-			input.setContentType("application/json");
-			post.setEntity(input);
-			
-			HttpResponse response = httpClient.execute(post);
-
-			int httpStatusCode = response.getStatusLine().getStatusCode();
-			if (! String.valueOf(httpStatusCode).startsWith("2")) {
-				throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatusLine().getStatusCode());
+///$apiURLs null check			
+			String apiURL = apiURLs.get(0);
+			HttpPost post = new HttpPost(apiURL);
+			try {
+				StringEntity input = new StringEntity(outParam);
+				input.setContentType("application/json");
+				post.setEntity(input);
+				
+				HttpResponse response = httpClient.execute(post);
+	
+				int httpStatusCode = response.getStatusLine().getStatusCode();
+				if (! String.valueOf(httpStatusCode).startsWith("2")) {
+					throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatusLine().getStatusCode());
+				}
+	
+				BufferedReader br = 
+						new BufferedReader(
+								new InputStreamReader(response.getEntity().getContent()));
+				
+				StringBuilder strBuilder = new StringBuilder();
+				String line = "";
+				while ((line = br.readLine()) != null) {
+					strBuilder.append(line);
+				}
+				resp = strBuilder.toString();
 			}
-
-			BufferedReader br = 
-					new BufferedReader(
-							new InputStreamReader(response.getEntity().getContent()));
-			
-			StringBuilder strBuilder = new StringBuilder();
-			String line = "";
-			while ((line = br.readLine()) != null) {
-				strBuilder.append(line);
-			}
-			resp = strBuilder.toString();
+			catch (Exception ex) {
+				VEN_LOGGER.error(Utility.stackTrace2string(ex));
+				VEN_LOGGER.error(ex.getMessage());
+			}	
 		}
-		catch (Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
-		}	
- 
+		else {			
+			VEN_LOGGER.warn("input param 2 recomder mapping cannot be found. input: {}", g.toJson(paramMap));			
+		}
+ 		
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		Map<String, Object> m = g.fromJson(resp, type);		
 		return m;
