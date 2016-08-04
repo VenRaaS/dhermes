@@ -20,8 +20,6 @@ import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
-import org.venraas.hermes.data_entity.Conf;
-import org.venraas.hermes.data_entity.Param2recomder;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -95,13 +93,13 @@ public class Param2recomderClient {
 //	@Cacheable(value="cache_category", key="{#codeName, #categoryCode}")
 	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
 		
-		VEN_LOGGER.info("caching getApiURL({},{})", codeName, grpKey);
+		VEN_LOGGER.info("caching getGroupMapping({},{})", codeName, grpKey);
 		
 		List<Map<String, Object>> mappings = new ArrayList<Map<String, Object>>(20);		
 
 		if (codeName == null || codeName.isEmpty() || null == grpKey || grpKey.isEmpty()) return mappings;			
 
-		String indexName = String.format("%s_hermes", codeName);				
+		String indexName = String.format("%s%s", codeName, Constant.HERMES_INDEX_SUFFIX);
 
 		try {
 			QueryBuilder qb = 
@@ -125,7 +123,7 @@ public class Param2recomderClient {
 				Gson gson = new Gson();
 				
 				for (SearchHit h : hits) {				
-					String json = h.getSourceAsString();
+					String json = h.getSourceAsString();			
 					Type type = new TypeToken<Map<String, Object>>(){}.getType();					
 					Map<String, Object> m = gson.fromJson(json, type);
 					mappings.add(m);
