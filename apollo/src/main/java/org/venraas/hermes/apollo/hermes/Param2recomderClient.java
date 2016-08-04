@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.data_entity.Conf;
 import org.venraas.hermes.data_entity.Param2recomder;
@@ -50,7 +51,7 @@ public class Param2recomderClient {
 		
 		if (codeName == null || codeName.isEmpty())	return grps;
 						
-		String indexName = String.format("%s_hermes", codeName);
+		String indexName = String.format("%s%s", codeName, Constant.HERMES_INDEX_SUFFIX);
 		String aggName = "group_key_count";
 
 		try {
