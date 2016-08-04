@@ -40,13 +40,14 @@ public class GroupRoute {
 	
 	public String routing(String codeName, String clientID) {
 		
-		String grouppKey = Constant.NORMAL_GROUP_KEY;
+		String groupKey = Constant.NORMAL_GROUP_KEY;
 		
 		if (null == codeName || codeName.isEmpty() || null == clientID || clientID.isEmpty())
-			return grouppKey;
+			return groupKey;
 				
 		Param2recomderClient p2rClient = new Param2recomderClient();
-		List<String> grps = p2rClient.getDistinctGroups(codeName);		
+		List<String> grps = p2rClient.getDistinctGroups(codeName);
+		
 		int num_testGrps = grps.size() - 1;
 		if (0 < num_testGrps) {
 			
@@ -74,17 +75,17 @@ public class GroupRoute {
 					hash = hash - num_testHashIdx;
 				
 				if (hash <= 0) {
-					grouppKey = grpKey;
+					groupKey = grpKey;
 					break;
 				}					
 			}
 		}
-		else {
+		else {			
 			VEN_LOGGER.warn("none of Testing Group");
 			VEN_LOGGER.warn("check ES type of hermes_{}/param2recomder", codeName);			
 		}		
-		
-		return grouppKey;		
+
+		return groupKey;		
 	}
 	
 	
