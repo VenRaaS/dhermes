@@ -43,7 +43,7 @@ public class Param2recomderClient {
 	public void reset() { }
 	
 	public List<String> getDistinctGroups (String codeName) {
-		VEN_LOGGER.info("caching getGroups({})", codeName);
+		VEN_LOGGER.info("caching getDistinctGroups({})", codeName);
 
 		List<String> grps = new ArrayList<String> (20);
 		
