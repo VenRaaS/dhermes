@@ -7,10 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -20,7 +17,6 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.Param2recomderClient;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyClient;
-import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.common.option.RecOption;
@@ -46,8 +41,42 @@ public class HermesController {
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)	
-	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {		
+	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {
+		return get_goods_rank(paramMap);
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/goods/rank", method = RequestMethod.POST)	
+	public Object get_goods_rank_POST(@RequestBody String jsonStr) {
+		Gson gson = new Gson();
+		Type type = new TypeToken<Map<String, Object>>(){}.getType();
+		Map<String, Object> paramMap = gson.fromJson(jsonStr, type);
+		
+		return get_goods_rank(paramMap);
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/hello", method = RequestMethod.GET)
+	public Map<String, Object> hello(@RequestParam Map<String, Object> m)
+	{		
+		return m;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/hello", method = RequestMethod.POST)	
+	public Map<String, Object> hello(@RequestBody String jsonStr)
+	{
+		Gson gson = new Gson();
+		Type type = new TypeToken<Map<String, Object>>(){}.getType();
+		Map<String, Object> m = gson.fromJson(jsonStr, type);
 
+//		Map<String, String> m = gson.fromJson(s, Map);
+
+		return m;
+	}
+	
+	
+	private Map<String, Object> get_goods_rank(Map<String, Object> paramMap) {
 		String clientID = String.format("%s_%s_%s", 
 				paramMap.get(EnumOptionBase.token.name()), 
 				paramMap.get(EnumOptionBase.ven_guid.name()), 
@@ -104,12 +133,13 @@ public class HermesController {
 ///$apiURLs null check			
 			String apiURL = apiURLs.get(0);
 			HttpPost post = new HttpPost(apiURL);
+			CloseableHttpResponse httpResponse = null;
 			try {
 				StringEntity input = new StringEntity(outParam);
 				input.setContentType("application/json");
 				post.setEntity(input);
 				
-				CloseableHttpResponse httpResponse = httpClient.execute(post);
+				httpResponse = httpClient.execute(post);
 	
 				int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
 				if (! String.valueOf(httpStatusCode).startsWith("2")) {
@@ -131,6 +161,14 @@ public class HermesController {
 				VEN_LOGGER.error(Utility.stackTrace2string(ex));
 				VEN_LOGGER.error(ex.getMessage());
 			}
+			finally {
+				try {
+					if (null != httpResponse) httpResponse.close();
+				} catch (Exception ex) {
+					VEN_LOGGER.error(Utility.stackTrace2string(ex));
+					VEN_LOGGER.error(ex.getMessage());
+				}				
+			}
 		}
 		else {
 			Gson g = new Gson();
@@ -140,31 +178,8 @@ public class HermesController {
 		Gson g = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		Map<String, Object> m = g.fromJson(resp, type);
-		return m;
-	}
-	
-	@CrossOrigin
-	@RequestMapping(value = "/hello", method = RequestMethod.GET)
-	public Map<String, Object> hello(@RequestParam Map<String, Object> m)
-	{		
-		return m;
-	}
-	
-	@CrossOrigin
-	@RequestMapping(value = "/hello", method = RequestMethod.POST)	
-	public Map<String, Object> hello(@RequestBody String jsonStr)
-	{
-		Gson gson = new Gson();
-		Type type = new TypeToken<Map<String, Object>>(){}.getType();
-		Map<String, Object> m = gson.fromJson(jsonStr, type);
-
-//		Map<String, String> m = gson.fromJson(s, Map);
-
-		return m;
-	}
-	
-
-	
+		return m;	
+	}	
 	
 
 }
