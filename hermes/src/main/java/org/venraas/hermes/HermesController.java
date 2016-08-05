@@ -7,14 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,9 +45,9 @@ public class HermesController {
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(HermesController.class);
 	
 	@CrossOrigin
-	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)
+	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)	
 	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {		
-									
+
 		String clientID = String.format("%s_%s_%s", 
 				paramMap.get(EnumOptionBase.token.name()), 
 				paramMap.get(EnumOptionBase.ven_guid.name()), 
@@ -80,8 +86,7 @@ public class HermesController {
 			} 
 		}
 			
-		String resp = "";
-		Gson g = new Gson();
+		String resp = "";		
 		if (null != mapping) {
 			HashMap<String, Object> outParamMap = new HashMap<String, Object> (paramMap);
 			List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
@@ -89,10 +94,11 @@ public class HermesController {
 			for (String f : fields) {
 				String v = (String) mapping.get(f);
 				outParamMap.put(f, v);			
-			}			
-			String outParam = g.toJson(outParamMap);		
-			System.out.println(outParam);
-					
+			}
+			
+			Gson g = new Gson();
+			String outParam = g.toJson(outParamMap);
+			
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 ///TODO... LB and select an Available RecAPI
 ///$apiURLs null check			
@@ -103,36 +109,37 @@ public class HermesController {
 				input.setContentType("application/json");
 				post.setEntity(input);
 				
-				HttpResponse response = httpClient.execute(post);
+				CloseableHttpResponse httpResponse = httpClient.execute(post);
 	
-				int httpStatusCode = response.getStatusLine().getStatusCode();
+				int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
 				if (! String.valueOf(httpStatusCode).startsWith("2")) {
 					throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatusLine().getStatusCode());
+						+ httpResponse.getStatusLine().getStatusCode());
 				}
-	
-				BufferedReader br = 
-						new BufferedReader(
-								new InputStreamReader(response.getEntity().getContent()));
 				
-				StringBuilder strBuilder = new StringBuilder();
-				String line = "";
-				while ((line = br.readLine()) != null) {
-					strBuilder.append(line);
-				}
-				resp = strBuilder.toString();
+				HttpEntity entity = httpResponse.getEntity();
+			    if (entity != null) {			        
+			        resp = EntityUtils.toString(entity);
+//TODO...			        
+			        long len = entity.getContentLength();
+			        if (len != -1 || 5120 <= len) {			            
+			        	VEN_LOGGER.warn("invalid size of reponse message");
+			        }
+			    }
 			}
 			catch (Exception ex) {
 				VEN_LOGGER.error(Utility.stackTrace2string(ex));
 				VEN_LOGGER.error(ex.getMessage());
-			}	
+			}
 		}
-		else {			
+		else {
+			Gson g = new Gson();
 			VEN_LOGGER.warn("input param 2 recomder mapping cannot be found. input: {}", g.toJson(paramMap));			
 		}
- 		
+ 				
+		Gson g = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
-		Map<String, Object> m = g.fromJson(resp, type);		
+		Map<String, Object> m = g.fromJson(resp, type);
 		return m;
 	}
 	
