@@ -1,7 +1,5 @@
 package org.venraas.hermes;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -76,50 +74,30 @@ public class HermesController {
 	}
 	
 	
-	private Map<String, Object> get_goods_rank(Map<String, Object> paramMap) {
+	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap) {
+		
 		String clientID = String.format("%s_%s_%s", 
-				paramMap.get(EnumOptionBase.token.name()), 
-				paramMap.get(EnumOptionBase.ven_guid.name()), 
-				paramMap.get(EnumOptionBase.ven_session.name()));
+				inParamMap.get(EnumOptionBase.token.name()), 
+				inParamMap.get(EnumOptionBase.ven_guid.name()), 
+				inParamMap.get(EnumOptionBase.ven_session.name()));
 
 		CompanyClient comClient = new CompanyClient();
-		String token = (String)paramMap.get(EnumOptionBase.token.name());
+		String token = (String)inParamMap.get(EnumOptionBase.token.name());
 		String codeName = comClient.getCodeName(token);
 						
 		GroupRoute gr = new GroupRoute();
 		String grpKey = gr.routing(codeName, clientID);		
 		
 		Map<String, Object> mapping = null;		
-		Param2recomderClient p2r = new Param2recomderClient();
-		List<Map<String, Object>> maps = p2r.getGroupMapping(codeName, grpKey);		
-		for (Map<String, Object> m : maps) {			
-			boolean matchAllKeys = true;
-			
-			List<String> fields = (List<String>) m.get(EnumParam2recomder.keys2recomder.name());						
-			for (String f : fields) {
-				String inputV = (String) paramMap.get(f);
-				String regV = (String) m.get(f);
-				
-				if (null == inputV || null == regV || 
-					inputV.isEmpty() || regV.isEmpty() || 
-					!inputV.equals(regV)) 
-				{
-					matchAllKeys = false;
-					break;
-				}
-			}
-			
-			if (matchAllKeys) {
-				mapping = m;
-				break;
-			} 
-		}
-			
+		
+		Param2RestAPI p2r = new Param2RestAPI(codeName, grpKey);
+		mapping = p2r.getMapping(inParamMap);
+
 		String resp = "";		
 		if (null != mapping) {
-			HashMap<String, Object> outParamMap = new HashMap<String, Object> (paramMap);
+			HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
 			List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
-			List<String> fields = (List<String>) mapping.get(EnumParam2recomder.output_params.name());
+			List<String> fields = (List<String>) mapping.get(EnumParam2recomder.out_aux_params.name());
 			for (String f : fields) {
 				String v = (String) mapping.get(f);
 				outParamMap.put(f, v);			
@@ -172,7 +150,7 @@ public class HermesController {
 		}
 		else {
 			Gson g = new Gson();
-			VEN_LOGGER.warn("input param 2 recomder mapping cannot be found. input: {}", g.toJson(paramMap));			
+			VEN_LOGGER.warn("input param 2 recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
 		}
  				
 		Gson g = new Gson();
