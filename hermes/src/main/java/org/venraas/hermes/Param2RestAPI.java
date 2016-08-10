@@ -11,50 +11,34 @@ import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 
 public class Param2RestAPI {
 	String _codeName;
-	String _grpKey;
-	Map<String, Object> _inParamMap;
-	Map<String, Object> _rsMap = new HashMap<String, Object>();
-	
+	String _grpKey;	
+
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(Param2RestAPI.class);	
 	
-	private Param2RestAPI() { }
-
-	public static Param2RestAPI getBuilder() {
-		return new Param2RestAPI();
-	}
-
-	public Param2RestAPI set_codeName(String codeName) {
+	public Param2RestAPI(String codeName, String grpKey) {
 		this._codeName = codeName;
-		return this;
+		this._grpKey = grpKey;				
 	}
-	
-	public Param2RestAPI set_grpKey(String grpKey) {
-		this._grpKey = grpKey;
-		return this;
-	}
-	
-	public Param2RestAPI set_inParamMap(Map<String, Object> inParamMap) {
-		this._inParamMap = inParamMap;
-		return this;
-	}
-	
-	public Param2RestAPI build() {
+				
+	public Map<String, Object> getMapping(Map<String, Object> inParamMap) {
 		
 		VEN_LOGGER.info("codeName: {}, grpKey: {}", _codeName, _grpKey);
 		
-		Map<String, Object> _rsMap = null;
+		Map<String, Object> rsMap = new HashMap<String, Object>();
 
 		Param2recomderClient p2r = new Param2recomderClient();
 		
-		//-- list available mappings with specified GroupKey
+		//-- list all available mappings with respect to $_codeName and $_grpKey
 		List<Map<String, Object>> maps = p2r.getGroupMapping(_codeName, _grpKey);
 		
+		//-- looking for the first Mapping which satisfies the $inParamMap 
 		for (Map<String, Object> m : maps) {
 			boolean matchAllKeys = true;
 			
-			List<String> fields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());						
+			List<String> fields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());
+			
 			for (String f : fields) {
-				String inputV = (String) _inParamMap.get(f);
+				String inputV = (String) inParamMap.get(f);
 				String regV = (String) m.get(f);
 				
 				if (null == inputV || null == regV || 
@@ -67,16 +51,12 @@ public class Param2RestAPI {
 			}
 			
 			if (matchAllKeys) {
-				_rsMap = m;
+				rsMap = m;
 				break;
 			}
 		}
 		
-		return this;
-	}
-
-	public Map<String, Object> getMapping() {
-		return _rsMap;
+		return rsMap;
 	}
 	
 	
