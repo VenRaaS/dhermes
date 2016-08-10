@@ -3,16 +3,16 @@ package org.venraas.hermes.data_entity;
 import java.util.List;
 
 public class Param2recomder {	
-	
+
 	String group_key;
 	
 	String traffic_type;
 	
 	String api_url;
 	
-	List<String> keys2recomder;
+	List<String> in_keys2recomder;
 	
-	List<String> output_params;
+	List<String> out_aux_params;
 	
 	int availability;
 	
@@ -43,22 +43,6 @@ public class Param2recomder {
 		this.api_url = api_url;
 	}
 
-	public List<String> getKeys2recomder() {
-		return keys2recomder;
-	}
-
-	public void setKeys2recomder(List<String> keys2recomder) {
-		this.keys2recomder = keys2recomder;
-	}
-
-	public List<String> getOutput_params() {
-		return output_params;
-	}
-
-	public void setOutput_params(List<String> output_params) {
-		this.output_params = output_params;
-	}
-
 	public int getAvailability() {
 		return availability;
 	}
@@ -73,6 +57,22 @@ public class Param2recomder {
 
 	public void setUpdate_dt(String update_dt) {
 		this.update_dt = update_dt;
+	}
+	
+	public List<String> getIn_keys2recomder() {
+		return in_keys2recomder;
+	}
+
+	public void setIn_keys2recomder(List<String> in_keys2recomder) {
+		this.in_keys2recomder = in_keys2recomder;
+	}
+
+	public List<String> getOut_aux_params() {
+		return out_aux_params;
+	}
+
+	public void setOut_aux_params(List<String> out_aux_params) {
+		this.out_aux_params = out_aux_params;
 	}
 
 }

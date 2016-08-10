@@ -16,9 +16,9 @@ public enum EnumParam2recomder {
 	
 	api_url,
 	
-	keys2recomder,
+	in_keys2recomder,
 	
-	output_params,
+	out_aux_params,
 	
 	availability,
 	
