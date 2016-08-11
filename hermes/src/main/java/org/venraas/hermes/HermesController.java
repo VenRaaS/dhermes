@@ -29,6 +29,7 @@ import org.venraas.hermes.common.option.RecOption;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.twitter.jsr166e.ThreadLocalRandom;
 
 
 @RestController
@@ -107,51 +108,25 @@ public class HermesController {
 			String outParam = g.toJson(outParamMap);
 			
 			CloseableHttpClient httpClient = HttpClients.createDefault();
-///TODO... LB and select an Available RecAPI
-///$apiURLs null check			
-			String apiURL = apiURLs.get(0);
-			HttpPost post = new HttpPost(apiURL);
-			CloseableHttpResponse httpResponse = null;
-			try {
-				StringEntity input = new StringEntity(outParam);
-				input.setContentType("application/json");
-				post.setEntity(input);
-				
-				httpResponse = httpClient.execute(post);
-	
-				int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
-				if (! String.valueOf(httpStatusCode).startsWith("2")) {
-					throw new RuntimeException("Failed : HTTP error code : "
-						+ httpResponse.getStatusLine().getStatusCode());
-				}
-				
-				HttpEntity entity = httpResponse.getEntity();
-			    if (entity != null) {			        
-			        resp = EntityUtils.toString(entity);
-//TODO...			        
-			        long len = entity.getContentLength();
-			        if (len != -1 || 5120 <= len) {			            
-			        	VEN_LOGGER.warn("invalid size of reponse message");
-			        }
-			    }
+
+			String apiURL = "";
+			if (1 == apiURLs.size()) {
+				apiURL = apiURLs.get(0);
+			} else {
+				 int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
+				 apiURL = apiURLs.get(r);
 			}
-			catch (Exception ex) {
-				VEN_LOGGER.error(Utility.stackTrace2string(ex));
-				VEN_LOGGER.error(ex.getMessage());
-			}
-			finally {
-				try {
-					if (null != httpResponse) httpResponse.close();
-				} catch (Exception ex) {
-					VEN_LOGGER.error(Utility.stackTrace2string(ex));
-					VEN_LOGGER.error(ex.getMessage());
-				}				
+			
+			if (! apiURL.isEmpty()) {				
+				APIConnector apiConn = new APIConnector();
+				resp = apiConn.post(apiURL, outParam);	
 			}
 		}
 		else {
 			Gson g = new Gson();
-			VEN_LOGGER.warn("input param 2 recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
+			VEN_LOGGER.warn("input parameter to recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
 		}
+		
  				
 		Gson g = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
