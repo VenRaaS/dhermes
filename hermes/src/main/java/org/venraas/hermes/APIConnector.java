@@ -21,7 +21,6 @@ import org.venraas.hermes.common.Utility;
 
 public class APIConnector {
 	
-///	static CloseableHttpClient _httpClient = null;
 	static RequestConfig _reqConfig = null;
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
@@ -54,20 +53,20 @@ public class APIConnector {
 				
 		String resp = "";
 		
-		CloseableHttpClient _httpClient = null;		
+		CloseableHttpClient httpClient = null;		
 		
 		try {
-			_httpClient =  HttpClients.createDefault();
+			httpClient =  HttpClients.createDefault();
 			
 			StringEntity body_entity = new StringEntity(body);
 			body_entity.setContentType("application/json");
 			
 			HttpPost post = new HttpPost(apiURL);
 			post.setEntity(body_entity);
-	//TODO... post.setConfig(_reqConfig);
+//TODO... post.setConfig(_reqConfig);
 			
 			StrRespHandler respHd = new StrRespHandler();
-			resp = _httpClient.execute(post, respHd);
+			resp = httpClient.execute(post, respHd);
 			
 		} catch (Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
@@ -75,7 +74,7 @@ public class APIConnector {
 		}
 		finally {
 			try {				
-				if (null != _httpClient) _httpClient.close();
+				if (null != httpClient) httpClient.close();
 			} catch (Exception ex) {
 				VEN_LOGGER.error(Utility.stackTrace2string(ex));
 				VEN_LOGGER.error(ex.getMessage());
@@ -88,11 +87,12 @@ public class APIConnector {
 	class StrRespHandler implements ResponseHandler<String> {
 		
 		@Override
-		public String handleResponse( final HttpResponse response) {
+		public String handleResponse(final HttpResponse response) {
 			
 			String resp = "";
 			
 			int status = response.getStatusLine().getStatusCode();
+			
 			try {
 				if (status >= 200 && status < 300) {
 					HttpEntity entity = response.getEntity();					
