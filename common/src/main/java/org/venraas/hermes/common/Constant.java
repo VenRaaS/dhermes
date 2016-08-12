@@ -9,4 +9,11 @@ public class Constant {
 	public static final int MAX_NUM_GROUPS = 100;
 	
 	public static final String NORMAL_GROUP_KEY = "normal";
+	
+	public static final int HTTP_REQUEST_TIMEOUT = 2 * 1000;
+	
+	
+	public final static long CACHE_SIZE_100K = 100 * 1000;
+	
+	public final static long CACHE_EXPIRE_AFTER_60_MINS = 1 * 60;
 }

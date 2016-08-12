@@ -1,6 +1,7 @@
 package org.venraas.hermes.apollo.raas;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.venraas.hermes.context.AppContext;
 
 public class CompanyManager {
 	
@@ -17,9 +18,8 @@ public class CompanyManager {
 			synchronized (CompanyManager.class) {
 				
 				if (null == _client) {
-					
-//TODO...					AnnotationConfigApplicationContext ctx = AppContext.getCacheAnnotContext();
-//TODO...					_client = ctx.getBean(CompanyClient.class);
+					AnnotationConfigApplicationContext ctx = AppContext.getCacheAnnotContext();
+					_client = ctx.getBean(CompanyClient.class);
 				}
 			}
 		}

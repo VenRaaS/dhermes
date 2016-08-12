@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyClient;
+import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.EnumOptionBase;
 
 import com.google.gson.Gson;
@@ -74,9 +75,9 @@ public class HermesController {
 				inParamMap.get(EnumOptionBase.ven_guid.name()), 
 				inParamMap.get(EnumOptionBase.ven_session.name()));
 
-		CompanyClient comClient = new CompanyClient();
 		String token = (String)inParamMap.get(EnumOptionBase.token.name());
-		String codeName = comClient.getCodeName(token);
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
 						
 		GroupRoute gr = new GroupRoute();
 		String grpKey = gr.routing(codeName, clientID);		

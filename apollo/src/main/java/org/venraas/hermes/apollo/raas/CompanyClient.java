@@ -8,6 +8,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.Com_pkgs;
 import org.venraas.hermes.common.Utility;
@@ -17,7 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-//@Service
+@Service
 public class CompanyClient {
 	
 	private static final String VENRAAS_INDEX_NAME = "venraas";
@@ -35,12 +38,10 @@ public class CompanyClient {
 		}		
 	}
 	
-//	@CacheEvict(value="cache_company", allEntries=true)
-	public void reset() {
-	}
-	
+	@CacheEvict(value="cache_company", allEntries=true)
+	public void reset() { }
 
-//	@Cacheable(value="cache_company", key="{#token}")
+	@Cacheable(value="cache_company", key="{#token}")
 	public String getCodeName(String token) {
 		VEN_LOGGER.info("caching getCodeName({})", token);
 		
