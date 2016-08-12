@@ -35,6 +35,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>			
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>			
 		</dependency>
 		<dependency>
 			<groupId>org.venraas.hermes.common</groupId>
@@ -45,19 +53,11 @@
 			<groupId>org.venraas.hermes.data_entity</groupId>
 			<artifactId>data_entity</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>		
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>			
-		</dependency>
-		<dependency>
-			<groupId>javax.json</groupId>
-			<artifactId>javax.json-api</artifactId>
-			<version>1.0</version>
+			<groupId>org.venraas.hermes.context</groupId>
+			<artifactId>app_context</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	
