@@ -10,6 +10,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.common.Utility;
@@ -21,6 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
+@Service
 public class ConfClient {	
 	
 	static private final String TYPE_NAME = "conf"; 
@@ -36,12 +40,10 @@ public class ConfClient {
 		}		
 	}
 	
-//	@CacheEvict(value="cache_conf", allEntries=true)
-	public void reset() {
-	}
-	
+	@CacheEvict(value="cache_conf", allEntries=true)
+	public void reset() { }
 
-//	@Cacheable(value="cache_conf", key="{#token}")
+	@Cacheable(value="cache_conf", key="{#root.methodName, #codeName}")	
 	public int get_routing_reset_interval(String codeName) {
 		
 		VEN_LOGGER.info("caching get_routing_reset_interval({})", codeName);
@@ -103,7 +105,7 @@ public class ConfClient {
         return interval;        
 	}
 	
-//	@Cacheable(value="cache_conf", key="{#token}")	
+	@Cacheable(value="cache_conf", key="{#root.methodName, #codeName}")	
 	public double get_traffic_percent_normal(String codeName) {
 		
 		VEN_LOGGER.info("caching get_traffic_percent_normal({})", codeName);
@@ -143,6 +145,8 @@ public class ConfClient {
 			VEN_LOGGER.error(ex.getMessage());
 		} 
         
-        return pct;        
+        return pct;
 	}
+	
+	
 }

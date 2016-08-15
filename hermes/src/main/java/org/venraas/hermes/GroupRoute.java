@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.hermes.ConfClient;
+import org.venraas.hermes.apollo.hermes.ConfManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderClient;
 import org.venraas.hermes.common.Constant;
 
@@ -51,8 +52,9 @@ public class GroupRoute {
 		int num_testGrps = grps.size() - 1;
 		if (0 < num_testGrps) {
 			
-			ConfClient conf = new ConfClient();			
-			double pctNormal = conf.get_traffic_percent_normal(codeName);
+///			ConfClient conf = new ConfClient();
+			ConfManager confMgr = ConfManager.getInstance();
+			double pctNormal = confMgr.get_traffic_percent_normal(codeName);
 			
 			//-- balance number of testing channel $hash_i, remains for normal channel
 			int num_normHashIdx = (int) (pctNormal * Constant.MAX_NUM_GROUPS);
@@ -60,7 +62,7 @@ public class GroupRoute {
 			num_normHashIdx = Constant.MAX_NUM_GROUPS - (num_testHashIdx * num_testGrps);
 
 			Calendar c = Calendar.getInstance();
-			int resetInterval = conf.get_routing_reset_interval(codeName);
+			int resetInterval = confMgr.get_routing_reset_interval(codeName);
 			int t = c.get(resetInterval);
 			int h = absHash(clientID, t);
 			int hash = (h % Constant.MAX_NUM_GROUPS) + 1;
@@ -80,7 +82,7 @@ public class GroupRoute {
 				}					
 			}
 		}
-		else {			
+		else {
 			VEN_LOGGER.warn("none of Testing Group");
 			VEN_LOGGER.warn("check ES type of hermes_{}/param2recomder", codeName);			
 		}		
