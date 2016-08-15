@@ -16,6 +16,9 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Constant;
@@ -24,6 +27,8 @@ import org.venraas.hermes.common.Utility;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+
+@Service
 public class Param2recomderClient {
 
 	final String TYPE_NAME = "param2recomder";
@@ -39,9 +44,10 @@ public class Param2recomderClient {
 		}
 	}
 	
-//	@CacheEvict(value="cache_category", allEntries=true)
+	@CacheEvict(value="cache_param2recomder", allEntries=true)
 	public void reset() { }
 	
+	@Cacheable(value="cache_param2recomder", key="{#codeName}")
 	public List<String> getDistinctGroups (String codeName) {
 		VEN_LOGGER.info("caching getDistinctGroups({})", codeName);
 
@@ -57,7 +63,8 @@ public class Param2recomderClient {
 			//-- availability = 1 
 			QueryBuilder qb = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1));
 			
-			//-- Terms Aggregation, https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/_bucket_aggregations.html#java-aggs-bucket-terms
+			//-- Terms Aggregation, 
+			//   https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/_bucket_aggregations.html#java-aggs-bucket-terms
 			AggregationBuilder ab = AggregationBuilders.terms(aggName).field(EnumParam2recomder.group_key.name());
 
 			SearchRequestBuilder searchReq = 		
@@ -90,7 +97,7 @@ public class Param2recomderClient {
 		return grps;
 	}
 
-//	@Cacheable(value="cache_category", key="{#codeName, #categoryCode}")
+	@Cacheable(value="cache_param2recomder", key="{#codeName, #grpKey}")
 	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
 		
 		VEN_LOGGER.info("caching getGroupMapping({},{})", codeName, grpKey);

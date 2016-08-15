@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.hermes.ConfClient;
 import org.venraas.hermes.apollo.hermes.ConfManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderClient;
+import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.common.Constant;
 
 import com.google.common.base.Charsets;
@@ -45,14 +46,13 @@ public class GroupRoute {
 		
 		if (null == codeName || codeName.isEmpty() || null == clientID || clientID.isEmpty())
 			return groupKey;
-				
-		Param2recomderClient p2rClient = new Param2recomderClient();
-		List<String> grps = p2rClient.getDistinctGroups(codeName);
+
+		Param2recomderManager p2rMgr = Param2recomderManager.getInstance(); 
+		List<String> grps = p2rMgr.getDistinctGroups(codeName);	
 		
 		int num_testGrps = grps.size() - 1;
 		if (0 < num_testGrps) {
 			
-///			ConfClient conf = new ConfClient();
 			ConfManager confMgr = ConfManager.getInstance();
 			double pctNormal = confMgr.get_traffic_percent_normal(codeName);
 			

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.hermes.Param2recomderClient;
+import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 
 public class Param2RestAPI {
@@ -25,11 +26,11 @@ public class Param2RestAPI {
 		VEN_LOGGER.info("codeName: {}, grpKey: {}", _codeName, _grpKey);
 		
 		Map<String, Object> rsMap = new HashMap<String, Object>();
-
-		Param2recomderClient p2r = new Param2recomderClient();
+		
+		Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
 		
 		//-- list all available mappings with respect to $_codeName and $_grpKey
-		List<Map<String, Object>> maps = p2r.getGroupMapping(_codeName, _grpKey);
+		List<Map<String, Object>> maps = p2rMgr.getGroupMapping(_codeName, _grpKey);
 		
 		//-- looking for the first Mapping which satisfies the $inParamMap 
 		for (Map<String, Object> m : maps) {
