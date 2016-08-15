@@ -15,5 +15,7 @@ public class Constant {
 	
 	public final static long CACHE_SIZE_100K = 100 * 1000;
 	
-	public final static long CACHE_EXPIRE_AFTER_60_MINS = 1 * 60;
+	public final static long CACHE_EXPIRE_AFTER_30_MINS = 30;
+	
+	public final static long CACHE_EXPIRE_AFTER_60_MINS = 60;
 }
