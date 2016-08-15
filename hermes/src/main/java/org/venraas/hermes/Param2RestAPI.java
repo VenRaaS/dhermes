@@ -30,17 +30,17 @@ public class Param2RestAPI {
 		Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
 		
 		//-- list all available mappings with respect to $_codeName and $_grpKey
-		List<Map<String, Object>> maps = p2rMgr.getGroupMapping(_codeName, _grpKey);
+		List<Map<String, Object>> regMaps = p2rMgr.getGroupMapping(_codeName, _grpKey);
 		
 		//-- looking for the first Mapping which satisfies the $inParamMap 
-		for (Map<String, Object> m : maps) {
+		for (Map<String, Object> m : regMaps) {
 			boolean matchAllKeys = true;
 			
-			List<String> fields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());
+			List<String> regFields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());
 			
-			for (String f : fields) {
-				String inputV = (String) inParamMap.get(f);
-				String regV = (String) m.get(f);
+			for (String regF : regFields) {
+				String inputV = (String) inParamMap.get(regF);
+				String regV = (String) m.get(regF);
 				
 				if (null == inputV || null == regV || 
 					inputV.isEmpty() || regV.isEmpty() || 
