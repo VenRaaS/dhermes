@@ -2,6 +2,7 @@ package org.venraas.hermes.apollo.hermes;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class Param2recomderClient {
 		return grps;
 	}
 
-	@Cacheable(value="cache_param2recomder", key="{#codeName, #grpKey}")
+	@Cacheable(value="cache_param2recomder", key="{#root.methodName, #codeName, #grpKey}")
 	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
 		
 		VEN_LOGGER.info("caching getGroupMapping({},{})", codeName, grpKey);
@@ -143,6 +144,38 @@ public class Param2recomderClient {
 		
 		return mappings;
 	}
+	
+	@Cacheable(value="cache_param2recomder", key="{#root.methodName, #codeName, #grpKey}")
+	public List<Map<String, String>> getGroupMapping_inKeys2recomder (String codeName, String grpKey) {
+		
+		VEN_LOGGER.info("caching {},{})", codeName, grpKey);
+		
+		List<Map<String, String>> mappings = new ArrayList<Map<String, String>>(20);
+
+		if (codeName == null || codeName.isEmpty() || null == grpKey || grpKey.isEmpty()) return mappings;
+		
+		List<Map<String, Object>> grpMappings = getGroupMapping(codeName, grpKey);
+		
+		try {
+			for (Map<String, Object> m : grpMappings) {				
+				List<String> regFields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());
+				
+				HashMap<String, String> k2r = new HashMap<String, String>(); 
+				for (String regF : regFields) {					
+					String regV = (String) m.get(regF);
+					k2r.put(regF, regV);
+				}
+				
+				mappings.add(k2r);
+			}		
+		} catch (Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+		
+		return mappings;
+	}
+
 
 	
 }

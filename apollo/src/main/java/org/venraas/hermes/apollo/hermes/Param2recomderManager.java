@@ -40,6 +40,10 @@ public class Param2recomderManager {
 	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
 		return _client.getGroupMapping(codeName, grpKey);
 	}
+	
+	public List<Map<String, String>> getGroupMapping_keys2recomder (String codeName, String grpKey) {
+		return _client.getGroupMapping_inKeys2recomder(codeName, grpKey);
+	}
 		
 	
 	
