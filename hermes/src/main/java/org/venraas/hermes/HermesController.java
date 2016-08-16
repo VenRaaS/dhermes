@@ -19,6 +19,7 @@ import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyClient;
 import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.EnumOptionBase;
+import org.venraas.hermes.common.Utility;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -63,62 +64,71 @@ public class HermesController {
 		Map<String, Object> m = gson.fromJson(jsonStr, type);
 
 //		Map<String, String> m = gson.fromJson(s, Map);
-
 		return m;
 	}
 	
 	
 	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap) {
 		
+		String resp = "";
+				
 		String clientID = String.format("%s_%s_%s", 
 				inParamMap.get(EnumOptionBase.token.name()), 
 				inParamMap.get(EnumOptionBase.ven_guid.name()), 
 				inParamMap.get(EnumOptionBase.ven_session.name()));
-
-		String token = (String)inParamMap.get(EnumOptionBase.token.name());
-		CompanyManager comMgr = CompanyManager.getInstance();
-		String codeName = comMgr.getCodeName(token);
-						
-		GroupRoute gr = new GroupRoute();
-		String grpKey = gr.routing(codeName, clientID);		
 		
-		Map<String, Object> mapping = null;		
+		try {
+			String token = (String)inParamMap.get(EnumOptionBase.token.name());
+			CompanyManager comMgr = CompanyManager.getInstance();
+			String codeName = comMgr.getCodeName(token);
 		
-		Param2RestAPI p2r = new Param2RestAPI(codeName, grpKey);
-		mapping = p2r.getMapping(inParamMap);
-
-		String resp = "";		
-		if (null != mapping) {
-			HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
-			List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
-			List<String> fields = (List<String>) mapping.get(EnumParam2recomder.out_aux_params.name());
-			for (String f : fields) {
-				String v = (String) mapping.get(f);
-				outParamMap.put(f, v);			
-			}
+			GroupRoute gr = new GroupRoute();
+			String grpKey = gr.routing(codeName, clientID);		
 			
-			Gson g = new Gson();
-			String outParam = g.toJson(outParamMap);
+			Map<String, Object> mapping = null;		
 			
-			CloseableHttpClient httpClient = HttpClients.createDefault();
-
-			String apiURL = "";
-			if (1 == apiURLs.size()) {
-				apiURL = apiURLs.get(0);
-			} else {
-				 int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
-				 apiURL = apiURLs.get(r);
+			Param2RestAPI p2r = new Param2RestAPI(codeName, grpKey);
+			mapping = p2r.getMapping(inParamMap);		
+		
+			if (null != mapping) {
+				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
+				List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
+				List<String> fields = (List<String>) mapping.get(EnumParam2recomder.out_aux_params.name());				
+				if (null != fields && null != apiURLs && !apiURLs.isEmpty() && !fields.isEmpty()) {
+					for (String f : fields) {
+						String v = (String) mapping.get(f);
+						outParamMap.put(f, v);
+					}					
+				}
+				else {
+					VEN_LOGGER.error("invalid register values: {} or {}", 
+						EnumParam2recomder.api_url.name(), EnumParam2recomder.out_aux_params.name());
+				}
+				
+				Gson g = new Gson();
+				String outParam = g.toJson(outParamMap);			
+	
+				String apiURL = "";
+				if (1 == apiURLs.size()) {
+					apiURL = apiURLs.get(0);
+				} else {
+					 int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
+					 apiURL = apiURLs.get(r);
+				}
+				
+				if (! apiURL.isEmpty()) {				
+					APIConnector apiConn = APIConnector.getInstance();
+					resp = apiConn.post(apiURL, outParam);	
+				}
 			}
-			
-			if (! apiURL.isEmpty()) {				
-				APIConnector apiConn = new APIConnector();
-				resp = apiConn.post(apiURL, outParam);	
+			else {
+				Gson g = new Gson();
+				VEN_LOGGER.warn("input parameter to recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
 			}
-		}
-		else {
-			Gson g = new Gson();
-			VEN_LOGGER.warn("input parameter to recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
-		}
+		} catch(Exception ex) {
+			VEN_LOGGER.error("{} with input {} ", ex.getMessage(), new Gson().toJson(inParamMap));
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+		} 
 		
  				
 		Gson g = new Gson();
