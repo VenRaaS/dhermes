@@ -134,7 +134,8 @@ public class Param2recomderClient {
 					String json = h.getSourceAsString();			
 					Type type = new TypeToken<Map<String, Object>>(){}.getType();					
 					Map<String, Object> m = gson.fromJson(json, type);
-					mappings.add(m);
+					
+					if (null != m) mappings.add(m);
 				}				
 			}
 		} catch (Exception ex) {

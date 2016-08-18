@@ -1,12 +1,11 @@
 package org.venraas.hermes;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
-import org.venraas.hermes.apollo.raas.CompanyClient;
 import org.venraas.hermes.apollo.raas.CompanyManager;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.Utility;
 
@@ -83,37 +82,37 @@ public class HermesController {
 			String codeName = comMgr.getCodeName(token);
 		
 			GroupRoute gr = new GroupRoute();
-			String grpKey = gr.routing(codeName, clientID);		
-			
-			Map<String, Object> mapping = null;		
-			
+			String grpKey = gr.routing(codeName, clientID);
 			Param2RestAPI p2r = new Param2RestAPI(codeName, grpKey);
-			mapping = p2r.getMapping(inParamMap);		
+			
+			Map<String, Object> mapping = p2r.getMapping(inParamMap);							
 		
 			if (null != mapping) {
 				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
-				List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
-				List<String> fields = (List<String>) mapping.get(EnumParam2recomder.out_aux_params.name());				
-				if (null != fields && null != apiURLs && !apiURLs.isEmpty() && !fields.isEmpty()) {
-					for (String f : fields) {
-						String v = (String) mapping.get(f);
-						outParamMap.put(f, v);
-					}					
-				}
-				else {
-					VEN_LOGGER.error("invalid register values: {} or {}", 
-						EnumParam2recomder.api_url.name(), EnumParam2recomder.out_aux_params.name());
-				}
 				
+///				List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
+				List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());				
+///				List<String> fields = (List<String>) mapping.get(EnumParam2recomder.out_aux_params.name());
+				List<String> fields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
+				
+				if (fields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
+				
+				for (String f : fields) {
+					String v = (String) mapping.get(f);
+					outParamMap.put(f, v);
+				}
+
+				String apiURL = "";				
 				Gson g = new Gson();
-				String outParam = g.toJson(outParamMap);			
-	
-				String apiURL = "";
+				String outParam = g.toJson(outParamMap);
+				
 				if (1 == apiURLs.size()) {
 					apiURL = apiURLs.get(0);
-				} else {
+				} else if (2 <= apiURLs.size()) {
 					 int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
 					 apiURL = apiURLs.get(r);
+				} else {
+					VEN_LOGGER.error("invalid register key/value: {} / {}", EnumParam2recomder.api_url.name(), apiURL);
 				}
 				
 				if (! apiURL.isEmpty()) {				
@@ -128,8 +127,7 @@ public class HermesController {
 		} catch(Exception ex) {
 			VEN_LOGGER.error("{} with input {} ", ex.getMessage(), new Gson().toJson(inParamMap));
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-		} 
-		
+		} 		
  				
 		Gson g = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
