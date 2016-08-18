@@ -90,9 +90,7 @@ public class HermesController {
 			if (null != mapping) {
 				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
 				
-///				List<String> apiURLs = (List<String>) mapping.get(EnumParam2recomder.api_url.name());
-				List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());				
-///				List<String> fields = (List<String>) mapping.get(EnumParam2recomder.out_aux_params.name());
+				List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
 				List<String> fields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
 				
 				if (fields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
@@ -109,8 +107,8 @@ public class HermesController {
 				if (1 == apiURLs.size()) {
 					apiURL = apiURLs.get(0);
 				} else if (2 <= apiURLs.size()) {
-					 int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
-					 apiURL = apiURLs.get(r);
+					int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
+					apiURL = apiURLs.get(r);
 				} else {
 					VEN_LOGGER.error("invalid register key/value: {} / {}", EnumParam2recomder.api_url.name(), apiURL);
 				}

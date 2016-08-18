@@ -1,5 +1,6 @@
 package org.venraas.hermes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +37,13 @@ public class Param2RestAPI {
 		for (Map<String, Object> m : regMaps) {
 			boolean matchAllKeys = true;
 			
-			List<String> regFields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());
+			List<String> regFields = (List<String>) m.getOrDefault(EnumParam2recomder.in_keys2recomder.name(), new ArrayList<String>());
 			
 			for (String regF : regFields) {
-				String inputV = (String) inParamMap.get(regF);
-				String regV = (String) m.get(regF);
+				String inputV = (String) inParamMap.getOrDefault(regF, "");
+				String regV = (String) m.getOrDefault(regF, "");
 				
-				if (null == inputV || null == regV || 
-					inputV.isEmpty() || regV.isEmpty() || 
-					!inputV.equals(regV)) 
+				if (inputV.isEmpty() || regV.isEmpty() || !inputV.equals(regV)) 
 				{
 					matchAllKeys = false;
 					break;
