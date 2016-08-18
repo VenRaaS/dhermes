@@ -126,7 +126,7 @@ public class HermesController {
 			VEN_LOGGER.error("{} with input {} ", ex.getMessage(), new Gson().toJson(inParamMap));
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 		} 		
- 				
+
 		Gson g = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		Map<String, Object> m = g.fromJson(resp, type);

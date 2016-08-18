@@ -50,6 +50,7 @@ public class Param2recomderClient {
 	
 	@Cacheable(value="cache_param2recomder", key="{#codeName}")
 	public List<String> getDistinctGroups (String codeName) {
+		
 		VEN_LOGGER.info("caching getDistinctGroups({})", codeName);
 
 		List<String> grps = new ArrayList<String> (20);
