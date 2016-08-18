@@ -82,12 +82,12 @@ public class HermesController {
 			String codeName = comMgr.getCodeName(token);
 		
 			GroupRoute gr = new GroupRoute();
-			String grpKey = gr.routing(codeName, clientID);
-			Param2RestAPI p2r = new Param2RestAPI(codeName, grpKey);
+			RoutingGroup targetGrp = gr.routing(codeName, clientID);
+			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());
 			
 			Map<String, Object> mapping = p2r.getMapping(inParamMap);							
 		
-			if (null != mapping) {
+			if (! mapping.isEmpty()) {
 				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
 				
 				List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
@@ -99,6 +99,9 @@ public class HermesController {
 					String v = (String) mapping.get(f);
 					outParamMap.put(f, v);
 				}
+				outParamMap.put(RoutingGroup.GROUP_KEY, targetGrp.getGroup_key());
+				outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type());
+				outParamMap.put(RoutingGroup.TRAFFIC_PCT, targetGrp.getTraffic_pct());
 
 				String apiURL = "";				
 				Gson g = new Gson();

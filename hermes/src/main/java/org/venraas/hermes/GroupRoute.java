@@ -42,14 +42,14 @@ public class GroupRoute {
 		return l;
 	}
 	
-	public String routing(String codeName, String clientID) {
+	public RoutingGroup routing(String codeName, String clientID) {
 		
-		String groupKey = Constant.NORMAL_GROUP_KEY;
+		RoutingGroup rGrp = new RoutingGroup();				
 		
 		if (null == codeName || codeName.isEmpty() || null == clientID || clientID.isEmpty())
 		{
 			VEN_LOGGER.warn("invalid codename {} or clientID {}", codeName, clientID);
-			return groupKey;
+			return rGrp;
 		}
 
 		Param2recomderManager p2rMgr = Param2recomderManager.getInstance(); 
@@ -65,6 +65,10 @@ public class GroupRoute {
 			int num_normHashIdx = (int) (pctNormal * Constant.MAX_NUM_GROUPS);
 			int num_testHashIdx = (Constant.MAX_NUM_GROUPS - num_normHashIdx) / num_nonNormalGrps;
 			num_normHashIdx = Constant.MAX_NUM_GROUPS - (num_testHashIdx * num_nonNormalGrps);
+			
+			//-- cast traffic percentage to String
+			String normPCT = String.valueOf((double)num_normHashIdx/(double)Constant.MAX_NUM_GROUPS);
+			String testPCT = String.valueOf((double)num_testHashIdx/(double)Constant.MAX_NUM_GROUPS);
 
 			Calendar c = Calendar.getInstance();
 			int resetInterval = confMgr.get_routing_reset_interval(codeName);
@@ -76,13 +80,19 @@ public class GroupRoute {
 			for (int i = 0; i < num_regGrps; ++i) {				
 				String grpKey = grps.get(i).trim();				
 
-				if (grpKey.equalsIgnoreCase(Constant.NORMAL_GROUP_KEY)) 
-					hash = hash - num_normHashIdx;									
-				else 
+				if (grpKey.equalsIgnoreCase(Constant.NORMAL_GROUP_KEY)) {
+					rGrp.setTraffic_type(Constant.TRAFFIC_TYPE_NORMAL);
+					rGrp.setTraffic_pct(normPCT); 
+					hash = hash - num_normHashIdx;
+				}
+				else { 
+					rGrp.setTraffic_type(Constant.TRAFFIC_TYPE_TEST);
+					rGrp.setTraffic_pct(testPCT);
 					hash = hash - num_testHashIdx;
+				}
 				
-				if (hash <= 0) {
-					groupKey = grpKey;
+				if (hash <= 0) {					
+					rGrp.setGroup_key(grpKey);					
 					break;
 				}					
 			}
@@ -92,7 +102,7 @@ public class GroupRoute {
 			VEN_LOGGER.warn("check registered Groups in terms of ES type of hermes_{}/param2recomder", codeName);			
 		}		
 
-		return groupKey;		
+		return rGrp;		
 	}
 	
 	
