@@ -1,7 +1,9 @@
 package org.venraas.hermes;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,21 +47,24 @@ public class GroupRoute {
 		String groupKey = Constant.NORMAL_GROUP_KEY;
 		
 		if (null == codeName || codeName.isEmpty() || null == clientID || clientID.isEmpty())
+		{
+			VEN_LOGGER.warn("invalid codename {} or clientID {}", codeName, clientID);
 			return groupKey;
+		}
 
 		Param2recomderManager p2rMgr = Param2recomderManager.getInstance(); 
-		List<String> grps = p2rMgr.getDistinctGroups(codeName);	
+		List<String> grps = p2rMgr.getDistinctGroups(codeName);
 		
-		int num_testGrps = grps.size() - 1;
-		if (0 < num_testGrps) {
+		int num_nonNormalGrps = (grps.contains(Constant.NORMAL_GROUP_KEY)) ? grps.size() - 1 : grps.size() ;
+		if (0 < num_nonNormalGrps) {
 			
 			ConfManager confMgr = ConfManager.getInstance();
 			double pctNormal = confMgr.get_traffic_percent_normal(codeName);
 			
 			//-- balance number of testing channel $hash_i, remains for normal channel
 			int num_normHashIdx = (int) (pctNormal * Constant.MAX_NUM_GROUPS);
-			int num_testHashIdx = (Constant.MAX_NUM_GROUPS - num_normHashIdx) / num_testGrps;
-			num_normHashIdx = Constant.MAX_NUM_GROUPS - (num_testHashIdx * num_testGrps);
+			int num_testHashIdx = (Constant.MAX_NUM_GROUPS - num_normHashIdx) / num_nonNormalGrps;
+			num_normHashIdx = Constant.MAX_NUM_GROUPS - (num_testHashIdx * num_nonNormalGrps);
 
 			Calendar c = Calendar.getInstance();
 			int resetInterval = confMgr.get_routing_reset_interval(codeName);
@@ -84,7 +89,7 @@ public class GroupRoute {
 		}
 		else {
 			VEN_LOGGER.warn("none of Testing Group");
-			VEN_LOGGER.warn("check ES type of hermes_{}/param2recomder", codeName);			
+			VEN_LOGGER.warn("check registered Groups in terms of ES type of hermes_{}/param2recomder", codeName);			
 		}		
 
 		return groupKey;		
