@@ -1,15 +1,19 @@
 package org.venraas.hermes.data_entity;
 
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumResetInterval;
+import org.venraas.hermes.common.Utility;
 
 public class Conf {
 	
 	double traffic_pct_normal = Constant.TRAFFIC_PERCENT_NORMAL;
 
-	String routing_reset_interval;
+	String routing_reset_interval = EnumResetInterval.HOUR.name();
 	
-	String update_dt;
+	String update_dt = Utility.now();
 	
+	
+	public Conf() { }	
 	
 	public double getTraffic_pct_normal() {
 		return traffic_pct_normal;
