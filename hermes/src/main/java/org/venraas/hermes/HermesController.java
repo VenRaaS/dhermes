@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyManager;
-import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.Utility;
 
@@ -95,13 +94,16 @@ public class HermesController {
 				
 				if (fields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
 				
-				for (String f : fields) {
-					String v = (String) mapping.get(f);
-					outParamMap.put(f, v);
-				}
+				//-- attach auxiliary key/value for back-end usage
+				// traffic info
 				outParamMap.put(RoutingGroup.GROUP_KEY, targetGrp.getGroup_key());
 				outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type());
 				outParamMap.put(RoutingGroup.TRAFFIC_PCT, targetGrp.getTraffic_pct());
+				// request specified
+				for (String f : fields) {
+					String v = (String) mapping.get(f);
+					outParamMap.put(f, v);
+				}				
 
 				String apiURL = "";				
 				Gson g = new Gson();
@@ -137,4 +139,5 @@ public class HermesController {
 	}	
 	
 
+	
 }
