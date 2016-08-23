@@ -47,7 +47,7 @@ public class CompanyClient {
 		
 		String codeName = "";
 		
-		if(null == token || token.isEmpty())	return codeName;				
+		if (null == token || token.isEmpty()) return codeName;				
 		
 		try {			
 			BoolQueryBuilder bq = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(Com_pkgs.token, token));
