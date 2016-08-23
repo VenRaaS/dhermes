@@ -2,6 +2,10 @@ package org.venraas.hermes.common;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,5 +19,12 @@ public class Utility {
 		ex.printStackTrace(pw);
 
 		return sw.toString();
+	}
+	
+	static public String now() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	Date date = new Date();
+    	
+		return dateFormat.format(date);		
 	}
 }
