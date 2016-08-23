@@ -4,8 +4,10 @@ public class Constant {
 	
 	public static final String HERMES_INDEX_SUFFIX = "_hermes";
 	
-	//-- 80%
-	public static final double TRAFFIC_PERCENT_NORMAL = 0.8;
+	public static final String HERMES_CONF_CACHE_TRAFFIC_PCT = "traffic_pct";
+	
+	//-- 100%
+	public static final double TRAFFIC_PERCENT_NORMAL = 1.0;
 	
 	public static final String TRAFFIC_TYPE_NORMAL = "normal";
 	
