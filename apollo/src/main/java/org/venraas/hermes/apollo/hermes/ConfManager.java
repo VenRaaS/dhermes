@@ -2,6 +2,7 @@ package org.venraas.hermes.apollo.hermes;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.context.AppContext;
 
 public class ConfManager {
@@ -32,9 +33,13 @@ public class ConfManager {
 		_client.reset();
 	}
 
-	public int get_routing_reset_interval(String codeName) {
-		int interval = _client.get_routing_reset_interval(codeName);		
-		return interval;
+	public EnumResetInterval get_routing_reset_interval(String codeName) {
+		EnumResetInterval enumInt = _client.get_routing_reset_interval(codeName, Constant.HERMES_CONF_CACHE_ROUTING_RESET_INTERVAL);		
+		return enumInt;
+	}
+	
+	public EnumResetInterval set_routing_reset_interval(String codeName, EnumResetInterval enumInt) {
+		return _client.set_routing_reset_interval(codeName, Constant.HERMES_CONF_CACHE_ROUTING_RESET_INTERVAL, enumInt);		
 	}
 	
 	public double get_traffic_percent_normal(String codeName) { 
@@ -46,6 +51,7 @@ public class ConfManager {
 		pct = _client.set_traffic_percent_normal(codeName, Constant.HERMES_CONF_CACHE_TRAFFIC_PCT, pct);		
 		return pct;
 	}
+
 
 	
 }

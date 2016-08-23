@@ -44,17 +44,17 @@ public class ConfClient {
 	@CacheEvict(value="cache_conf", allEntries=true)
 	public void reset() { }
 
-	@Cacheable(value="cache_conf", key="{#root.methodName, #codeName}")	
-	public int get_routing_reset_interval(String codeName) {
+	@Cacheable(value="cache_conf", key="{#codeName, #cacheField}")	
+	public EnumResetInterval get_routing_reset_interval(String codeName, String cacheField) {
 		
 		VEN_LOGGER.info("caching get_routing_reset_interval({})", codeName);
 				
-		int interval = EnumResetInterval.HOUR.get_enumCode();
+		EnumResetInterval enumInt = EnumResetInterval.HOUR;
 		
-		if (null == codeName || codeName.isEmpty()) return interval;				
+		if (null == codeName || codeName.isEmpty()) return enumInt;				
 		
 		try {						
-	        SearchResponse resp = get_conf_(codeName);
+	        SearchResponse resp = _search_conf(codeName);
 	        	        
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);	        		        	
@@ -63,36 +63,56 @@ public class ConfClient {
 	        	Gson g = new Gson();	        	    	        		
 	        	Conf con = g.fromJson(jsonStr, Conf.class);
 	        	String val = con.getRouting_reset_interval();
-	        		        	
-	        	switch (val) {
-	        		case "SECOND":
-	        			interval = EnumResetInterval.SECOND.get_enumCode();	        			
-	        			break;
-	        		case "MINUTE":
-	        			interval = EnumResetInterval.MINUTE.get_enumCode();	        			
-	        			break;
-	        		case "DAY":
-	        			interval = EnumResetInterval.DAY.get_enumCode();
-	        			break;
-	        		case "WEEK":
-	        			interval = EnumResetInterval.WEEK.get_enumCode();
-	        			break;
-	        		case "MONTH":
-	        			interval = EnumResetInterval.MONTH.get_enumCode();
-	        			break;
-	        		case "HOUR":
-	        		default:
-	        			interval = EnumResetInterval.HOUR.get_enumCode();
-	        			break;
-	        	}
-	        }
-	        
+	        	
+	        	enumInt = EnumResetInterval.valueOf(val);	        	
+	        }	        
 		} catch(Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 			VEN_LOGGER.error(ex.getMessage());
 		} 
         
-        return interval;        
+        return enumInt;        
+	}
+	
+	@CachePut(value="cache_conf", key="{#codeName, #cacheField}")
+	public EnumResetInterval set_routing_reset_interval(String codeName, String cacheField, EnumResetInterval enumInt) {
+		
+		VEN_LOGGER.info("update and caching set_routing_reset_interval({})", codeName);				
+		
+		if (null == codeName || codeName.isEmpty()) return enumInt;
+						
+		try {
+			Conf con = new Conf();	        
+
+	        SearchResponse resp = _search_conf(codeName);
+	        if (0 < resp.getHits().getTotalHits()) {
+	        	SearchHit h = resp.getHits().getAt(0);
+//	        	String docID = h.getId();        	
+	        	String jsonStr = h.getSourceAsString();	        	
+	        	Gson g = new Gson();
+	        	con = g.fromJson(jsonStr, Conf.class);	        	
+	        }
+	        
+        	//-- updated json
+        	con.setRouting_reset_interval(enumInt.name());
+        	con.setUpdate_dt(Utility.now());
+        	Gson g = new Gson();
+        	String updateJson = g.toJson(con);
+	                	
+        	IndexResponse indexResp = _index_conf_(codeName, updateJson);        	
+        	boolean isCreated = indexResp.isCreated();
+        	
+        	if (isCreated) {
+        		String indexName = String.format("%s_hermes", codeName);
+        		VEN_LOGGER.info("a record of {}/{} is created: {}", indexName, TYPE_NAME, updateJson);
+        	}
+	        
+		} catch(Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+        
+        return enumInt;
 	}
 	
 	@Cacheable(value="cache_conf", key="{#codeName, #cacheField}")	
@@ -105,7 +125,7 @@ public class ConfClient {
 		if (null == codeName || codeName.isEmpty()) return pct;	
 		
 		try {
-			SearchResponse resp = get_conf_(codeName);
+			SearchResponse resp = _search_conf(codeName);
 			
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);	        		        	
@@ -132,12 +152,12 @@ public class ConfClient {
 		
 		VEN_LOGGER.info("update and caching set_traffic_percent_normal({})", codeName);				
 		
-		if(null == codeName || codeName.isEmpty()) return pct;
+		if (null == codeName || codeName.isEmpty()) return pct;
 						
 		try {
 			Conf con = new Conf();	        
 
-	        SearchResponse resp = get_conf_(codeName);
+	        SearchResponse resp = _search_conf(codeName);
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);
 //	        	String docID = h.getId();        	
@@ -151,15 +171,13 @@ public class ConfClient {
         	con.setUpdate_dt(Utility.now());
         	Gson g = new Gson();
         	String updateJson = g.toJson(con);
-	        
-        	String indexName = String.format("%s_hermes", codeName);
-        	IndexResponse indexResp = _apo.esClient().prepareIndex(indexName, TYPE_NAME)
-        		.setSource(updateJson)
-        		.get();
+	                	
+        	IndexResponse indexResp = _index_conf_(codeName, updateJson);
         	
         	boolean isCreated = indexResp.isCreated();
         	
-        	if (isCreated) { 
+        	if (isCreated) {
+        		String indexName = String.format("%s_hermes", codeName);
         		VEN_LOGGER.info("a record of {}/{} is created: {}", indexName, TYPE_NAME, updateJson);
         	}
 	        
@@ -169,10 +187,22 @@ public class ConfClient {
 		}
         
         return pct;
+	}	
+	
+
+	private IndexResponse _index_conf_(String codeName, String updateJson) {
+		
+		String indexName = String.format("%s_hermes", codeName);
+		
+    	IndexResponse indexResp = _apo.esClient().prepareIndex(indexName, TYPE_NAME)
+        		.setSource(updateJson)
+        		.get();
+    	
+    	return indexResp;
 	}
 	
-	
-	private SearchResponse get_conf_(String codeName) {
+		
+	private SearchResponse _search_conf(String codeName) {
 		
 		SearchResponse resp = null;
 

@@ -12,6 +12,7 @@ import org.venraas.hermes.apollo.hermes.ConfManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderClient;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumResetInterval;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
@@ -71,8 +72,8 @@ public class GroupRoute {
 			String testPCT = String.valueOf((double)num_testHashIdx/(double)Constant.MAX_NUM_GROUPS);
 
 			Calendar c = Calendar.getInstance();
-			int resetInterval = confMgr.get_routing_reset_interval(codeName);
-			int t = c.get(resetInterval);
+			EnumResetInterval enumInt = confMgr.get_routing_reset_interval(codeName);
+			int t = c.get(enumInt.get_enumCode());
 			int h = absHash(clientID, t);
 			int hash = (h % Constant.MAX_NUM_GROUPS) + 1;
 

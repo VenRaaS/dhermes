@@ -6,6 +6,8 @@ public class Constant {
 	
 	public static final String HERMES_CONF_CACHE_TRAFFIC_PCT = "traffic_pct";
 	
+	public static final String HERMES_CONF_CACHE_ROUTING_RESET_INTERVAL = "routing_reset_interval";
+	
 	//-- 100%
 	public static final double TRAFFIC_PERCENT_NORMAL = 1.0;
 	
