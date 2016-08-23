@@ -1,6 +1,7 @@
 package org.venraas.hermes.apollo.hermes;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.context.AppContext;
 
 public class ConfManager {
@@ -37,8 +38,14 @@ public class ConfManager {
 	}
 	
 	public double get_traffic_percent_normal(String codeName) { 
-		double pct = _client.get_traffic_percent_normal(codeName);		
+		double pct = _client.get_traffic_percent_normal(codeName, Constant.HERMES_CONF_CACHE_TRAFFIC_PCT);		
 		return pct;
 	}
+	
+	public double set_traffic_percent_normal(String codeName, double pct) {
+		pct = _client.set_traffic_percent_normal(codeName, Constant.HERMES_CONF_CACHE_TRAFFIC_PCT, pct);		
+		return pct;
+	}
+
 	
 }
