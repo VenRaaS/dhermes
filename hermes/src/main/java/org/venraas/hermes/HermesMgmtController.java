@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.ConfManager;
 import org.venraas.hermes.apollo.raas.CompanyManager;
+import org.venraas.hermes.common.ConstantMsg;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.EnumResetInterval;
+
+import com.google.gson.Gson;
 
 
 /** 
@@ -32,20 +35,25 @@ public class HermesMgmtController {
 
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
-				
-		if (codeName.isEmpty()) {
-			msg = String.format("warning, invalid token \"%s\" !", token);
-			VEN_LOGGER.warn(msg);
-		}
-		else if (pct < 0.0 || 1.0 < pct) {
-			msg = String.format("warning, invalid input \"pct\" whose value should be ranged within [0.0, 1.0] !");
-			VEN_LOGGER.warn(msg);
-		}
-		else {
-			ConfManager confMgr = ConfManager.getInstance();
-			confMgr.set_traffic_percent_normal(codeName, pct);
-			msg = String.format("ok, %s's traffic percentage of normal channel is %s", codeName, pct);
-			VEN_LOGGER.info(msg);
+		
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			else if (pct < 0.0 || 1.0 < pct) {
+				msg = String.format("Invalid input \"pct\" whose value should be ranged within [0.0, 1.0] !");
+				throw new IllegalArgumentException(msg);
+			}
+			else {
+				ConfManager confMgr = ConfManager.getInstance();
+				confMgr.set_traffic_percent_normal(codeName, pct);
+				msg = String.format("ok, %s's traffic percentage of normal channel is %s", codeName, pct);
+				VEN_LOGGER.info(msg);
+			}
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
 		}
 		
 		return msg;
@@ -58,24 +66,54 @@ public class HermesMgmtController {
 		
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
-		
+						
 		try {
-			EnumResetInterval enumInt = EnumResetInterval.valueOf(interval);
-			
 			if (codeName.isEmpty()) {
-				msg = String.format("warning, invalid token \"%s\" !", token);
-				VEN_LOGGER.warn(msg);
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
 			}
-			else {
-				ConfManager confMgr = ConfManager.getInstance();
-				confMgr.set_routing_reset_interval(codeName, enumInt);
-				msg = String.format("ok, %s's routing reset interval is %s", codeName, enumInt.name());
-				VEN_LOGGER.info(msg);
-			}
-		} catch (IllegalArgumentException ex) {
-			msg = String.format("warning, invalid input \"interval\": %s", ex.getMessage());
+			
+			EnumResetInterval enumInt = EnumResetInterval.valueOf(interval);
+
+			ConfManager confMgr = ConfManager.getInstance();
+			confMgr.set_routing_reset_interval(codeName, enumInt);
+			msg = String.format("ok, %s's routing reset interval is %s", codeName, enumInt.name());
+			VEN_LOGGER.info(msg);
+
 		} catch (Exception ex) {
 			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return msg;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/register_normal", method = RequestMethod.GET)
+	public String register_normal(String token, String json) {		
+		String msg = "";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+				
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			// valid format
+			Gson g = new Gson();
+			
+			
+			// valid rec_api
+			
+			// add "group_key", "traffic_type", "availability"
+			
+					
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
 		}		
 		
 		return msg;
