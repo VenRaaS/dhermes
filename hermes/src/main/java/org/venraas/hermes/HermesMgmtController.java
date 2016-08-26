@@ -1,26 +1,16 @@
 package org.venraas.hermes;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.ConfManager;
-import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyManager;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
-import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.EnumResetInterval;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 
 @RestController
@@ -111,38 +101,32 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			//-- input validation
-			Gson g = new Gson();			
-			Type type = new TypeToken<Map<String, Object>>(){}.getType();
-			Map<String, Object> jsonMap = g.fromJson(json, type);
-			
-			// "in_keys2recomder"
-			List<String> inKeys = (List<String>) jsonMap.getOrDefault(EnumParam2recomder.in_keys2recomder.name(), new ArrayList<String>());
-			for (String k : inKeys){
-				String val = (String) jsonMap.getOrDefault(k, "");
-				if (val.isEmpty()) {
-					msg = String.format("Invalid input, key \"%s\" in \"%s\" can't be found in the input Json!", k, EnumParam2recomder.in_keys2recomder.name());
-					throw new IllegalArgumentException(msg);
-				}
+			Param2RestAPI p2api = new Param2RestAPI();
+			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_NORMAL, json);
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}		
+		
+		return msg;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/register_test", method = RequestMethod.GET)
+	public String register_test(String token, String json) {		
+		String msg = "";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+				
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
 			}
 			
-			// "out_aux_params"
-			List<String> outAuxParams = (List<String>) jsonMap.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
-			for (String k : outAuxParams){
-				String val = (String) jsonMap.getOrDefault(k, "");
-				if (val.isEmpty()) {
-					msg = String.format("Invalid input, key \"%s\" in \"%s\" can't be found in the input Json!", k, EnumParam2recomder.out_aux_params.name());
-					throw new IllegalArgumentException(msg);
-				}
-			}
-			
-			List<String> api_urls = (List<String>) jsonMap.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
-			
-			
-			
-			// add "group_key", "traffic_type", "availability"
-			
-					
+			Param2RestAPI p2api = new Param2RestAPI();
+			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_TEST, json);
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);

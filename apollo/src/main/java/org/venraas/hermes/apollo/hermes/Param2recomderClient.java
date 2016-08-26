@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -18,6 +19,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
@@ -177,7 +179,38 @@ public class Param2recomderClient {
 		
 		return mappings;
 	}
+	
+	public String indexMapping (String codeName, String mappingJson) {
+				
+		VEN_LOGGER.info("indexMapping({},{})", codeName, mappingJson);
+		
+		String docID = "";
+		
+		if (codeName == null || codeName.isEmpty()) return docID;		
 
+		try {
+			
+			String indexName = String.format("%s_hermes", codeName);
+			IndexResponse indexResp = _index_doc(indexName, mappingJson);
+			docID = indexResp.getId();
+			
+        	VEN_LOGGER.info("a mapping of {}/{} is created: {}", indexName, TYPE_NAME, mappingJson);
+		} catch (Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+		
+		return docID;
+	}
+	
+	
+	private IndexResponse _index_doc(String indexName, String jsonBody) {				
+    	IndexResponse indexResp = _apo.esClient().prepareIndex(indexName, TYPE_NAME)
+        		.setSource(jsonBody)
+        		.get();
+    	
+    	return indexResp;
+	}
 
 	
 }
