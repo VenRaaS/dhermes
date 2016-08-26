@@ -22,11 +22,13 @@ public class Constant {
 	public static final int HTTP_REQUEST_TIMEOUT = 2 * 1000;
 	
 	
-	public final static long CACHE_SIZE_100K = 100 * 1000;
+	public final static long CACHE_SIZE_10K = 10 * 1000;
+	
+	public final static long CACHE_EXPIRE_AFTER_0_TIMEUNIT = 0;
+	
+	public final static long CACHE_EXPIRE_AFTER_5_MINS = 5;
 	
 	public final static long CACHE_EXPIRE_AFTER_30_MINS = 30;
-	
-	public final static long CACHE_EXPIRE_AFTER_60_MINS = 60;
 	
 	
 	public final static int CONNECTION_POOL_MAX_TOTAL = 1000;
