@@ -44,7 +44,10 @@ public class Param2recomderManager {
 	public List<Map<String, String>> getGroupMapping_keys2recomder (String codeName, String grpKey) {
 		return _client.getGroupMapping_inKeys2recomder(codeName, grpKey);
 	}
-		
+	
+	public String registerMapping (String codeName, String mappingJson) {
+		return _client.indexMapping(codeName, mappingJson);
+	}
 	
 	
 }
