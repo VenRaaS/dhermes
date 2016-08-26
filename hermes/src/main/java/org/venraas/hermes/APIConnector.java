@@ -1,6 +1,8 @@
 package org.venraas.hermes;
 
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -85,7 +87,7 @@ public class APIConnector {
 	public String post(String apiURL, String body) {
 //TODO... $apiURL health check MAP and periodical resume polling		
 				
-		String resp = "";		
+		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
 		
 		try {		
 			StringEntity body_entity = new StringEntity(body);
@@ -110,15 +112,48 @@ public class APIConnector {
 			}				
 		}
 				
-		return resp;
+		return resp.getValue();
 	}
 	
-	class StrRespHandler implements ResponseHandler<String> {
+	public boolean isValidURL(String apiURL, String body) {
+						
+		boolean isValid = false;
+		
+		try {		
+			StringEntity body_entity = new StringEntity(body);
+			body_entity.setContentType("application/json");
+			
+			HttpPost post = new HttpPost(apiURL);
+			post.setEntity(body_entity);			
+									
+			StrRespHandler resHd = new StrRespHandler();
+			Map.Entry<Integer, String> resp = _httpClient.execute(post, resHd);
+			
+			if (resp.getKey() >= 200 && resp.getKey() < 300) {
+				isValid = true;				
+			}
+		} catch (Exception ex) {
+			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+		}
+		finally {
+			try {
+				if (null != _httpClient) _httpClient.close();
+			} catch (Exception ex) {
+				VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
+				VEN_LOGGER.error(Utility.stackTrace2string(ex));				
+			}				
+		}
+				
+		return isValid;
+	}
+	
+	class StrRespHandler implements ResponseHandler<Map.Entry<Integer, String> > {
 		
 		@Override
-		public String handleResponse(final HttpResponse response) {
+		public Map.Entry<Integer, String> handleResponse(final HttpResponse response) {
 			
-			String resp = "";
+			Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
 			
 			int status = response.getStatusLine().getStatusCode();
 			
@@ -126,8 +161,9 @@ public class APIConnector {
 				
 				if (status >= 200 && status < 300) {					
 					HttpEntity entity = response.getEntity();					
-					if (null != entity) { 
-						resp = EntityUtils.toString(entity);
+					if (null != entity) {						
+						String respStr = EntityUtils.toString(entity);
+						resp = new AbstractMap.SimpleEntry<Integer, String>(status, respStr);
 					}
 				} else {
 					VEN_LOGGER.warn("Unexpected response http status code: {}", status);				
