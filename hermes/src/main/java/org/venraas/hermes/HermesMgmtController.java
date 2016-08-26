@@ -87,6 +87,30 @@ public class HermesMgmtController {
 		return msg;
 	}
 	
+	
+	/** 
+	 * usage:
+	 * 		/hermes/mgmt/set_routing_reset_interval?token=&json=
+		    	{
+					"rec_pos":"categTop",
+				    "rec_code":"ClickStream",
+				    "rec_type":"cs",
+				    "api_url":[
+				        "http://140.96.83.32:8080/cupid/api/goods/rank"
+				    ],
+				    "in_keys2recomder":[
+				        "rec_pos"
+				    ],
+				    "out_aux_params":[
+				        "rec_code",
+				        "rec_type"
+				    ]
+				}
+	 *
+	 * @param token
+	 * @param json
+	 * @return
+	 */
 	@CrossOrigin
 	@RequestMapping(value = "/register_normal", method = RequestMethod.GET)
 	public String register_normal(String token, String json) {		
@@ -110,7 +134,31 @@ public class HermesMgmtController {
 		
 		return msg;
 	}
-	
+		
+	/**
+	 * usage:
+	 * 		/hermes/mgmt/register_test?token=&json=
+				{
+				    "group_key":"test-1",
+				    "rec_pos":"categTop",
+				    "rec_code":"ClickStream",
+				    "rec_type":"cs",
+				    "api_url":[
+				        "http://140.96.83.32:8080/cupid/api/goods/rank"
+				    ],
+				    "in_keys2recomder":[
+				        "rec_pos"
+				    ],
+				    "out_aux_params":[
+				        "rec_code",
+				        "rec_type"
+				    ]
+				}
+	 *
+	 * @param token
+	 * @param json
+	 * @return
+	 */
 	@CrossOrigin
 	@RequestMapping(value = "/register_test", method = RequestMethod.GET)
 	public String register_test(String token, String json) {		
