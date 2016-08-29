@@ -26,6 +26,9 @@ TODO...
 
 ## Usage Guide - restFul APIs
 ### Management APIs 
+* register_normal  
+  `hermes/mgmt/register_normal?token=${token}&json=`
+
 * register_test  
   `hermes/mgmt/register_test?token=${token}&json=`
 
