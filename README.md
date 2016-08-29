@@ -24,7 +24,8 @@ TODO...
 #### Reference
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
 
-## Usage Guide
-### Management restFul API 
-### Dispatch request RestFul API 
+## Usage Guide - restFul APIs
+### Management APIs 
+
+### Request bypass APIs
 
