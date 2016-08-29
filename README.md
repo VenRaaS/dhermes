@@ -26,6 +26,8 @@ TODO...
 
 ## Usage Guide - restFul APIs
 ### Management APIs 
+* register_test  
+  `hermes/mgmt/register_test?token=${token}&json=`
 
 ### Request bypass APIs
 
