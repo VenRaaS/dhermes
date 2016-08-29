@@ -10,7 +10,7 @@ An API group comprises a set of APIs which represents a service embodiment, e.g.
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
 ## A Hermes instance
-...TODO
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtVnlKZW5sZHdHZ0E)
 
 ## Routing Hash
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmteWQ0YXJHdTliQ2M)
