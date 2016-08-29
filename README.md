@@ -6,7 +6,7 @@ It splits incoming traffic into pre-defined restful API group.
 
 ### Overview - Service Tier
 <img src= https://drive.google.com/uc?id=0B78KhWqVkVmtS0poNkJUZ2N0OGc />
-where A recommender is represented by a restful API, i.e. http://
+In the left side tier, where A recommender is represented by a restful API, i.e. http://
 
 ## Routing Hash
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmteWQ0YXJHdTliQ2M)
