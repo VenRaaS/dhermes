@@ -70,5 +70,11 @@ TODO...
 /hermes/mgmt/ls_grp?token=
 ```
 
+* rm_grp
+  ```
+/hermes/mgmt/rm_grp?token=&key=${group_key}
+```
+
+
 ### Request bypass APIs (/hermes/api/)
 
