@@ -30,19 +30,12 @@ TODO...
   ```hermes/mgmt/register_normal?token=${token}&json=
 
 {
-	"rec_pos":"categTop",
-    "rec_code":"ClickStream",
-    "rec_type":"cs",
-    "api_url":[
-        "http://140.96.83.32:8080/cupid/api/goods/rank"
-    ],
-    "in_keys2recomder":[
-        "rec_pos"
-    ],
-    "out_aux_params":[
-        "rec_code",
-        "rec_type"
-    ]
+  "rec_pos":"categTop",
+  "rec_code":"ClickStream",
+  "rec_type":"cs",
+  "api_url":["http://140.96.83.32:8080/cupid/api/goods/rank"],
+  "in_keys2recomder":["rec_pos"],
+  "out_aux_params":["rec_code", "rec_type"]
 }
 ```
 
