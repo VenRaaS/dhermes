@@ -1,5 +1,9 @@
 package org.venraas.hermes;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -7,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.ConfManager;
+import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
@@ -181,6 +186,60 @@ public class HermesMgmtController {
 		}		
 		
 		return msg;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/ls_grp", method = RequestMethod.GET)
+	public Object ls_grp(String token) {
+		
+		Map<String, Map<String, List<Object>>> mappings = new HashMap<String, Map<String, List<Object>>> ();
+		String msg ="";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+		
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
+			mappings = p2rMgr.ls_grp (codeName);
+			
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return (0 < mappings.size()) ? mappings : msg;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/rm_mapping", method = RequestMethod.DELETE)
+	public Object ls_grp(String token, String mid) {
+		
+		Map<String, Map<String, List<Object>>> mappings = new HashMap<String, Map<String, List<Object>>> ();
+		String msg ="";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+		
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
+			mappings = p2rMgr.ls_grp (codeName);
+			
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return (0 < mappings.size()) ? mappings : msg;
 	}
 
 	

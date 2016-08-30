@@ -16,6 +16,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -179,6 +182,85 @@ public class Param2recomderClient {
 		
 		return mappings;
 	}
+	
+	public Map<String, Map<String, List<Object>>> getAllMappings (String codeName) {
+		
+		VEN_LOGGER.info("getAllMappings({})", codeName);
+		
+		Map<String, Map<String, List<Object>>> trafficMaps = new HashMap<String, Map<String, List<Object>>> ();
+		trafficMaps.put(Constant.TRAFFIC_TYPE_NORMAL, new HashMap<String, List<Object>>());
+		trafficMaps.put(Constant.TRAFFIC_TYPE_TEST, new HashMap<String, List<Object>>());		
+		
+		Map<String, List<Object>> grpMaps = new HashMap<String, List<Object>> ();
+
+		if (codeName == null || codeName.isEmpty()) return trafficMaps;			
+
+		String indexName = String.format("%s%s", codeName, Constant.HERMES_INDEX_SUFFIX);
+
+		try {
+			
+			QueryBuilder qb = 
+					QueryBuilders.boolQuery().filter(
+						QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
+					);
+			
+			SearchRequestBuilder searchReq = 
+					_apo.esClient()
+					.prepareSearch(indexName)
+					.setTypes(TYPE_NAME)
+					.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+					.setQuery(qb)
+					.addSort(SortBuilders.fieldSort(EnumParam2recomder.traffic_type.name()).order(SortOrder.ASC))
+					.addSort(SortBuilders.fieldSort(EnumParam2recomder.group_key.name()))
+					.addSort(SortBuilders.fieldSort(EnumParam2recomder.update_dt.name()).order(SortOrder.DESC))
+					.setSize(500);
+					;
+
+			SearchResponse resp = searchReq.execute().actionGet();
+
+			if (0 < resp.getHits().getTotalHits()) {
+				SearchHit[] hits = resp.getHits().getHits();
+				Gson gson = new Gson();
+				
+				for (SearchHit h : hits) {				
+					String json = h.getSourceAsString();
+					String docId = h.getId();
+					Type type = new TypeToken<Map<String, Object>>(){}.getType();					
+					Map<String, Object> m = gson.fromJson(json, type);
+					
+					if (null != m) {
+						m.put("_id", docId);
+						String grpKey = (String) m.getOrDefault(EnumParam2recomder.group_key.name(), "");
+						
+						if (grpMaps.containsKey(grpKey)) {
+							grpMaps.get(grpKey).add(m);	
+						} else {
+							List<Object> l = new ArrayList<Object>(20);
+							l.add(m);
+							grpMaps.put(grpKey, l);
+						}
+					}
+				}
+			}
+			
+			for (String grpK : grpMaps.keySet()) {
+				List<Object> mappings = grpMaps.get(grpK);
+				
+				if (grpK.equals(Constant.TRAFFIC_TYPE_NORMAL)) {
+					trafficMaps.get(Constant.TRAFFIC_TYPE_NORMAL).put(grpK, mappings);
+				}
+				else {
+					trafficMaps.get(Constant.TRAFFIC_TYPE_TEST).put(grpK, mappings);
+				}
+			}
+		} catch (Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+		
+		return trafficMaps;
+	}
+
 	
 	public String indexMapping (String codeName, String mappingJson) {
 				
