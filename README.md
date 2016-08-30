@@ -25,7 +25,7 @@ TODO...
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
 
 ## Usage Guide - restFul APIs
-### Management APIs 
+### Management APIs (/hermes/mgmt/)
 * register_normal  
   ```
 hermes/mgmt/register_normal?token=${token}&json=
@@ -66,5 +66,5 @@ hermes/mgmt/register_test?token=${token}&json=
 ```
 
 
-### Request bypass APIs
+### Request bypass APIs (/hermes/api/)
 
