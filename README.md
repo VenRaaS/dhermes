@@ -27,7 +27,8 @@ TODO...
 ## Usage Guide - restFul APIs
 ### Management APIs 
 * register_normal  
-  ```hermes/mgmt/register_normal?token=${token}&json=
+  ```
+hermes/mgmt/register_normal?token=${token}&json=
 
 {
   "rec_pos":"categTop",
