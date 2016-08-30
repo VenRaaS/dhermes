@@ -34,7 +34,7 @@ hermes/mgmt/register_normal?token=${token}&json=
   "rec_pos":"categTop",
   "rec_code":"ClickStream",
   "rec_type":"cs",
-  "api_url":["http://140.96.83.32:8080/cupid/api/goods/rank"],
+  "api_url":["http://104.199.205.141/cupid/api/showinputparam"],
   "in_keys2recomder":["rec_pos"],
   "out_aux_params":["rec_code", "rec_type"]
 }
@@ -49,10 +49,20 @@ hermes/mgmt/register_test?token=${token}&json=
   "rec_pos":"categTop",
   "rec_code":"ClickStream",
   "rec_type":"cs",
-  "api_url":["http://140.96.83.32:8080/cupid/api/goods/rank"],
+  "api_url":["http://fake-cupid/cupid/api/showinputparam"],
   "in_keys2recomder":["rec_pos"],
   "out_aux_params":["rec_code","rec_type"]
 }
+```
+
+* set_traffic_pct_normal
+  ```
+/hermes/mgmt/set_traffic_pct_normal?token=&pct=0.66
+```
+
+* set_routing_reset_interval
+  ```
+/hermes/mgmt/set_routing_reset_interval?token=&interval=HOUR
 ```
 
 
