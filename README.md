@@ -28,7 +28,7 @@ TODO...
 ### Management APIs (/hermes/mgmt/)
 * register_normal  
   ```
-hermes/mgmt/register_normal?token=${token}&json=
+/hermes/mgmt/register_normal?token=${token}&json=
 
 {
   "rec_pos":"categTop",
@@ -42,7 +42,7 @@ hermes/mgmt/register_normal?token=${token}&json=
 
 * register_test  
   ```
-hermes/mgmt/register_test?token=${token}&json=
+/hermes/mgmt/register_test?token=${token}&json=
 
 {
   "group_key":"test-1",
@@ -65,6 +65,10 @@ hermes/mgmt/register_test?token=${token}&json=
 /hermes/mgmt/set_routing_reset_interval?token=&interval=HOUR
 ```
 
+* ls_grp
+  ```
+/hermes/mgmt/ls_grp?token=
+```
 
 ### Request bypass APIs (/hermes/api/)
 
