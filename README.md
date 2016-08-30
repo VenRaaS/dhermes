@@ -5,7 +5,7 @@
 * [A Hermes instance](#a-hermes-instance)
 * [Routing Hash](#routing-hash)
 * Usage Guide
-** [restFul APIs](#usage-guide---restful-apis)
+  * [restFul APIs](#usage-guide---restful-apis)
 
 ## Overview
 DHermes is a distributed A/B testing application.  
