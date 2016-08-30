@@ -75,6 +75,10 @@ TODO...
 /hermes/mgmt/rm_grp?token=&key=${group_key}
 ```
 
+* rm_mapping
+  ```
+/hermes/mgmt/rm_mapping?token=&mid=${_id}
+```
 
 ### Request bypass APIs (/hermes/api/)
 
