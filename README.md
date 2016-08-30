@@ -47,11 +47,12 @@ TODO...
 {
   "group_key":"test-1",
   "rec_pos":"categTop",
-  "rec_code":"ClickStream",
-  "rec_type":"cs",
+  "rec_code":"ClickStream_COOC",
+  "rec_type":"ClickStream",
+  "page_type":"1",
   "api_url":["http://fake-cupid/cupid/api/showinputparam"],
-  "in_keys2recomder":["rec_pos"],
-  "out_aux_params":["rec_code","rec_type"]
+  "in_keys2recomder":["page_type"],
+  "out_aux_params":["rec_code","rec_pos", "rec_type"]
 }
 ```
 
