@@ -95,7 +95,7 @@ public class HermesMgmtController {
 	
 	/** 
 	 * usage:
-	 * 		/hermes/mgmt/set_routing_reset_interval?token=&json=
+	 * 		/hermes/mgmt/register_normal?token=&json=
 		    	{
 					"rec_pos":"categTop",
 				    "rec_code":"ClickStream",
@@ -188,6 +188,13 @@ public class HermesMgmtController {
 		return msg;
 	}
 	
+	/**
+	 * usage:
+	 * 		/hermes/mgmt/ls_grp?token=
+     *
+	 * @param token
+	 * @return
+	 */
 	@CrossOrigin
 	@RequestMapping(value = "/ls_grp", method = RequestMethod.GET)
 	public Object ls_grp(String token) {
@@ -215,11 +222,16 @@ public class HermesMgmtController {
 		return (0 < mappings.size()) ? mappings : msg;
 	}
 	
+	/**
+	 * usage:
+	 * 		/hermes/mgmt/rm_grp?token=&key=${group_key}
+     *
+	 * @param token
+	 * @return
+	 */
 	@CrossOrigin
-	@RequestMapping(value = "/rm_mapping", method = RequestMethod.DELETE)
-	public Object ls_grp(String token, String mid) {
-		
-		Map<String, Map<String, List<Object>>> mappings = new HashMap<String, Map<String, List<Object>>> ();
+	@RequestMapping(value = "/rm_grp", method = RequestMethod.DELETE)
+	public String rm_group(String token, String key) {
 		String msg ="";
 		
 		CompanyManager comMgr = CompanyManager.getInstance();
@@ -231,17 +243,68 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
+			if (null == key || key.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "key");
+				throw new IllegalArgumentException(msg);
+			}
+			
 			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
-			mappings = p2rMgr.ls_grp (codeName);
+			List<String> update_ids = p2rMgr.rm_group(codeName, key);
+			
+			msg = (0 < update_ids.size()) ? 
+					String.format("ok, all group mapping: \"%s\" are Unavailable now.", key) :
+					String.format("warn, group: \"%s\" isn't available!", key);
 			
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);
 		}
 		
-		return (0 < mappings.size()) ? mappings : msg;
+		return msg;
+	}
+	
+	/**
+	 * usage:
+	 * 		/hermes/mgmt/rm_mapping?token=&mid=${_id}
+	 * 
+	 * @param token
+	 * @param mid
+	 * @return
+	 */
+	@CrossOrigin
+	@RequestMapping(value = "/rm_mapping", method = RequestMethod.DELETE)
+	public String rm_mapping(String token, String mid) {
+				
+		String msg ="";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+		
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			if (null == mid || mid.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "mid");
+				throw new IllegalArgumentException(msg);
+			}
+			
+			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
+			String id = p2rMgr.rm_mapping(codeName, mid);
+			
+			msg = String.format("ok, mapping:%s is Unavailable now.", id);
+			
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return msg;
 	}
 
+	
 	
 	
 }

@@ -53,5 +53,13 @@ public class Param2recomderManager {
 		return _client.indexMapping(codeName, mappingJson);
 	}
 	
+	public List<String> rm_group (String codeName, String grpKey) {
+		return _client.rm_group(codeName, grpKey);
+	}
+	
+	public String rm_mapping (String codeName, String mid) {
+		return _client.rm_mapping(codeName, mid);
+	}
+	
 	
 }

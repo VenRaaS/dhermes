@@ -11,19 +11,18 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
@@ -120,21 +119,8 @@ public class Param2recomderClient {
 		String indexName = String.format("%s%s", codeName, Constant.HERMES_INDEX_SUFFIX);
 
 		try {
-			QueryBuilder qb = 
-					QueryBuilders.boolQuery().filter(
-						QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
-					).filter(
-						QueryBuilders.termQuery(EnumParam2recomder.group_key.name(), grpKey)
-					);
-			
-			SearchRequestBuilder searchReq = 
-					_apo.esClient()
-					.prepareSearch(indexName)
-					.setTypes(TYPE_NAME)
-					.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-					.setQuery(qb);
 
-			SearchResponse resp = searchReq.execute().actionGet();
+			SearchResponse resp = _query_group (indexName, grpKey);
 						
 			if (0 < resp.getHits().getTotalHits()) {
 				SearchHit[] hits = resp.getHits().getHits();
@@ -298,7 +284,47 @@ public class Param2recomderClient {
 	}
 	
 	/**
+	 * Remove all mapping from the specified $grpKey with flag clean, i.e. availability = 0
 	 * 
+	 * @param codeName
+	 * @param grpKey
+	 * @return
+	 */
+	public List<String> rm_group (String codeName, String grpKey) {
+		
+		List<String> updated_mids = new ArrayList<String>(20);
+		
+		if (null == codeName || codeName.isEmpty() || 
+			null == grpKey || grpKey.isEmpty()) 
+			return updated_mids;
+		
+		try 
+		{					
+			String indexName = String.format("%s_hermes", codeName);
+			
+			//-- query the mapping id(s), _id, in terms of the specified $grpKey
+			SearchResponse resp = _query_group (indexName, grpKey);
+			
+			if (0 < resp.getHits().getTotalHits()) {
+				SearchHit[] hits = resp.getHits().getHits();				
+				
+				for (SearchHit h : hits) {				
+					String mid = h.getId();					
+					
+					String id = rm_mapping(codeName, mid);
+					updated_mids.add(id);
+				}
+			}			
+		} catch (Exception ex) {			
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());		
+		}
+		
+		return updated_mids;
+	}
+	
+	/**
+	 * Remove an input specified mapping with flag cleaning, i.e. availability = 0
 	 * 
 	 * @param codeName
 	 * @param mid The mapping id which represent by docId in ES client, i.e. _id  
@@ -316,27 +342,57 @@ public class Param2recomderClient {
 		{
 			String indexName = String.format("%s_hermes", codeName);
 			
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put(EnumParam2recomder.availability.name(), 0);
+			m.put(EnumParam2recomder.update_dt.name(), Utility.now());			
+			Gson g = new Gson();
+			String updateJson = g.toJson(m); 
+			
 			UpdateRequest updateRequest = 
 					new UpdateRequest(indexName, TYPE_NAME, mid)
-			        .doc("");
+			        .doc(updateJson);						
 			
-			_apo.esClient().update(updateRequest).get();
+			UpdateResponse resp = _apo.esClient().update(updateRequest).get();
+			msg = resp.getId();
 			
-		} catch (Exception ex) {
+		} catch (Exception ex) {			
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 			VEN_LOGGER.error(ex.getMessage());
+			msg = ex.getMessage();
 		}
 		
 		return msg;
 	}
+		
 	
 	
-	private IndexResponse _index_doc(String indexName, String jsonBody) {				
+	private IndexResponse _index_doc (String indexName, String jsonBody) {				
     	IndexResponse indexResp = _apo.esClient().prepareIndex(indexName, TYPE_NAME)
         		.setSource(jsonBody)
         		.get();
     	
     	return indexResp;
+	}
+	
+	private SearchResponse _query_group (String indexName, String grpKey) {
+		
+		QueryBuilder qb = 
+				QueryBuilders.boolQuery().filter(
+					QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
+				).filter(
+					QueryBuilders.termQuery(EnumParam2recomder.group_key.name(), grpKey)
+				);
+		
+		SearchRequestBuilder searchReq = 
+				_apo.esClient()
+				.prepareSearch(indexName)
+				.setTypes(TYPE_NAME)
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+				.setQuery(qb);
+
+		SearchResponse resp = searchReq.execute().actionGet();
+		
+		return resp;
 	}
 
 	
