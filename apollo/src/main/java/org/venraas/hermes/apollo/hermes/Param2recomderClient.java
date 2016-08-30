@@ -10,6 +10,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -68,7 +69,10 @@ public class Param2recomderClient {
 		try {
 			
 			//-- availability = 1 
-			QueryBuilder qb = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1));
+			QueryBuilder qb = 
+					QueryBuilders.boolQuery().filter(
+							QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
+					);
 			
 			//-- Terms Aggregation, 
 			//   https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/_bucket_aggregations.html#java-aggs-bucket-terms
@@ -183,14 +187,22 @@ public class Param2recomderClient {
 		return mappings;
 	}
 	
+	/**
+	 * Gets all mappings with Json hierarchical structure, i.e. ${traffic_type}/${group_key}/${mappings} 
+	 * 
+	 * @param codeName
+	 * @return
+	 */
 	public Map<String, Map<String, List<Object>>> getAllMappings (String codeName) {
 		
 		VEN_LOGGER.info("getAllMappings({})", codeName);
 		
+		//--  ${traffic_type}/${group_key}/${mappings} 
 		Map<String, Map<String, List<Object>>> trafficMaps = new HashMap<String, Map<String, List<Object>>> ();
 		trafficMaps.put(Constant.TRAFFIC_TYPE_NORMAL, new HashMap<String, List<Object>>());
 		trafficMaps.put(Constant.TRAFFIC_TYPE_TEST, new HashMap<String, List<Object>>());		
 		
+		//--  ${group_key}/${mappings}
 		Map<String, List<Object>> grpMaps = new HashMap<String, List<Object>> ();
 
 		if (codeName == null || codeName.isEmpty()) return trafficMaps;			
@@ -232,6 +244,7 @@ public class Param2recomderClient {
 						m.put("_id", docId);
 						String grpKey = (String) m.getOrDefault(EnumParam2recomder.group_key.name(), "");
 						
+						//--  ${group_key}/${mappings}
 						if (grpMaps.containsKey(grpKey)) {
 							grpMaps.get(grpKey).add(m);	
 						} else {
@@ -260,7 +273,6 @@ public class Param2recomderClient {
 		
 		return trafficMaps;
 	}
-
 	
 	public String indexMapping (String codeName, String mappingJson) {
 				
@@ -283,6 +295,39 @@ public class Param2recomderClient {
 		}
 		
 		return docID;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param codeName
+	 * @param mid The mapping id which represent by docId in ES client, i.e. _id  
+	 * @return
+	 */
+	public String rm_mapping (String codeName, String mid) {
+		
+		String msg = "";
+		
+		if (null == codeName || codeName.isEmpty() || 
+			null == mid || mid.isEmpty()) 
+			return msg;
+		
+		try 
+		{
+			String indexName = String.format("%s_hermes", codeName);
+			
+			UpdateRequest updateRequest = 
+					new UpdateRequest(indexName, TYPE_NAME, mid)
+			        .doc("");
+			
+			_apo.esClient().update(updateRequest).get();
+			
+		} catch (Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+		
+		return msg;
 	}
 	
 	
