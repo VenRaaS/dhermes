@@ -1,9 +1,9 @@
 
 ## TOC
 * [Overview](#overview)
-* [Service Tier](d#overview---service-tier)
+* [Service Tier](#overview---service-tier)
 * [A Hermes instance](#a-hermes-instance)
-
+* [Routing Hash](#routing-hash)
 
 ## Overview
 DHermes is a distributed A/B testing application.  
