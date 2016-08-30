@@ -68,27 +68,27 @@ TODO...
 
 * set_traffic_pct_normal
   ```
-/hermes/mgmt/set_traffic_pct_normal?token=&pct=0.66
+/hermes/mgmt/set_traffic_pct_normal?token=${token}&pct=0.66
 ```
 
 * set_routing_reset_interval
   ```
-/hermes/mgmt/set_routing_reset_interval?token=&interval=HOUR
+/hermes/mgmt/set_routing_reset_interval?token=${token}&interval=HOUR
 ```
 
 * ls_grp
   ```
-/hermes/mgmt/ls_grp?token=
+/hermes/mgmt/ls_grp?token=${token}
 ```
 
 * rm_grp
   ```
-/hermes/mgmt/rm_grp?token=&key=${group_key}
+/hermes/mgmt/rm_grp?token=${token}&key=${group_key}
 ```
 
 * rm_mapping
   ```
-/hermes/mgmt/rm_mapping?token=&mid=${_id}
+/hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
 ```
 
 ### Request bypass APIs (/hermes/api/)
