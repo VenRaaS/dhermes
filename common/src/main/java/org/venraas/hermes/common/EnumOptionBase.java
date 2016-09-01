@@ -6,6 +6,8 @@ public enum EnumOptionBase {
 	
 	ven_guid,
 	
-	ven_session
+	ven_session,
+	
+	uid
 	
 }

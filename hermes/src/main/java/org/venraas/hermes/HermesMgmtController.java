@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.ConfManager;
+import org.venraas.hermes.apollo.hermes.JumperManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.Constant;
@@ -84,6 +85,52 @@ public class HermesMgmtController {
 			msg = String.format("ok, %s's routing reset interval is %s", codeName, enumInt.name());
 			VEN_LOGGER.info(msg);
 
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return msg;
+	}
+	
+	/** 
+	 * usage:
+	 *     /hermes/mgmt/set_jumper?token=&uid=u0806449&grpkey=test-1
+	 */
+	@CrossOrigin
+	@RequestMapping(value = "/set_jumper", method = RequestMethod.GET)
+	public String set_jumper(String token, String uid, String grpkey) {		
+		String msg = "";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+						
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			if (null == uid || uid.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "uid");
+				throw new IllegalArgumentException(msg);
+			}
+			
+			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
+			List<String> grps = p2rMgr.getDistinctGroups(codeName);
+			if ( ! grps.contains(grpkey)) {
+				msg = String.format("Warning, Invalid group key \"%s\", the group isn't available !", grpkey);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			JumperManager jumperMgr = JumperManager.getInstance();
+			
+			boolean isSuccess = jumperMgr.set_jumper(codeName, uid, grpkey);
+			msg = (isSuccess) ? 
+					String.format("Ok, %s is jumping to group %s", uid, grpkey) : 
+					String.format("Warning, there's some problem during jumping, please check input parameters !") ;
+						
+			VEN_LOGGER.info(msg);
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);

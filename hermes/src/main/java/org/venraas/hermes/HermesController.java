@@ -46,24 +46,6 @@ public class HermesController {
 		return get_goods_rank(paramMap);
 	}
 	
-	@CrossOrigin
-	@RequestMapping(value = "/hello", method = RequestMethod.GET)
-	public Map<String, Object> hello(@RequestParam Map<String, Object> m)
-	{		
-		return m;
-	}
-	
-	@CrossOrigin
-	@RequestMapping(value = "/hello", method = RequestMethod.POST)	
-	public Map<String, Object> hello(@RequestBody String jsonStr)
-	{
-		Gson gson = new Gson();
-		Type type = new TypeToken<Map<String, Object>>(){}.getType();
-		Map<String, Object> m = gson.fromJson(jsonStr, type);
-
-//		Map<String, String> m = gson.fromJson(s, Map);
-		return m;
-	}
 	
 	
 	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap) {
@@ -78,10 +60,12 @@ public class HermesController {
 		try {
 			String token = (String)inParamMap.get(EnumOptionBase.token.name());
 			CompanyManager comMgr = CompanyManager.getInstance();
-			String codeName = comMgr.getCodeName(token);
+			String codeName = comMgr.getCodeName(token);			
+			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), ""); 
 		
 			GroupRoute gr = new GroupRoute();
-			RoutingGroup targetGrp = gr.routing(codeName, clientID);
+//TODO... Normal default Group, if input parameter doesn't match
+			RoutingGroup targetGrp = gr.routing(codeName, clientID, uid);
 			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());
 			
 			Map<String, Object> mapping = p2r.getMapping(inParamMap);							
@@ -138,6 +122,25 @@ public class HermesController {
 		return m;	
 	}	
 	
+	
 
+	@CrossOrigin
+	@RequestMapping(value = "/hello", method = RequestMethod.GET)
+	public Map<String, Object> hello(@RequestParam Map<String, Object> m)
+	{		
+		return m;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/hello", method = RequestMethod.POST)	
+	public Map<String, Object> hello(@RequestBody String jsonStr)
+	{
+		Gson gson = new Gson();
+		Type type = new TypeToken<Map<String, Object>>(){}.getType();
+		Map<String, Object> m = gson.fromJson(jsonStr, type);
+
+//		Map<String, String> m = gson.fromJson(s, Map);
+		return m;
+	}
 	
 }
