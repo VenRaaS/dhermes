@@ -37,6 +37,7 @@ TODO...
 ## Usage Guide - restFul APIs
 ### Management APIs (/hermes/mgmt/)
 * register_normal  
+  Note, value should be Double-Auoted as a String
   ```
 /hermes/mgmt/register_normal?token=${token}&json=
 
@@ -51,6 +52,7 @@ TODO...
 ```
 
 * register_test  
+  Note, value should be Double-Auoted as a String
   ```
 /hermes/mgmt/register_test?token=${token}&json=
 
