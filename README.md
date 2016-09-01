@@ -1,12 +1,22 @@
+
+## TOC
+* [Overview](#overview)
+* [Service Tier](#overview---service-tier)
+* [A Hermes instance](#a-hermes-instance)
+* [Routing Hash](#routing-hash)
+* Usage Guide
+  * [restFul APIs](#usage-guide---restful-apis)
+
 ## Overview
 DHermes is a distributed A/B testing application.  
 It splits incoming traffic into pre-defined restful API group.  
 An API group comprises a set of APIs which represents a service embodiment, e.g. recommendation APIs for an EC site.
 
-<img src="https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s" width=700/>
+<img src="https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s" width=100%/>
 
 ## Overview - Service Tier
-<img src= https://drive.google.com/uc?id=0B78KhWqVkVmtS0poNkJUZ2N0OGc />
+<img src= https://drive.google.com/uc?id=0B78KhWqVkVmtS0poNkJUZ2N0OGc width=100%/>
+
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
 ## A Hermes instance
@@ -58,27 +68,27 @@ TODO...
 
 * set_traffic_pct_normal
   ```
-/hermes/mgmt/set_traffic_pct_normal?token=&pct=0.66
+/hermes/mgmt/set_traffic_pct_normal?token=${token}&pct=0.66
 ```
 
 * set_routing_reset_interval
   ```
-/hermes/mgmt/set_routing_reset_interval?token=&interval=HOUR
+/hermes/mgmt/set_routing_reset_interval?token=${token}&interval=HOUR
 ```
 
 * ls_grp
   ```
-/hermes/mgmt/ls_grp?token=
+/hermes/mgmt/ls_grp?token=${token}
 ```
 
 * rm_grp
   ```
-/hermes/mgmt/rm_grp?token=&key=${group_key}
+/hermes/mgmt/rm_grp?token=${token}&key=${group_key}
 ```
 
 * rm_mapping
   ```
-/hermes/mgmt/rm_mapping?token=&mid=${_id}
+/hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
 ```
 
 ### Request bypass APIs (/hermes/api/)
