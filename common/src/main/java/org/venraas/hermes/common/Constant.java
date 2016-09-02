@@ -26,9 +26,9 @@ public class Constant {
 	
 	public final static long CACHE_EXPIRE_AFTER_0_TIMEUNIT = 0;
 	
-	public final static long CACHE_EXPIRE_AFTER_5_MINS = 5;
+	public final static long CACHE_EXPIRE_AFTER_10_TIMEUNIT = 10;
 	
-	public final static long CACHE_EXPIRE_AFTER_30_MINS = 30;
+	public final static long CACHE_EXPIRE_AFTER_30_TIMEUNIT = 30;
 	
 	
 	public final static int CONNECTION_POOL_MAX_TOTAL = 1000;

@@ -40,7 +40,7 @@ public class CacheConfig {
 							"cache_company", 
 							CacheBuilder.newBuilder()
 							.maximumSize(Constant.CACHE_SIZE_10K)
-							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_MINS, TimeUnit.MINUTES)
+							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 							.build());
 			cache_list.add(cache_company);
 			
@@ -49,7 +49,7 @@ public class CacheConfig {
 						"cache_conf", 
 						CacheBuilder.newBuilder()
 						.maximumSize(Constant.CACHE_SIZE_10K)
-						.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_MINS, TimeUnit.MINUTES)
+						.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 						.build());
 			cache_list.add(cache_conf);
 			
@@ -58,13 +58,21 @@ public class CacheConfig {
 							"cache_param2recomder", 
 							CacheBuilder.newBuilder()
 							.maximumSize(Constant.CACHE_SIZE_10K)
-							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_MINS, TimeUnit.MINUTES)
+							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 							.build());
 			cache_list.add(cache_param2recomder);
-
+			
+			GuavaCache cache_jumper = 
+					new GuavaCache(
+							"cache_jumper", 
+							CacheBuilder.newBuilder()
+							.maximumSize(Constant.CACHE_SIZE_10K)
+							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_10_TIMEUNIT, TimeUnit.SECONDS)
+							.build());
+			cache_list.add(cache_jumper);			
 
 			
-/*			
+/*///			
 			GuavaCache cache_goods = 
 					new GuavaCache(
 							"cache_goods", 
