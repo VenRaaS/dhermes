@@ -93,5 +93,10 @@ TODO...
 /hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
 ```
 
+* set_jumper
+  ```
+/hermes/mgmt/set_jumper?token=${token}&uid=u0806449&grpkey=test-1
+```
+
 ### Request bypass APIs (/hermes/api/)
 
