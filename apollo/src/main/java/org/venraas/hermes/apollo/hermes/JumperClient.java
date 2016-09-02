@@ -3,6 +3,7 @@ package org.venraas.hermes.apollo.hermes;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -99,11 +100,14 @@ public class JumperClient {
 		try {			
 			Jumper jumper = new Jumper();
 
+        	String docID = "";
+        	
 			//-- query specified jumper setting if any 
 	        SearchResponse resp = _search_jumper(codeName, uid);
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);
-//	        	String docID = h.getId();
+	        	
+	        	docID = h.getId();
 	        	String jsonStr = h.getSourceAsString();	        	
 	        	Gson g = new Gson();
 	        	jumper = g.fromJson(jsonStr, Jumper.class);	        	
@@ -113,24 +117,27 @@ public class JumperClient {
 	        jumper.setGroup_key(grpKey);
         	jumper.setUid(uid);
         	jumper.setUpdate_dt(Utility.now());
-        	
         	Gson g = new Gson();
         	String updateJson = g.toJson(jumper);
-
-        	String indexName = String.format("%s_hermes", codeName);
-        	IndexResponse indexResp = 
-        			_apo.esClient().prepareIndex(indexName, TYPE_NAME)
-            		.setSource(updateJson)
-            		.get();
         	
-        	boolean isCreated = indexResp.isCreated();
+        	String indexName = String.format("%s_hermes", codeName);        	        	
         	
-        	if (isCreated) {
-        		VEN_LOGGER.info("a record of {}/{} is created: {}", indexName, TYPE_NAME, updateJson);
+        	if (docID.isEmpty()) {
+	        	IndexResponse indexResp = 
+	        			_apo.esClient().prepareIndex(indexName, TYPE_NAME)
+	            		.setSource(updateJson)
+	            		.get();
+	        	
+	        	VEN_LOGGER.info("a record of {}/{} is created: {}", indexName, TYPE_NAME, updateJson);
         	} else {
+        		UpdateResponse updateResp =
+        				_apo.esClient().prepareUpdate(indexName, TYPE_NAME, docID)
+        				.setDoc(updateJson)
+        				.get();        		
+        		
         		VEN_LOGGER.info("a record of {}/{} is updated: {}", indexName, TYPE_NAME, updateJson);        	
         	}
-        	
+        	        	        	
         	isSuccess = true;	        
 		} catch(Exception ex) {
 			VEN_LOGGER.error(ex.getMessage());
