@@ -28,8 +28,8 @@ TODO...
 
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtaWU1Z0FVYWVJSUk)
 
-## Routing Hash
-![](https://drive.google.com/uc?id=0B78KhWqVkVmteWQ0YXJHdTliQ2M)
+## Routing Hash Overview
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtRlJ5OHFSbkFNOTg)
 
 #### Reference
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
@@ -37,6 +37,7 @@ TODO...
 ## Usage Guide - restFul APIs
 ### Management APIs (/hermes/mgmt/)
 * register_normal  
+  Note, value should be Double-Auoted as a String
   ```
 /hermes/mgmt/register_normal?token=${token}&json=
 
@@ -51,6 +52,7 @@ TODO...
 ```
 
 * register_test  
+  Note, value should be Double-Auoted as a String
   ```
 /hermes/mgmt/register_test?token=${token}&json=
 
@@ -89,6 +91,11 @@ TODO...
 * rm_mapping
   ```
 /hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
+```
+
+* set_jumper
+  ```
+/hermes/mgmt/set_jumper?token=${token}&uid=u0806449&grpkey=test-1
 ```
 
 ### Request bypass APIs (/hermes/api/)
