@@ -1,5 +1,7 @@
 package org.venraas.hermes.apollo.hermes;
 
+import java.util.List;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
@@ -51,7 +53,13 @@ public class ConfManager {
 		pct = _client.set_traffic_percent_normal(codeName, Constant.HERMES_CONF_CACHE_TRAFFIC_PCT, pct);		
 		return pct;
 	}
-
+	
+	public List<String> get_http_forward_headers(String codeName) {
+		List<String> headers = _client.get_http_forward_headers(codeName, Constant.HERMES_CONF_HTTP_FORWARD_HEADER);		
+		return headers;
+	}
+	
+	
 
 	
 }

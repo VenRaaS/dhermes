@@ -2,15 +2,17 @@ package org.venraas.hermes;
 
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -84,19 +86,28 @@ public class APIConnector {
 		return _conn;
 	}
 	
-	public String post(String apiURL, String body) {
+	public String post(String apiURL, String body, HttpServletRequest req, List<String> headers) {
 //TODO... $apiURL health check MAP and periodical resume polling		
 				
 		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
 		
-		try {		
+		try {
+			HttpPost post = new HttpPost(apiURL);
+
+			//-- forward headers
+			for (String h : headers) {
+				Enumeration<String> vals = req.getHeaders(h);
+				while (vals.hasMoreElements()) {
+					String v = vals.nextElement();
+					post.addHeader(h, v);
+				}				
+			}
+						
 			StringEntity body_entity = new StringEntity(body);
 			body_entity.setContentType("application/json");
-			
-			HttpPost post = new HttpPost(apiURL);
-			post.setEntity(body_entity);			
+			post.setEntity(body_entity);
 //TODO... post.setConfig(_reqConfig);
-									
+												
 			StrRespHandler resHd = new StrRespHandler();
 			resp = _httpClient.execute(post, resHd);
 		} catch (Exception ex) {

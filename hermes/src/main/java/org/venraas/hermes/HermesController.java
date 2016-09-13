@@ -1,10 +1,14 @@
 package org.venraas.hermes;
 
 import java.lang.reflect.Type;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.venraas.hermes.apollo.hermes.ConfManager;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyManager;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.Utility;
 
@@ -32,23 +38,23 @@ public class HermesController {
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)	
-	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap) {
-		return get_goods_rank(paramMap);
+	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap, HttpServletRequest req) {		
+		return get_goods_rank(paramMap, req);
 	}
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.POST)	
-	public Object get_goods_rank_POST(@RequestBody String jsonStr) {
+	public Object get_goods_rank_POST(@RequestBody String jsonStr, HttpServletRequest req) {		
 		Gson gson = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		Map<String, Object> paramMap = gson.fromJson(jsonStr, type);
 		
-		return get_goods_rank(paramMap);
+		return get_goods_rank(paramMap, req);
 	}
 	
 	
 	
-	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap) {
+	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap, HttpServletRequest req) {
 		
 		String resp = "";
 				
@@ -102,9 +108,12 @@ public class HermesController {
 					VEN_LOGGER.error("invalid register key/value: {} / {}", EnumParam2recomder.api_url.name(), apiURL);
 				}
 				
-				if (! apiURL.isEmpty()) {				
+				if (! apiURL.isEmpty()) {
+					ConfManager confMgr = ConfManager.getInstance();
+					List<String> headers = confMgr.get_http_forward_headers(codeName);
+					
 					APIConnector apiConn = APIConnector.getInstance();
-					resp = apiConn.post(apiURL, outParam);	
+					resp = apiConn.post(apiURL, outParam, req, headers);
 				}
 			}
 			else {

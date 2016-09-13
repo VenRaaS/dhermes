@@ -7,7 +7,9 @@ public class Constant {
 	public static final String HERMES_CONF_CACHE_TRAFFIC_PCT = "traffic_pct";
 	
 	public static final String HERMES_CONF_CACHE_ROUTING_RESET_INTERVAL = "routing_reset_interval";
-	
+
+	public static final String HERMES_CONF_HTTP_FORWARD_HEADER = "http_forward_headers";
+
 	//-- 100%
 	public static final double TRAFFIC_PERCENT_NORMAL = 1.0;
 	
@@ -32,6 +34,9 @@ public class Constant {
 	
 	
 	public final static int CONNECTION_POOL_MAX_TOTAL = 1000;
+	
+	//-- HTTP header
+	public final static String COOOKIE = "Cookie";
 	
 	
 }

@@ -1,5 +1,8 @@
 package org.venraas.hermes.data_entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.common.Utility;
@@ -10,6 +13,8 @@ public class Conf {
 
 	String routing_reset_interval = EnumResetInterval.HOUR.name();
 	
+	List<String> http_forward_headers = new ArrayList<String>();
+
 	String update_dt = Utility.now();
 	
 	
@@ -29,6 +34,14 @@ public class Conf {
 
 	public void setRouting_reset_interval(String routing_reset_interval) {
 		this.routing_reset_interval = routing_reset_interval;
+	}
+	
+	public List<String> getHttp_forward_headers() {
+		return http_forward_headers;
+	}
+
+	public void setHttp_forward_headers(List<String> http_forward_headers) {
+		this.http_forward_headers = http_forward_headers;
 	}
 
 	public String getUpdate_dt() {

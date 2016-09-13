@@ -1,5 +1,8 @@
 package org.venraas.hermes.apollo.hermes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -166,7 +169,7 @@ public class ConfClient {
 	        	con = g.fromJson(jsonStr, Conf.class);	        	
 	        }
 	        
-        	//-- updated json
+        	//-- updated JSON
         	con.setTraffic_pct_normal(pct);
         	con.setUpdate_dt(Utility.now());
         	Gson g = new Gson();
@@ -187,7 +190,42 @@ public class ConfClient {
 		}
         
         return pct;
-	}	
+	}
+		
+	/**
+	 * Gets header names which'll be forwarding to next tier.
+	 * 
+	 * @param codeName
+	 * @param cacheField
+	 * @return
+	 */
+	@Cacheable(value="cache_conf", key="{#codeName, #cacheField}")
+	public List<String> get_http_forward_headers(String codeName, String cacheField) {
+		
+		VEN_LOGGER.info("update and caching get_http_forward_headers({})", codeName);
+		
+		List<String> headers = new ArrayList<String>();
+		
+		if (null == codeName || codeName.isEmpty()) return headers;
+						
+		try {
+	        SearchResponse resp = _search_conf(codeName);
+	        	        
+	        if (0 < resp.getHits().getTotalHits()) {
+	        	SearchHit h = resp.getHits().getAt(0);	        		        	
+	        	String jsonStr = h.getSourceAsString();	        
+	        	
+	        	Gson g = new Gson();
+	        	Conf con = g.fromJson(jsonStr, Conf.class);
+	        	headers = con.getHttp_forward_headers();	
+	        }
+		} catch(Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+        
+        return headers;
+	}
 	
 
 	private IndexResponse _index_conf_(String codeName, String updateJson) {
