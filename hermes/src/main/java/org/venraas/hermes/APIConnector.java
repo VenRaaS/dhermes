@@ -94,7 +94,7 @@ public class APIConnector {
 		try {
 			HttpPost post = new HttpPost(apiURL);
 
-			//-- forward headers
+			//-- forwarding headers
 			for (String h : headers) {
 				Enumeration<String> vals = req.getHeaders(h);
 				while (vals.hasMoreElements()) {
