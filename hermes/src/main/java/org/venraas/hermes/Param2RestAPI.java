@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.venraas.hermes.apollo.hermes.Param2recomderClient;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Constant;
@@ -87,7 +86,7 @@ public class Param2RestAPI {
 			// "in_keys2recomder"
 			List<String> inKeys = (List<String>) regMap.getOrDefault(EnumParam2recomder.in_keys2recomder.name(), new ArrayList<String>());
 			for (String k : inKeys){
-				String val = (String) regMap.getOrDefault(k, "");
+				String val = String.valueOf(regMap.getOrDefault(k, ""));
 				if (val.isEmpty()) {
 					msg = String.format("Invalid input, key \"%s\" in \"%s\" is unavailable or empty in the input Json!", k, EnumParam2recomder.in_keys2recomder.name());
 					throw new IllegalArgumentException(msg);
