@@ -69,28 +69,35 @@ public class HermesController {
 			String codeName = comMgr.getCodeName(token);			
 			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), ""); 
 		
-			GroupRoute gr = new GroupRoute();
-//TODO... Normal default Group, if input parameter doesn't match
+			//-- routing to target group according to $clientID
+			GroupRoute gr = new GroupRoute();			
 			RoutingGroup targetGrp = gr.routing(codeName, clientID, uid);
-			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());
 			
-			Map<String, Object> mapping = p2r.getMapping(inParamMap);							
-		
+			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());			
+			Map<String, Object> mapping = p2r.getMapping(inParamMap);
+			
+			//-- redirect to Normal (default) Group, if input parameter doesn't match
+			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && 
+					mapping.isEmpty()) {
+				p2r = new Param2RestAPI(codeName, Constant.NORMAL_GROUP_KEY);
+				mapping = p2r.getMapping(inParamMap);
+			}
+			
 			if (! mapping.isEmpty()) {
 				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
 				
 				List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
-				List<String> fields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
+				List<String> auxFields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
 				
-				if (fields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
+				if (auxFields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
 				
-				//-- attach auxiliary key/value for back-end usage
+				//-- forward attaching fields for back-end usage
 				// traffic info
 				outParamMap.put(RoutingGroup.GROUP_KEY, targetGrp.getGroup_key());
 				outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type());
 				outParamMap.put(RoutingGroup.TRAFFIC_PCT, targetGrp.getTraffic_pct());
-				// request specified
-				for (String f : fields) {
+				//  auxiliary key/value which are specified by registration mapping. 
+				for (String f : auxFields) {
 					String v = (String) mapping.get(f);
 					outParamMap.put(f, v);
 				}				
