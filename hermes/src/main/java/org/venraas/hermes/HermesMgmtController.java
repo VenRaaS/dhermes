@@ -24,6 +24,99 @@ import org.venraas.hermes.common.EnumResetInterval;
 public class HermesMgmtController {
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(HermesMgmtController.class);
+
+	/** 
+	 * usage:
+	 *     /hermes/mgmt/ls_forward_headers?token=${token}     
+	 */	
+	@CrossOrigin
+	@RequestMapping(value = "/ls_forward_headers", method = RequestMethod.GET)
+	public String ls_http_forward_headers(String token) {		
+		String msg = "";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+				
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			ConfManager confMgr = ConfManager.getInstance();
+			List<String> headers = confMgr.get_http_forward_headers(codeName);
+			msg = String.format("ok, \"%s\" : [%s]", Constant.HERMES_CONF_HTTP_FORWARD_HEADER, String.join(",", headers));			
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return msg;
+	}
+	
+	/** 
+	 * usage:
+	 *     /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
+	 */	
+	@CrossOrigin
+	@RequestMapping(value = "/add_forward_headers", method = RequestMethod.GET)
+	public String add_http_forward_headers(String token, String json) {		
+		String msg = "";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+				
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			ConfManager confMgr = ConfManager.getInstance();
+			List<String> updateHeaders = confMgr.add_http_forward_headers(codeName, json);
+			msg = (updateHeaders.isEmpty()) 
+					? String.format("Invalid, Null or Empty input \"%s\" for \"%s\" setting", json, Constant.HERMES_CONF_HTTP_FORWARD_HEADER)
+					: String.format("ok, update \"%s\" with [%s]", Constant.HERMES_CONF_HTTP_FORWARD_HEADER, String.join(",", updateHeaders));
+			
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return msg;
+	}
+	
+	/** 
+	 * usage:
+	 *     /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
+	 */
+	@CrossOrigin
+	@RequestMapping(value = "/set_forward_headers", method = RequestMethod.GET)
+	public String set_http_forward_headers(String token, String json) {		
+		String msg = "";
+		
+		CompanyManager comMgr = CompanyManager.getInstance();
+		String codeName = comMgr.getCodeName(token);
+				
+		try {
+			if (codeName.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+				throw new IllegalArgumentException(msg);
+			}
+			
+			ConfManager confMgr = ConfManager.getInstance();
+			boolean isSuccess = confMgr.set_http_forward_headers(codeName, json);
+			msg = (isSuccess) 
+					? String.format("ok, update \"%s\" with %s", Constant.HERMES_CONF_HTTP_FORWARD_HEADER, String.join(",", json))
+					: String.format("Invalid or Null input \"%s\" for \"%s\" setting", json, Constant.HERMES_CONF_HTTP_FORWARD_HEADER);
+			
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);					
+		}
+		
+		return msg;
+	}
 	
 	/** 
 	 * usage:
@@ -233,7 +326,7 @@ public class HermesMgmtController {
 		}		
 		
 		return msg;
-	}
+	}	
 	
 	/**
 	 * usage:

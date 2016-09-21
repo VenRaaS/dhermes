@@ -83,7 +83,7 @@ public class Param2recomderClient {
 				.setTypes(TYPE_NAME)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				.setQuery(qb)
-				.addAggregation(ab)
+				.addAggregation(ab)				
 				.setSize(0);
 
 			SearchResponse resp = searchReq.execute().actionGet();

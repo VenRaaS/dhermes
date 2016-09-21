@@ -202,7 +202,7 @@ public class ConfClient {
 	@Cacheable(value="cache_conf", key="{#codeName, #cacheField}")
 	public List<String> get_http_forward_headers(String codeName, String cacheField) {
 		
-		VEN_LOGGER.info("update and caching get_http_forward_headers({})", codeName);
+		VEN_LOGGER.info("get and caching get_http_forward_headers({})", codeName);
 		
 		List<String> headers = new ArrayList<String>();
 		
@@ -219,6 +219,47 @@ public class ConfClient {
 	        	Conf con = g.fromJson(jsonStr, Conf.class);
 	        	headers = con.getHttp_forward_headers();	
 	        }
+		} catch(Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+		}
+        
+        return headers;
+	}
+	
+	@CachePut(value="cache_conf", key="{#codeName, #cacheField}")
+	public List<String> set_http_forward_headers(String codeName, String cacheField, List<String> headers) {
+		
+		VEN_LOGGER.info("update and caching set_http_forward_headers({})", codeName);		
+				
+		if (null == codeName || codeName.isEmpty()) return headers;
+						
+		try {
+			Conf con = new Conf();
+
+			//-- get setting from ES
+	        SearchResponse resp = _search_conf(codeName);
+	        if (0 < resp.getHits().getTotalHits()) {
+	        	SearchHit h = resp.getHits().getAt(0);        
+	        	String jsonStr = h.getSourceAsString();	        	
+	        	Gson g = new Gson();
+	        	con = g.fromJson(jsonStr, Conf.class);	        	
+	        }	        	        
+	        
+        	//-- updated Json	        
+	        con.setHttp_forward_headers(headers);        	
+        	con.setUpdate_dt(Utility.now());
+        	Gson g = new Gson();
+        	String updateJson = g.toJson(con);
+	                	
+        	IndexResponse indexResp = _index_conf_(codeName, updateJson);        	
+        	boolean isCreated = indexResp.isCreated();
+        	
+        	if (isCreated) {
+        		String indexName = String.format("%s_hermes", codeName);
+        		VEN_LOGGER.info("a record of {}/{} is created: {}", indexName, TYPE_NAME, updateJson);
+        	}
+	        
 		} catch(Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 			VEN_LOGGER.error(ex.getMessage());
