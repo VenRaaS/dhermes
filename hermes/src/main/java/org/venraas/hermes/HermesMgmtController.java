@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.venraas.hermes.apollo.hermes.ConfManager;
 import org.venraas.hermes.apollo.hermes.JumperManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
+import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
@@ -45,7 +46,7 @@ public class HermesMgmtController {
 			
 			ConfManager confMgr = ConfManager.getInstance();
 			List<String> headers = confMgr.get_http_forward_headers(codeName);
-			msg = String.format("ok, \"%s\" : [%s]", Constant.HERMES_CONF_HTTP_FORWARD_HEADER, String.join(",", headers));			
+			msg = String.format("ok, \"%s\" : [%s]", EnumConf.http_forward_headers.name(), String.join(",", headers));			
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);
@@ -75,8 +76,8 @@ public class HermesMgmtController {
 			ConfManager confMgr = ConfManager.getInstance();
 			List<String> updateHeaders = confMgr.add_http_forward_headers(codeName, json);
 			msg = (updateHeaders.isEmpty()) 
-					? String.format("Invalid, Null or Empty input \"%s\" for \"%s\" setting", json, Constant.HERMES_CONF_HTTP_FORWARD_HEADER)
-					: String.format("ok, update \"%s\" with [%s]", Constant.HERMES_CONF_HTTP_FORWARD_HEADER, String.join(",", updateHeaders));
+					? String.format("Invalid, Null or Empty input \"%s\" for \"%s\" setting", json, EnumConf.http_forward_headers.name())
+					: String.format("ok, update \"%s\" with [%s]", EnumConf.http_forward_headers.name(), String.join(",", updateHeaders));
 			
 		} catch (Exception ex) {
 			msg = ex.getMessage();
@@ -107,8 +108,8 @@ public class HermesMgmtController {
 			ConfManager confMgr = ConfManager.getInstance();
 			boolean isSuccess = confMgr.set_http_forward_headers(codeName, json);
 			msg = (isSuccess) 
-					? String.format("ok, update \"%s\" with %s", Constant.HERMES_CONF_HTTP_FORWARD_HEADER, String.join(",", json))
-					: String.format("Invalid or Null input \"%s\" for \"%s\" setting", json, Constant.HERMES_CONF_HTTP_FORWARD_HEADER);
+					? String.format("ok, update \"%s\" with %s", EnumConf.http_forward_headers.name(), String.join(",", json))
+					: String.format("Invalid or Null input \"%s\" for \"%s\" setting", json, EnumConf.http_forward_headers.name());
 			
 		} catch (Exception ex) {
 			msg = ex.getMessage();
