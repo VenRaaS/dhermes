@@ -9,6 +9,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.common.Utility;
@@ -47,26 +48,26 @@ public class ConfManager {
 	}
 
 	public EnumResetInterval get_routing_reset_interval(String codeName) {
-		EnumResetInterval enumInt = _client.get_routing_reset_interval(codeName, Constant.HERMES_CONF_CACHE_ROUTING_RESET_INTERVAL);		
+		EnumResetInterval enumInt = _client.get_routing_reset_interval(codeName, EnumConf.routing_reset_interval.name());		
 		return enumInt;
 	}
 	
 	public EnumResetInterval set_routing_reset_interval(String codeName, EnumResetInterval enumInt) {
-		return _client.set_routing_reset_interval(codeName, Constant.HERMES_CONF_CACHE_ROUTING_RESET_INTERVAL, enumInt);		
+		return _client.set_routing_reset_interval(codeName, EnumConf.routing_reset_interval.name(), enumInt);		
 	}
 	
 	public double get_traffic_percent_normal(String codeName) { 
-		double pct = _client.get_traffic_percent_normal(codeName, Constant.HERMES_CONF_CACHE_TRAFFIC_PCT);		
+		double pct = _client.get_traffic_percent_normal(codeName, EnumConf.traffic_pct_normal.name());		
 		return pct;
 	}
 	
 	public double set_traffic_percent_normal(String codeName, double pct) {
-		pct = _client.set_traffic_percent_normal(codeName, Constant.HERMES_CONF_CACHE_TRAFFIC_PCT, pct);		
+		pct = _client.set_traffic_percent_normal(codeName, EnumConf.traffic_pct_normal.name(), pct);		
 		return pct;
 	}
 	
 	public List<String> get_http_forward_headers(String codeName) {
-		List<String> headers = _client.get_http_forward_headers(codeName, Constant.HERMES_CONF_HTTP_FORWARD_HEADER);		
+		List<String> headers = _client.get_http_forward_headers(codeName, EnumConf.http_forward_headers.name());		
 		return headers;
 	}
 	
@@ -80,7 +81,7 @@ public class ConfManager {
 			List<String> inHeaders = g.fromJson(jsonArray, listType);
 			
 			if (null != inHeaders && ! inHeaders.isEmpty()) {
-				List<String> orgHeaders = _client.get_http_forward_headers(codeName, Constant.HERMES_CONF_HTTP_FORWARD_HEADER);
+				List<String> orgHeaders = _client.get_http_forward_headers(codeName, EnumConf.http_forward_headers.name());
 			
 				//-- combine input and original headers without duplication
 				Set<String> headerSet = new HashSet<String>(orgHeaders);
@@ -89,7 +90,7 @@ public class ConfManager {
 			    }
 				rsHeaders.addAll(headerSet);
 			
-				rsHeaders = _client.set_http_forward_headers(codeName, Constant.HERMES_CONF_HTTP_FORWARD_HEADER, rsHeaders);
+				rsHeaders = _client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), rsHeaders);
 			}
 		} 
 		catch (Exception ex) {
@@ -108,7 +109,7 @@ public class ConfManager {
 			List<String> inHeaders = g.fromJson(jsonArray, listType);					
 			
 			if (null != inHeaders) {
-				_client.set_http_forward_headers(codeName, Constant.HERMES_CONF_HTTP_FORWARD_HEADER, inHeaders);
+				_client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), inHeaders);
 				isSuccess = true;
 			}
 		} 
