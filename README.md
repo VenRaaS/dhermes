@@ -99,20 +99,20 @@ TODO...
 ```
 
 * ls_forward_headers
-```
+  ```
 /hermes/mgmt/ls_forward_headers?token=${token}
 ```
 
-* add_forward_headers
-The input json should be a JsonArray.
-Note, empty input isn't acceptably, i.e. [].
-```
+* add_forward_headers  
+  The input json should be a JsonArray.  
+  Note, empty input isn't acceptably, i.e. [].
+  ```
 /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
 ```
 
-* set_forward_headers
-The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].
-```
+* set_forward_headers  
+  The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].
+  ```
 /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
 ```
 
