@@ -2,9 +2,12 @@ package org.venraas.hermes;
 
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,6 +17,7 @@ import org.apache.http.ParseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -21,8 +25,11 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
+import org.venraas.hermes.context.AppContext;
+import org.venraas.hermes.context.Config;
 
 public class APIConnector {
 	
@@ -32,7 +39,10 @@ public class APIConnector {
 	
 	private static final APIConnector _conn = new APIConnector();
 	
+	private ConcurrentHashMap<String, APIStatus> _suspendAPIMap = new ConcurrentHashMap<String, APIStatus>(); 
+	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
+	
 			
 	private APIConnector() {
 /*///
@@ -106,10 +116,18 @@ public class APIConnector {
 			StringEntity body_entity = new StringEntity(body);
 			body_entity.setContentType("application/json");
 			post.setEntity(body_entity);
-//TODO... post.setConfig(_reqConfig);
+			
+			int timeout = Config.getInstance().getConn_timeout();
+			_reqConfig = RequestConfig.custom()
+					.setConnectTimeout(timeout)
+					.build();
+			post.setConfig(_reqConfig);
 												
 			StrRespHandler resHd = new StrRespHandler();
 			resp = _httpClient.execute(post, resHd);
+		} catch (ConnectTimeoutException ex) {
+			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
+			
 		} catch (Exception ex) {
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
@@ -189,5 +207,17 @@ public class APIConnector {
 		
 	}
 	
+		
+	class APIStatus {
+		boolean suspending = false;
+		
+		Date connFailBeg_dt;
+		
+		Date suspendBeg_dt;
+		
+		AtomicInteger cnt_connFail;		
+		
+		
+	}
 
 }
