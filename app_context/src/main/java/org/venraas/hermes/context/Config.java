@@ -7,7 +7,7 @@ public class Config {
 	
 	int conn_fail_cond_interval;
 	
-	int conn_fail_cont_count;
+	int conn_fail_cond_count;
 	
 	int conn_fail_resume_interval;
 	
@@ -38,12 +38,12 @@ public class Config {
 		this.conn_fail_cond_interval = conn_fail_cond_interval;
 	}
 
-	public int getConn_fail_cont_count() {
-		return conn_fail_cont_count;
+	public int getConn_fail_cond_count() {
+		return conn_fail_cond_count;
 	}
 
-	public void setConn_fail_cont_count(int conn_fail_cont_count) {
-		this.conn_fail_cont_count = conn_fail_cont_count;
+	public void setConn_fail_cond_count(int conn_fail_cond_count) {
+		this.conn_fail_cond_count = conn_fail_cond_count;
 	}
 
 	public String getConn_failover_url() {
