@@ -32,7 +32,7 @@ public class AppProperty {
 		try {
 			cfg.setConn_timeout(Integer.valueOf(env.getProperty("conn.timeout_ms")));
 			cfg.setConn_fail_cond_interval(Integer.valueOf(env.getProperty("conn.fail.cond.interval_sec")));
-			cfg.setConn_fail_cont_count(Integer.valueOf(env.getProperty("conn.fail.cond.count")));
+			cfg.setConn_fail_cond_count(Integer.valueOf(env.getProperty("conn.fail.cond.count")));
 			cfg.setConn_failover_url(env.getProperty("conn.failover.url"));	
 			cfg.setConn_fail_resume_interval(Integer.valueOf(env.getProperty("conn.fail.resume.interval_sec")));
 		}
