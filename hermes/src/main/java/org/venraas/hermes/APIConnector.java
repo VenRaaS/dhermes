@@ -1,12 +1,14 @@
 package org.venraas.hermes;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,21 +27,17 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
-import org.venraas.hermes.context.AppContext;
 import org.venraas.hermes.context.Config;
 
 public class APIConnector {
 	
 	private static CloseableHttpClient _httpClient = null;
 	
-	private static RequestConfig _reqConfig = null;	
-	
 	private static final APIConnector _conn = new APIConnector();
 	
-	private ConcurrentHashMap<String, APIStatus> _suspendAPIMap = new ConcurrentHashMap<String, APIStatus>(); 
+	private static final ConcurrentHashMap<String, APIStatus> _APIStatusMap = new ConcurrentHashMap<String, APIStatus>(); 
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
 	
@@ -70,7 +68,9 @@ public class APIConnector {
 	public static APIConnector getInstance() {
 		
 		if (null == _httpClient) {
+			
 			synchronized (APIConnector.class) {
+				
 				if (null == _httpClient) { 
 					PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 				    cm.setMaxTotal(Constant.CONNECTION_POOL_MAX_TOTAL);
@@ -81,27 +81,23 @@ public class APIConnector {
 				    	.build();
 				}
 			}
-		}
-		
-		if (null == _reqConfig) {
-			synchronized (APIConnector.class) {
-				if (null == _reqConfig) {
-					_reqConfig = RequestConfig.custom()
-				    .setConnectionRequestTimeout(Constant.HTTP_REQUEST_TIMEOUT)
-				    .build();
-				}
-			}
-		}
+		}			
 		
 		return _conn;
 	}
 	
-	public String post(String apiURL, String body, HttpServletRequest req, List<String> headers) {
-//TODO... $apiURL health check MAP and periodical resume polling		
-				
-		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
+	public String post(String apiURL, String body, HttpServletRequest req, List<String> headers) {				
+		if (null == apiURL || apiURL.isEmpty()) return "";
 		
+//TODO... $apiURL health check MAP and periodical resume polling
+		_APIStatusMap.putIfAbsent(apiURL, new APIStatus());		
+		
+		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");				
+			
 		try {
+			//-- validation
+			new URL(apiURL);		
+			
 			HttpPost post = new HttpPost(apiURL);
 
 			//-- forwarding headers
@@ -115,19 +111,15 @@ public class APIConnector {
 						
 			StringEntity body_entity = new StringEntity(body);
 			body_entity.setContentType("application/json");
-			post.setEntity(body_entity);
-			
-			int timeout = Config.getInstance().getConn_timeout();
-			_reqConfig = RequestConfig.custom()
-					.setConnectTimeout(timeout)
-					.build();
-			post.setConfig(_reqConfig);
+			post.setEntity(body_entity);						
+			post.setConfig(getTimeoutConfig());
 												
 			StrRespHandler resHd = new StrRespHandler();
 			resp = _httpClient.execute(post, resHd);
-		} catch (ConnectTimeoutException ex) {
+		} catch (ConnectTimeoutException  ex) {			
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
-			
+			_connectTimeoutHelper(apiURL);			
+		
 		} catch (Exception ex) {
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
@@ -144,17 +136,29 @@ public class APIConnector {
 		return resp.getValue();
 	}
 	
+	public boolean isSuspending(String apiURL) {				
+		if (null == apiURL || apiURL.isEmpty()) return true;
+			
+		APIStatus status = _APIStatusMap.get(apiURL);
+		if (null == status) return true;
+		
+		return status.isSuspending();
+	}
+	
 	public boolean isValidURL(String apiURL, String body) {
 						
 		boolean isValid = false;
 		
-		try {		
+		try {
+			new URL(apiURL);
+			
 			StringEntity body_entity = new StringEntity(body);
 			body_entity.setContentType("application/json");
 			
 			HttpPost post = new HttpPost(apiURL);
-			post.setEntity(body_entity);			
-									
+			post.setEntity(body_entity);
+			post.setConfig(getTimeoutConfig());
+
 			StrRespHandler resHd = new StrRespHandler();
 			Map.Entry<Integer, String> resp = _httpClient.execute(post, resHd);
 			
@@ -176,6 +180,69 @@ public class APIConnector {
 				
 		return isValid;
 	}
+	
+	public RequestConfig getTimeoutConfig() {
+		int timeout = Config.getInstance().getConn_timeout();		
+		return RequestConfig.custom()
+				.setConnectTimeout(timeout)
+				.build();		
+	}
+	
+	private void _connectTimeoutHelper(String apiURL) {
+		
+		if (null == apiURL || apiURL.isEmpty()) return;
+		
+		_APIStatusMap.putIfAbsent(apiURL, new APIStatus());
+		APIStatus s = _APIStatusMap.get(apiURL);
+		
+		synchronized (s) {
+			Config conf = Config.getInstance();
+			
+			if (s.isSuspending()) {
+				long suspendPeriod = Utility.duration_sec(s.getSuspendBeg_dt(), new Date());
+				
+				if (conf.getConn_fail_resume_interval() < suspendPeriod) {
+					if (isValidURL(apiURL, "")) {
+						s.cnt_connFail.set(0);	
+						s.clearSuspending();
+					}
+					else
+						s.setSuspending();
+				}
+			} else {
+				int failCnt = s.cnt_connFail.incrementAndGet();
+				
+				if (1 == failCnt) {
+					s.setConnFailBeg_dt();
+				}								
+								
+				if (conf.getConn_fail_cond_count() <= failCnt) {
+					long failPeriod = Utility.duration_sec(s.getConnFailBeg_dt(), new Date());
+										
+					if (conf.getConn_fail_cond_interval() < failPeriod) {
+						//-- reset fail counting
+						s.cnt_connFail.set(0);
+					}
+					else {
+						//-- satisfy suspending condition  
+						s.setSuspending();						
+						
+						VEN_LOGGER.warn("API: %s is suspending for %d sec due to %d connection fails within %s sec", 
+								apiURL, conf.getConn_fail_resume_interval(), 
+								failCnt, conf.getConn_fail_cond_interval());
+					}
+				}
+				
+				
+			}
+							
+			
+		}
+		
+		
+	}
+	
+	
 	
 	class StrRespHandler implements ResponseHandler<Map.Entry<Integer, String> > {
 		
@@ -209,13 +276,50 @@ public class APIConnector {
 	
 		
 	class APIStatus {
-		boolean suspending = false;
+		
+	    boolean suspending = false;
 		
 		Date connFailBeg_dt;
 		
 		Date suspendBeg_dt;
 		
-		AtomicInteger cnt_connFail;		
+		public AtomicInteger cnt_connFail = new AtomicInteger(0);
+		
+		
+		public boolean isSuspending() {
+			synchronized (this) {
+				return suspending;
+			}
+		}
+
+		public void setSuspending() {
+			synchronized (this) {
+				this.suspending = true;
+				this.suspendBeg_dt = new Date();
+			}
+		}
+		
+		public void clearSuspending() {
+			synchronized (this) {
+				this.suspending = false;				
+			}
+		}
+		
+		public Date getConnFailBeg_dt() {
+			return connFailBeg_dt;
+		}
+
+		public void setConnFailBeg_dt() {
+			synchronized (this) {
+				if (! suspending) {
+					this.connFailBeg_dt = new Date();
+				}
+			}
+		}
+
+		public Date getSuspendBeg_dt() {
+			return suspendBeg_dt;
+		}
 		
 		
 	}
