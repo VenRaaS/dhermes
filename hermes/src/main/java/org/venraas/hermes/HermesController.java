@@ -75,8 +75,7 @@ public class HermesController {
 			Map<String, Object> mapping = p2r.getMapping(inParamMap);
 			
 			//-- redirect to Normal (default) Group, if input parameter doesn't match
-			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && 
-					mapping.isEmpty()) {
+			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && mapping.isEmpty()) {
 				p2r = new Param2RestAPI(codeName, Constant.NORMAL_GROUP_KEY);
 				mapping = p2r.getMapping(inParamMap);
 			}
@@ -128,7 +127,7 @@ public class HermesController {
 		} catch(Exception ex) {
 			VEN_LOGGER.error("{} with input {} ", ex.getMessage(), new Gson().toJson(inParamMap));
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-		} 		
+		}
 
 		Gson g = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
