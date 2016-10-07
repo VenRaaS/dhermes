@@ -1,14 +1,15 @@
 package org.venraas.hermes;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.context.Config;
+
+import com.google.common.io.CharStreams;
+
 
 public class APIConnector {
 	
@@ -81,7 +85,7 @@ public class APIConnector {
 				    	.build();
 				}
 			}
-		}			
+		}
 		
 		return _conn;
 	}
@@ -90,7 +94,10 @@ public class APIConnector {
 		if (null == apiURL || apiURL.isEmpty()) return "";
 		
 //TODO... $apiURL health check MAP and periodical resume polling
-		_APIStatusMap.putIfAbsent(apiURL, new APIStatus());		
+		_APIStatusMap.putIfAbsent(apiURL, new APIStatus());
+		
+		APIStatus status = _APIStatusMap.get(apiURL);
+		if (status.isSuspending()) return "";
 		
 		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");				
 			
@@ -106,9 +113,9 @@ public class APIConnector {
 				while (vals.hasMoreElements()) {
 					String v = vals.nextElement();
 					post.addHeader(h, v);
-				}				
+				}
 			}
-						
+
 			StringEntity body_entity = new StringEntity(body);
 			body_entity.setContentType("application/json");
 			post.setEntity(body_entity);						
@@ -118,8 +125,7 @@ public class APIConnector {
 			resp = _httpClient.execute(post, resHd);
 		} catch (ConnectTimeoutException  ex) {			
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
-			_connectTimeoutHelper(apiURL);			
-		
+			_connectTimeoutHelper(apiURL);
 		} catch (Exception ex) {
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
@@ -192,14 +198,32 @@ public class APIConnector {
 		
 		if (null == apiURL || apiURL.isEmpty()) return;
 		
-		_APIStatusMap.putIfAbsent(apiURL, new APIStatus());
+		_APIStatusMap.putIfAbsent(apiURL, new APIStatus(apiURL));
 		APIStatus s = _APIStatusMap.get(apiURL);
 		
 		synchronized (s) {
 			Config conf = Config.getInstance();
 			
-			if (s.isSuspending()) {
-				long suspendPeriod = Utility.duration_sec(s.getSuspendBeg_dt(), new Date());
+			if (! s.isSuspending()) {
+				int failCnt = s.failIncrementAndGet();
+				
+				if (conf.getConn_fail_cond_count() <= failCnt) {
+					long failPeriod = s.getConnFailDurationSec();
+										
+					if (failPeriod <= conf.getConn_fail_cond_interval()) {
+						//-- satisfy suspending condition  
+						s.setSuspending();						
+						VEN_LOGGER.warn("API: %s is suspending for %d sec due to %d connection fails within %s sec", 
+								apiURL, conf.getConn_fail_resume_interval(), 
+								failCnt, conf.getConn_fail_cond_interval());						
+					}
+					else {
+						//-- reset fail counting
+						s.clearConnFailCnt();;
+					}
+				}
+			} else {
+				long suspendPeriod = s.getSuspendingDurationSec();
 				
 				if (conf.getConn_fail_resume_interval() < suspendPeriod) {
 					if (isValidURL(apiURL, "")) {
@@ -209,36 +233,9 @@ public class APIConnector {
 					else
 						s.setSuspending();
 				}
-			} else {
-				int failCnt = s.cnt_connFail.incrementAndGet();
-				
-				if (1 == failCnt) {
-					s.setConnFailBeg_dt();
-				}								
-								
-				if (conf.getConn_fail_cond_count() <= failCnt) {
-					long failPeriod = Utility.duration_sec(s.getConnFailBeg_dt(), new Date());
-										
-					if (conf.getConn_fail_cond_interval() < failPeriod) {
-						//-- reset fail counting
-						s.cnt_connFail.set(0);
-					}
-					else {
-						//-- satisfy suspending condition  
-						s.setSuspending();						
-						
-						VEN_LOGGER.warn("API: %s is suspending for %d sec due to %d connection fails within %s sec", 
-								apiURL, conf.getConn_fail_resume_interval(), 
-								failCnt, conf.getConn_fail_cond_interval());
-					}
-				}
-				
-				
 			}
-							
-			
+	
 		}
-		
 		
 	}
 	
@@ -277,48 +274,101 @@ public class APIConnector {
 		
 	class APIStatus {
 		
+		String apiURL = "";
+		
 	    boolean suspending = false;
 		
-		Date connFailBeg_dt;
+		Date connFailBeg_dt = new Date();
 		
-		Date suspendBeg_dt;
+		Date suspendBeg_dt = new Date();
 		
-		public AtomicInteger cnt_connFail = new AtomicInteger(0);
+		AtomicInteger cnt_connFail = new AtomicInteger(0);
 		
+		
+		public APIStatus() {}
+		
+		public APIStatus(String url) {
+			apiURL = url;
+		}
 		
 		public boolean isSuspending() {
-			synchronized (this) {
-				return suspending;
+			
+			if (suspending) {
+				synchronized (this) {
+					if (suspending) {					
+						long suspendPeriod = getSuspendingDurationSec();					
+						Config conf = Config.getInstance();
+						
+						if (conf.getConn_fail_resume_interval() < suspendPeriod) {
+							try {
+								URL url = new URL(apiURL);								
+								String result = CharStreams.toString(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));								
+								clearSuspending();							
+							} catch (Exception ex) {
+								VEN_LOGGER.error(ex.getMessage());
+								VEN_LOGGER.error(Utility.stackTrace2string(ex));								
+							}	
+						}
+					}
+				}
 			}
-		}
+			
+			return suspending;
+		}		
 
 		public void setSuspending() {
-			synchronized (this) {
-				this.suspending = true;
-				this.suspendBeg_dt = new Date();
+			if (! suspending) {
+				synchronized (this) {
+					if (! suspending) {
+						suspending = true;
+						suspendBeg_dt = new Date();
+					}
+				}
 			}
 		}
 		
 		public void clearSuspending() {
-			synchronized (this) {
-				this.suspending = false;				
-			}
-		}
-		
-		public Date getConnFailBeg_dt() {
-			return connFailBeg_dt;
-		}
-
-		public void setConnFailBeg_dt() {
-			synchronized (this) {
-				if (! suspending) {
-					this.connFailBeg_dt = new Date();
+			if (suspending) {
+				synchronized (this) {
+					if (suspending) {
+						suspending = false;
+						cnt_connFail.set(0);
+					}
 				}
 			}
 		}
-
-		public Date getSuspendBeg_dt() {
-			return suspendBeg_dt;
+		
+		public long getSuspendingDurationSec() {
+			synchronized (this) {
+				return Utility.duration_sec(suspendBeg_dt, new Date());
+			}
+		}
+		
+		public int failIncrementAndGet() {
+			int failCnt = cnt_connFail.get();
+			
+			if (! suspending) {
+				synchronized (this) {
+					if (! suspending) {
+						failCnt = cnt_connFail.incrementAndGet();
+						if (1 == failCnt) connFailBeg_dt = new Date();						
+					}
+				}
+			}
+			
+			return failCnt;
+		}
+		
+		public void clearConnFailCnt() {
+			synchronized (this) {
+				cnt_connFail.set(0);
+			}			
+		}
+		
+		public long getConnFailDurationSec() {
+			synchronized (this) {
+				return Utility.duration_sec(connFailBeg_dt, new Date());
+			}
 		}
 		
 		
