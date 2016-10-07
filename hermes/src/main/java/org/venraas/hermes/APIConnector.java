@@ -3,6 +3,7 @@ package org.venraas.hermes;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Date;
@@ -94,7 +95,7 @@ public class APIConnector {
 		if (null == apiURL || apiURL.isEmpty()) return "";
 		
 //TODO... $apiURL health check MAP and periodical resume polling
-		_APIStatusMap.putIfAbsent(apiURL, new APIStatus());
+		_APIStatusMap.putIfAbsent(apiURL, new APIStatus(apiURL));
 		
 		APIStatus status = _APIStatusMap.get(apiURL);
 		if (status.isSuspending()) return "";
@@ -123,7 +124,7 @@ public class APIConnector {
 												
 			StrRespHandler resHd = new StrRespHandler();
 			resp = _httpClient.execute(post, resHd);
-		} catch (ConnectTimeoutException  ex) {			
+		} catch (ConnectTimeoutException | ConnectException ex) {			
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
 			_connectTimeoutHelper(apiURL);
 		} catch (Exception ex) {
@@ -367,7 +368,8 @@ public class APIConnector {
 		
 		public long getConnFailDurationSec() {
 			synchronized (this) {
-				return Utility.duration_sec(connFailBeg_dt, new Date());
+				long dursec = Utility.duration_sec(connFailBeg_dt, new Date());
+				return dursec;
 			}
 		}
 		
