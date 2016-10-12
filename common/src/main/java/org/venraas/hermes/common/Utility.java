@@ -30,6 +30,7 @@ public class Utility {
 	}
 	
 	static public long duration_sec (Date beg, Date end) {
-		return TimeUnit.MILLISECONDS.toSeconds(end.getTime() - beg.getTime());		
+		long secs = TimeUnit.MILLISECONDS.toSeconds(end.getTime() - beg.getTime());
+		return secs;		
 	}
 }
