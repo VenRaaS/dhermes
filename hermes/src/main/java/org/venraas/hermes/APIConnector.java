@@ -314,25 +314,18 @@ public class APIConnector {
 			return suspending;
 		}		
 
-		public void setSuspending() {
-			if (! suspending) {
-				synchronized (this) {
-					if (! suspending) {
-						suspending = true;
-						suspendBeg_dt = new Date();
-					}
-				}
-			}
+		public void setSuspending() {			
+			synchronized (this) {					
+				suspending = true;
+				suspendBeg_dt = new Date();
+				
+			}			
 		}
 		
-		public void clearSuspending() {
-			if (suspending) {
-				synchronized (this) {
-					if (suspending) {
-						suspending = false;
-						cnt_connFail.set(0);
-					}
-				}
+		public void clearSuspending() {			
+			synchronized (this) {				
+				suspending = false;
+				cnt_connFail.set(0);				
 			}
 		}
 		
