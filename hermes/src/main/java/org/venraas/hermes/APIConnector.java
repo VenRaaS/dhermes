@@ -203,18 +203,18 @@ public class APIConnector {
 		APIStatus s = _APIStatusMap.get(apiURL);
 		
 		synchronized (s) {
-			Config conf = Config.getInstance();
 			
 			if (! s.isSuspending()) {
 				int failCnt = s.failIncrementAndGet();
 				
+				Config conf = Config.getInstance();
 				if (conf.getConn_fail_cond_count() <= failCnt) {
 					long failPeriod = s.getConnFailDurationSec();
 										
 					if (failPeriod <= conf.getConn_fail_cond_interval()) {
 						//-- satisfy suspending condition  
 						s.setSuspending();						
-						VEN_LOGGER.warn("API: %s is suspending for %d sec due to %d connection fails within %s sec", 
+						VEN_LOGGER.error("API: {} is suspending for {} sec due to {} connection fails within {} sec", 
 								apiURL, conf.getConn_fail_resume_interval(), 
 								failCnt, conf.getConn_fail_cond_interval());						
 					}
@@ -223,19 +223,7 @@ public class APIConnector {
 						s.clearConnFailCnt();;
 					}
 				}
-			} else {
-				long suspendPeriod = s.getSuspendingDurationSec();
-				
-				if (conf.getConn_fail_resume_interval() < suspendPeriod) {
-					if (isValidURL(apiURL, "")) {
-						s.cnt_connFail.set(0);	
-						s.clearSuspending();
-					}
-					else
-						s.setSuspending();
-				}
-			}
-	
+			}	
 		}
 		
 	}
@@ -295,19 +283,28 @@ public class APIConnector {
 		public boolean isSuspending() {
 			
 			if (suspending) {
+				
 				synchronized (this) {
-					if (suspending) {					
+					
+					if (suspending) {								
 						long suspendPeriod = getSuspendingDurationSec();					
 						Config conf = Config.getInstance();
 						
 						if (conf.getConn_fail_resume_interval() < suspendPeriod) {
+							VEN_LOGGER.info("try to resume API: {} after suspending in {} seconds.", apiURL, suspendPeriod);
+							
 							try {
 								URL url = new URL(apiURL);								
 								String result = CharStreams.toString(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));								
-								clearSuspending();							
-							} catch (Exception ex) {
+								clearSuspending();
+								
+								VEN_LOGGER.info("resume API: {} successfully after suspending in {} seconds.", apiURL, suspendPeriod);
+							} catch (Exception ex) {								
+								setSuspending();
+								VEN_LOGGER.info("resume API: {} fail.", apiURL);
+								
 								VEN_LOGGER.error(ex.getMessage());
-								VEN_LOGGER.error(Utility.stackTrace2string(ex));								
+								VEN_LOGGER.error(Utility.stackTrace2string(ex));
 							}	
 						}
 					}
