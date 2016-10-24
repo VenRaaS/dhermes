@@ -91,20 +91,35 @@ public class APIConnector {
 		return _conn;
 	}
 	
-	public String post(String apiURL, String body, HttpServletRequest req, List<String> headers) {				
-		if (null == apiURL || apiURL.isEmpty()) return "";
+	public String post(String apiURL, String apiURL_FO, String body, HttpServletRequest req, List<String> headers) {
+		String rs = ""; 
 		
-//TODO... $apiURL health check MAP and periodical resume polling
+		Map.Entry<Integer, String> resp = post(apiURL, body, req, headers);		
+		int status = resp.getKey();
+		
+		//-- error apply normal 
+		if (status < 200 || 300 <= status) {					
+			resp = post(apiURL_FO, body, req, headers);			
+		}
+		
+		rs =  resp.getValue();
+		return rs;
+	}
+	
+	public Map.Entry<Integer, String> post(String apiURL, String body, HttpServletRequest req, List<String> headers) {
+		
+		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
+		
+		if (null == apiURL || apiURL.isEmpty()) return resp;
+		
 		_APIStatusMap.putIfAbsent(apiURL, new APIStatus(apiURL));
-		
-		APIStatus status = _APIStatusMap.get(apiURL);
-		if (status.isSuspending()) return "";
-		
-		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");				
+//TODO... $apiURL health check MAP and periodical resume polling
+		APIStatus status = _APIStatusMap.get(apiURL);		
+		if (status.isSuspending()) return resp;				
 			
 		try {
-			//-- validation
-			new URL(apiURL);		
+///			//-- validation
+///			new URL(apiURL);
 			
 			HttpPost post = new HttpPost(apiURL);
 
@@ -124,12 +139,13 @@ public class APIConnector {
 												
 			StrRespHandler resHd = new StrRespHandler();
 			resp = _httpClient.execute(post, resHd);
-		} catch (ConnectTimeoutException | ConnectException ex) {			
-			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
-			_connectTimeoutHelper(apiURL);
+///		} catch (ConnectTimeoutException | ConnectException ex) {			
+///			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
+///			_connectFailHelper(apiURL);
 		} catch (Exception ex) {
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			_connectFailHelper(apiURL);
 		}
 		finally {
 			try {
@@ -140,7 +156,7 @@ public class APIConnector {
 			}				
 		}
 				
-		return resp.getValue();
+		return resp;
 	}
 	
 	public boolean isSuspending(String apiURL) {				
@@ -195,7 +211,7 @@ public class APIConnector {
 				.build();		
 	}
 	
-	private void _connectTimeoutHelper(String apiURL) {
+	private void _connectFailHelper(String apiURL) {
 		
 		if (null == apiURL || apiURL.isEmpty()) return;
 		
@@ -235,11 +251,10 @@ public class APIConnector {
 		@Override
 		public Map.Entry<Integer, String> handleResponse(final HttpResponse response) {
 			
-			Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
-			
-			int status = response.getStatusLine().getStatusCode();
+			Map.Entry<Integer, String> resp = null;					
 			
 			try {
+				int status = response.getStatusLine().getStatusCode();
 				
 				if (status >= 200 && status < 300) {					
 					HttpEntity entity = response.getEntity();					
@@ -248,6 +263,7 @@ public class APIConnector {
 						resp = new AbstractMap.SimpleEntry<Integer, String>(status, respStr);
 					}
 				} else {
+					resp = new AbstractMap.SimpleEntry<Integer, String>(status, "");
 					VEN_LOGGER.warn("Unexpected response http status code: {}", status);				
 				}
 			} catch (ParseException | IOException ex) {

@@ -74,10 +74,16 @@ public class HermesController {
 			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());			
 			Map<String, Object> mapping = p2r.getMapping(inParamMap);
 			
+			//-- normal channel
+			Param2RestAPI n_p2r = new Param2RestAPI(codeName, Constant.NORMAL_GROUP_KEY);
+			Map<String, Object> n_mapping = p2r.getMapping(inParamMap);
+			List<String> n_apiURLs = (List<String>) n_mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
+			String n_apiURL = n_apiURLs.get(0);
+			
 			//-- redirect to Normal (default) Group, if input parameter doesn't match
 			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && mapping.isEmpty()) {
-				p2r = new Param2RestAPI(codeName, Constant.NORMAL_GROUP_KEY);
-				mapping = p2r.getMapping(inParamMap);
+				p2r = n_p2r;
+				mapping = n_mapping;
 			}
 			
 			if (! mapping.isEmpty()) {
@@ -97,7 +103,7 @@ public class HermesController {
 				for (String f : auxFields) {
 					String v = (String) mapping.get(f);
 					outParamMap.put(f, v);
-				}				
+				}
 
 				String apiURL = "";				
 				Gson g = new Gson();
@@ -115,9 +121,9 @@ public class HermesController {
 				if (! apiURL.isEmpty()) {
 					ConfManager confMgr = ConfManager.getInstance();
 					List<String> headers = confMgr.get_http_forward_headers(codeName);
-					
-					APIConnector apiConn = APIConnector.getInstance();
-					resp = apiConn.post(apiURL, outParam, req, headers);
+										
+					APIConnector apiConn = APIConnector.getInstance();					
+					resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
 				}
 			}
 			else {
