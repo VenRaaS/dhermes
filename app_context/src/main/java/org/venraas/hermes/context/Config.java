@@ -11,7 +11,7 @@ public class Config {
 	
 	int conn_fail_resume_interval;
 	
-	String conn_failover_url;
+	
 		
 	static Config _conf = new Config();
 	
@@ -44,14 +44,6 @@ public class Config {
 
 	public void setConn_fail_cond_count(int conn_fail_cond_count) {
 		this.conn_fail_cond_count = conn_fail_cond_count;
-	}
-
-	public String getConn_failover_url() {
-		return conn_failover_url;
-	}
-
-	public void setConn_failover_url(String conn_failover_url) {
-		this.conn_failover_url = conn_failover_url;
 	}
 	
 	public int getConn_fail_resume_interval() {
