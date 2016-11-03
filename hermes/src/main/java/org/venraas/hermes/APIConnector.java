@@ -47,28 +47,7 @@ public class APIConnector {
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
 	
 			
-	private APIConnector() {
-/*///
- 		if (null == _httpClient) {
-			synchronized (APIConnector.class){
-				if (null == _httpClient) {
-					_httpClient = HttpClients.createDefault();										
-				}				
-			}
-		}
-
-		
-		if (null == _reqConfig) {
-			synchronized (APIConnector.class) {
-				if (null == _reqConfig) {
-					_reqConfig = RequestConfig.custom()
-				    .setConnectionRequestTimeout(Constant.HTTP_REQUEST_TIMEOUT)
-				    .build();
-				}
-			}
-		}
-*/
-	}
+	private APIConnector() { }
 	
 	public static APIConnector getInstance() {
 		
@@ -117,10 +96,7 @@ public class APIConnector {
 		APIStatus status = _APIStatusMap.get(apiURL);		
 		if (status.isSuspending()) return resp;				
 			
-		try {
-///			//-- validation
-///			new URL(apiURL);
-			
+		try {		
 			HttpPost post = new HttpPost(apiURL);
 
 			//-- forwarding headers
