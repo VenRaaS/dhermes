@@ -86,9 +86,7 @@ public class Param2recomderClient {
 				.addAggregation(ab)				
 				.setSize(0);
 
-			SearchResponse resp = searchReq.execute().actionGet();
-
-			Gson gson = new Gson();
+			SearchResponse resp = searchReq.execute().actionGet();			
 			
 			if (0 < resp.getHits().getTotalHits()) {
 				Terms agg = resp.getAggregations().get(aggName);

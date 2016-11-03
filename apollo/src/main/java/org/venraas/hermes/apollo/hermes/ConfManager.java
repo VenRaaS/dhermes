@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.venraas.hermes.apollo.mappings.EnumConf;
-import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.context.AppContext;

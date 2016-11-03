@@ -3,7 +3,7 @@ package org.venraas.hermes;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.ConnectException;
+//import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Date;
@@ -21,7 +21,7 @@ import org.apache.http.ParseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ConnectTimeoutException;
+//import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -115,9 +115,9 @@ public class APIConnector {
 												
 			StrRespHandler resHd = new StrRespHandler();
 			resp = _httpClient.execute(post, resHd);
-///		} catch (ConnectTimeoutException | ConnectException ex) {			
-///			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
-///			_connectFailHelper(apiURL);
+//		} catch (ConnectTimeoutException | ConnectException ex) {			
+//			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
+//			_connectFailHelper(apiURL);
 		} catch (Exception ex) {
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
