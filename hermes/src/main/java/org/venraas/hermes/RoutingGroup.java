@@ -41,6 +41,9 @@ public class RoutingGroup {
 		return this;
 	}
 	
+	public String toString() {
+		return String.format("%s:%s, %s:%s, %s:%s", GROUP_KEY, group_key, TRAFFIC_TYPE, traffic_type, TRAFFIC_PCT, traffic_pct);
+	}
 	
 
 }

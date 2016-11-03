@@ -36,13 +36,18 @@ public class HermesController {
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)	
-	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap, HttpServletRequest req) {		
+	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap, HttpServletRequest req) {
+		Gson gson = new Gson();
+		VEN_LOGGER.info(gson.toJson(paramMap));
+		
 		return get_goods_rank(paramMap, req);
 	}
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.POST)	
-	public Object get_goods_rank_POST(@RequestBody String jsonStr, HttpServletRequest req) {		
+	public Object get_goods_rank_POST(@RequestBody String jsonStr, HttpServletRequest req) {
+		VEN_LOGGER.info(jsonStr);
+		
 		Gson gson = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		Map<String, Object> paramMap = gson.fromJson(jsonStr, type);
@@ -104,6 +109,8 @@ public class HermesController {
 					String v = (String) mapping.get(f);
 					outParamMap.put(f, v);
 				}
+				
+				VEN_LOGGER.info("clientID: {} => {}", clientID, targetGrp.toString()); 
 
 				String apiURL = "";				
 				Gson g = new Gson();
