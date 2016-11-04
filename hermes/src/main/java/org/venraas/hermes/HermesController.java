@@ -83,13 +83,13 @@ public class HermesController {
 			Param2RestAPI n_p2r = new Param2RestAPI(codeName, Constant.NORMAL_GROUP_KEY);
 			Map<String, Object> n_mapping = p2r.getMapping(inParamMap);
 			List<String> n_apiURLs = (List<String>) n_mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
-			String n_apiURL = n_apiURLs.get(0);
+			String n_apiURL = (n_apiURLs.isEmpty()) ? "" : n_apiURLs.get(0);
 			
 			//-- redirect to Normal (default) Group, if input parameter doesn't match
 			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && mapping.isEmpty()) {
 				p2r = n_p2r;
 				mapping = n_mapping;
-			}
+			}			
 			
 			if (! mapping.isEmpty()) {
 				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
@@ -128,11 +128,11 @@ public class HermesController {
 				if (! apiURL.isEmpty()) {
 					ConfManager confMgr = ConfManager.getInstance();
 					List<String> headers = confMgr.get_http_forward_headers(codeName);
-										
-					APIConnector apiConn = APIConnector.getInstance();					
+
+					APIConnector apiConn = APIConnector.getInstance();										
 					resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
 				}
-			}
+			}			
 			else {
 				Gson g = new Gson();
 				VEN_LOGGER.warn("input parameter to recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
