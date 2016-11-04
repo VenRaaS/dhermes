@@ -77,8 +77,10 @@ public class APIConnector {
 		int status = resp.getKey();
 		
 		//-- error apply normal 
-		if (status < 200 || 300 <= status) {					
-			resp = post(apiURL_FO, body, req, headers);			
+		if (status < 200 || 300 <= status) {
+			if (null != apiURL_FO && ! apiURL_FO.isEmpty()) {
+				resp = post(apiURL_FO, body, req, headers);
+			}
 		}
 		
 		rs =  resp.getValue();
@@ -230,16 +232,15 @@ public class APIConnector {
 			Map.Entry<Integer, String> resp = null;					
 			
 			try {
-				int status = response.getStatusLine().getStatusCode();
+				int status = response.getStatusLine().getStatusCode();				
+				HttpEntity entity = response.getEntity();
 				
-				if (status >= 200 && status < 300) {					
-					HttpEntity entity = response.getEntity();					
-					if (null != entity) {						
-						String respStr = EntityUtils.toString(entity);
-						resp = new AbstractMap.SimpleEntry<Integer, String>(status, respStr);
-					}
-				} else {
-					resp = new AbstractMap.SimpleEntry<Integer, String>(status, "");
+				if (null != entity) {						
+					String respStr = EntityUtils.toString(entity);
+					resp = new AbstractMap.SimpleEntry<Integer, String>(status, respStr);
+				}
+				
+				if (status < 200 || 300 <= status) {					
 					VEN_LOGGER.warn("Unexpected response http status code: {}", status);				
 				}
 			} catch (ParseException | IOException ex) {
