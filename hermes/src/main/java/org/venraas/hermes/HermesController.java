@@ -1,6 +1,7 @@
 package org.venraas.hermes;
 
 import java.lang.reflect.Type;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,9 +59,9 @@ public class HermesController {
 	
 	
 	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap, HttpServletRequest req) {
-		
+		Map<String, Object> errMsg = null;
 		String resp = "";
-				
+
 		String clientID = String.format("%s_%s_%s", 
 				inParamMap.get(EnumOptionBase.token.name()), 
 				inParamMap.get(EnumOptionBase.ven_guid.name()), 
@@ -70,6 +71,10 @@ public class HermesController {
 			String token = (String)inParamMap.get(EnumOptionBase.token.name());
 			CompanyManager comMgr = CompanyManager.getInstance();
 			String codeName = comMgr.getCodeName(token);			
+			if (codeName.isEmpty()) {
+				throw new InvalidParameterException(String.format("an invalid token: '%s' !", token));
+			}
+			
 			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), ""); 
 		
 			//-- routing to target group according to $clientID
@@ -91,61 +96,71 @@ public class HermesController {
 				mapping = n_mapping;
 			}			
 			
-			if (! mapping.isEmpty()) {
-				HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
-				
-				List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
-				List<String> auxFields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
-				
-				if (auxFields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
-				
-				//-- forward attaching fields for back-end usage
-				// traffic info
-				outParamMap.put(RoutingGroup.GROUP_KEY, targetGrp.getGroup_key());
-				outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type());
-				outParamMap.put(RoutingGroup.TRAFFIC_PCT, Float.parseFloat(targetGrp.getTraffic_pct()));
-				//  auxiliary key/value which are specified by registration mapping. 
-				for (String f : auxFields) {
-					String v = (String) mapping.get(f);
-					outParamMap.put(f, v);
-				}
-				
-				VEN_LOGGER.info("clientID: {} => {}", clientID, targetGrp.toString()); 
+			if (mapping.isEmpty()) {
+				throw new InvalidParameterException("input parameter to recommender mapping cannot be found!");
+			}					
+			
+			List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
+			List<String> auxFields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
+			
+			if (auxFields.isEmpty()) VEN_LOGGER.info("none of register key: {}", EnumParam2recomder.out_aux_params.name());
+			
+			//-- forward attaching fields for back-end usage
+			// traffic info
+			HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
+			outParamMap.put(RoutingGroup.GROUP_KEY, targetGrp.getGroup_key());
+			outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type());
+			outParamMap.put(RoutingGroup.TRAFFIC_PCT, Float.parseFloat(targetGrp.getTraffic_pct()));
+			//  auxiliary key/value which are specified by registration mapping. 
+			for (String f : auxFields) {
+				String v = (String) mapping.get(f);
+				outParamMap.put(f, v);
+			}
+			
+			VEN_LOGGER.info("clientID: {} => {}", clientID, targetGrp.toString()); 
 
-				String apiURL = "";				
-				Gson g = new Gson();
-				String outParam = g.toJson(outParamMap);
-				
-				if (1 == apiURLs.size()) {
-					apiURL = apiURLs.get(0);
-				} else if (2 <= apiURLs.size()) {
-					int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
-					apiURL = apiURLs.get(r);
-				} else {
-					VEN_LOGGER.error("invalid register key/value: {} / {}", EnumParam2recomder.api_url.name(), apiURL);
-				}
-				
-				if (! apiURL.isEmpty()) {
-					ConfManager confMgr = ConfManager.getInstance();
-					List<String> headers = confMgr.get_http_forward_headers(codeName);
+			String apiURL = "";
+			Gson g = new Gson();
+			String outParam = g.toJson(outParamMap);
+			
+			if (1 == apiURLs.size()) {
+				apiURL = apiURLs.get(0);
+			} else if (2 <= apiURLs.size()) {
+				int r = ThreadLocalRandom.current().nextInt(apiURLs.size());
+				apiURL = apiURLs.get(r);
+			} else {
+				VEN_LOGGER.error("invalid register key/value: {} / {}", EnumParam2recomder.api_url.name(), apiURL);
+			}
+			
+			if (! apiURL.isEmpty()) {
+				ConfManager confMgr = ConfManager.getInstance();
+				List<String> headers = confMgr.get_http_forward_headers(codeName);
 
-					APIConnector apiConn = APIConnector.getInstance();										
-					resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
-				}
-			}			
-			else {
-				Gson g = new Gson();
-				VEN_LOGGER.warn("input parameter to recomder mapping cannot be found. input: {}", g.toJson(inParamMap));			
+				APIConnector apiConn = APIConnector.getInstance();										
+				resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
 			}
 		} catch(Exception ex) {
-			VEN_LOGGER.error("{} with input {} ", ex.getMessage(), new Gson().toJson(inParamMap));
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+///			String err = String.format("%s, input: %s", ex.getMessage(), new Gson().toJson(inParamMap));
+			String err = String.format("%s", ex.getMessage());
+			errMsg = new HashMap<String, Object>();
+			errMsg.put("input", inParamMap);
+			errMsg.put("error", err);
+			
+			VEN_LOGGER.error(err);
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
 		}
 
-		Gson g = new Gson();
-		Type type = new TypeToken<Map<String, Object>>(){}.getType();
-		Map<String, Object> m = g.fromJson(resp, type);
-		return m;	
+		Map<String, Object> respMap = null;
+		if (null == errMsg) {
+			Gson g = new Gson();
+			Type type = new TypeToken<Map<String, Object>>(){}.getType();
+			respMap = g.fromJson(resp, type);
+		}
+		else {
+			respMap = errMsg;
+		}
+		
+		return respMap;	
 	}	
 	
 	
