@@ -39,7 +39,7 @@ TODO...
 * register_normal  
   Note, all value should be Double-quoted as a String
   ```
-/hermes/mgmt/register_normal?token=${token}&json=
+GET /hermes/mgmt/register_normal?token=${token}&json=
 
 {
   "rec_pos":"categTop",
@@ -54,7 +54,7 @@ TODO...
 * register_test  
   Note, all value should be Double-quoted as a String
   ```
-/hermes/mgmt/register_test?token=${token}&json=
+GET /hermes/mgmt/register_test?token=${token}&json=
 
 {
   "group_key":"test-1",
@@ -70,50 +70,50 @@ TODO...
 
 * set_traffic_pct_normal
   ```
-/hermes/mgmt/set_traffic_pct_normal?token=${token}&pct=0.66
+GET /hermes/mgmt/set_traffic_pct_normal?token=${token}&pct=0.66
 ```
 
 * set_routing_reset_interval
   ```
-/hermes/mgmt/set_routing_reset_interval?token=${token}&interval=HOUR
+GET /hermes/mgmt/set_routing_reset_interval?token=${token}&interval=HOUR
 ```
 
 * ls_grp
   ```
-/hermes/mgmt/ls_grp?token=${token}
+GET /hermes/mgmt/ls_grp?token=${token}
 ```
 
 * rm_grp
   ```
-/hermes/mgmt/rm_grp?token=${token}&key=${group_key}
+DELETE /hermes/mgmt/rm_grp?token=${token}&key=${group_key}
 ```
 
 * rm_mapping
   ```
-/hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
+DELETE /hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
 ```
 
 * set_jumper
   ```
-/hermes/mgmt/set_jumper?token=${token}&uid=u0806449&grpkey=test-1
+GET /hermes/mgmt/set_jumper?token=${token}&uid=u0806449&grpkey=test-1
 ```
 
 * ls_forward_headers
   ```
-/hermes/mgmt/ls_forward_headers?token=${token}
+GET /hermes/mgmt/ls_forward_headers?token=${token}
 ```
 
 * add_forward_headers  
   The input json should be a JsonArray.  
   Note, empty input isn't acceptably, i.e. [].
   ```
-/hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
+GET /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
 ```
 
 * set_forward_headers  
   The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].
   ```
-/hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
+GET /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
 ```
 
 ### Request bypass APIs (/hermes/api/)
