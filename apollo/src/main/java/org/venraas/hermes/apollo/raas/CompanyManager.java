@@ -1,38 +1,69 @@
 package org.venraas.hermes.apollo.raas;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.venraas.hermes.context.AppContext;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.Utility;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.ListenableFuture;
+
 
 public class CompanyManager {
 	
-	static CompanyClient _client = null;
+	static CompanyClient _client = new CompanyClient();
 	static CompanyManager _mgr = new CompanyManager();
+	static LoadingCache<String, String> _cache_company;
 	
+	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(CompanyManager.class);
+	
+	
+	static {
+		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
+		_cache_company = CacheBuilder.newBuilder()
+				.maximumSize(Constant.CACHE_SIZE_10K)						
+				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_10_TIMEUNIT, TimeUnit.MINUTES)
+				.build(
+					new CacheLoader<String, String>() {
+						public String load(String key) throws Exception {									
+							return _client.getCodeName(key);					
+						}
+						
+						public ListenableFuture<String> reload (final String key, String prevGraph) {
+							ListenableFuture<String> task = 
+								Utility.CacheRefreshLES.submit(new Callable<String>() {
+									public String call() throws Exception {
+										return _client.getCodeName(key);
+									}
+								});
+							
+			                return task;
+						}
+					}
+				);			
+	}
 	
 	private CompanyManager() {}
 	
 	static public CompanyManager getInstance() {
+		return _mgr;
+	}	
+
+	public String getCodeName(String token) {	
+		String codeName = "";
 		
-		if (null == _client) {
-			
-			synchronized (CompanyManager.class) {
-				
-				if (null == _client) {
-					AnnotationConfigApplicationContext ctx = AppContext.getCacheAnnotContext();
-					_client = ctx.getBean(CompanyClient.class);
-				}
-			}
+		try {
+			codeName = _cache_company.get(token);
+		} catch (Exception ex) {
+			VEN_LOGGER.error(ex.getMessage());
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 		}
 		
-		return _mgr;
-	}
-	
-	public void reset() {
-		_client.reset();
-	}
-	
-	public String getCodeName(String token) {
-		String codeName = _client.getCodeName(token);		
 		return codeName;
 	}
 

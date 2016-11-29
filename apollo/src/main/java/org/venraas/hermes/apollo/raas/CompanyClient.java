@@ -8,19 +8,16 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.CachePut;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.Com_pkgs;
-import org.venraas.hermes.common.Utility;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-@Service
+
 public class CompanyClient {
 	
 	private static final String VENRAAS_INDEX_NAME = "venraas";
@@ -38,54 +35,51 @@ public class CompanyClient {
 		}		
 	}
 	
-	@CacheEvict(value="cache_company", allEntries=true)
 	public void reset() { }
 
-	@Cacheable(value="cache_company", key="{#token}")
-	public String getCodeName(String token) {
+	public String getCodeName(String token) throws Exception {
 		VEN_LOGGER.info("caching getCodeName({})", token);
 		
 		String codeName = "";
 		
-		if (null == token || token.isEmpty()) return codeName;				
+		if (null == token || token.isEmpty()) return codeName;		
+
+		BoolQueryBuilder bq = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(Com_pkgs.token, token));
 		
-		try {			
-			BoolQueryBuilder bq = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(Com_pkgs.token, token));
-			
-	        SearchResponse resp = _apo.esClient()
-	        		.prepareSearch(VENRAAS_INDEX_NAME)
-	                .setTypes(TYPE_NAME)
-	                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-	                .setQuery(bq)
-	                .addSort(Com_pkgs.webServerTime, SortOrder.DESC)
-	                .setSize(1)
-	                .execute()
-	                .actionGet();
-	        	        
-	        if (0 < resp.getHits().getTotalHits()) {
-	        	SearchHit h = resp.getHits().getAt(0);	        		        	
-	        	String jsonStr = h.getSourceAsString();
-	        	
-	        	JsonParser jsonParser = new JsonParser();
-	        	JsonObject o = jsonParser.parse(jsonStr).getAsJsonObject();	        	
-	        	JsonArray comps = o.getAsJsonArray("companies");
-	        		        	
-	        	for (JsonElement v : comps) {
-	        		JsonObject c = (JsonObject)v;
-	        		String tok = c.get("token").getAsString();
-	        		
-	        		if (0 == tok.compareToIgnoreCase(token)) {
-	        			codeName = c.get("codeName").getAsString();
-	        			break;
-	        		}
-	        	}	        	
-	        }
-	        
-		} catch(Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
-		} 
-        
-        return codeName;        
+        SearchResponse resp = _apo.esClient()
+        		.prepareSearch(VENRAAS_INDEX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(bq)
+                .addSort(Com_pkgs.webServerTime, SortOrder.DESC)
+                .setSize(1)
+                .execute()
+                .actionGet();
+        	        
+        if (0 < resp.getHits().getTotalHits()) {
+        	SearchHit h = resp.getHits().getAt(0);	        		        	
+        	String jsonStr = h.getSourceAsString();
+        	
+        	JsonParser jsonParser = new JsonParser();
+        	JsonObject o = jsonParser.parse(jsonStr).getAsJsonObject();	        	
+        	JsonArray comps = o.getAsJsonArray("companies");
+        		        	
+        	for (JsonElement v : comps) {
+        		JsonObject c = (JsonObject)v;
+        		String tok = c.get("token").getAsString();
+        		
+        		if (0 == tok.compareToIgnoreCase(token)) {
+        			codeName = c.get("codeName").getAsString();
+        			break;
+        		}
+        	}	        	
+        }
+		
+        return codeName;
+	}
+	
+	@CachePut(value="cache_company", key="{#token}")
+	public String updateCodeName(String token, String codeName) {		
+		return codeName;
 	}
 }

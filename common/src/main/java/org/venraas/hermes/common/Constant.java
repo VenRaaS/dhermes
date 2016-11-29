@@ -20,6 +20,8 @@ public class Constant {
 	
 	public final static long CACHE_SIZE_10K = 10 * 1000;
 	
+	public final static long CACHE_SIZE_1M = 1 * 1000 * 1000;
+	
 	public final static long CACHE_EXPIRE_AFTER_0_TIMEUNIT = 0;
 	
 	public final static long CACHE_EXPIRE_AFTER_10_TIMEUNIT = 10;

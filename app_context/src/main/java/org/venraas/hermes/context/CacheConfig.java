@@ -26,7 +26,7 @@ public class CacheConfig {
 
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(CacheConfig.class);
 
-	@Bean
+	@Bean(name="cacheMgr")
 	public CacheManager cacheManager() {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		
@@ -34,7 +34,7 @@ public class CacheConfig {
 		
 		try
 		{
-
+/*//			
 			GuavaCache cache_company = 
 					new GuavaCache(
 							"cache_company", 
@@ -43,6 +43,7 @@ public class CacheConfig {
 							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 							.build());
 			cache_list.add(cache_company);
+*/			
 			
 			GuavaCache cache_conf = 
 				new GuavaCache(
