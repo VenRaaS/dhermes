@@ -78,10 +78,10 @@ public class HermesController {
 			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), ""); 
 		
 			//-- routing to target group according to $clientID
-			GroupRoute gr = new GroupRoute();			
+			GroupRoute gr = new GroupRoute();
 			RoutingGroup targetGrp = gr.routing(codeName, clientID, uid);
 			
-			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());			
+			Param2RestAPI p2r = new Param2RestAPI(codeName, targetGrp.getGroup_key());
 			Map<String, Object> mapping = p2r.getMapping(inParamMap);
 			
 			//-- normal channel
@@ -94,11 +94,11 @@ public class HermesController {
 			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && mapping.isEmpty()) {
 				p2r = n_p2r;
 				mapping = n_mapping;
-			}			
+			}
 			
 			if (mapping.isEmpty()) {
 				throw new InvalidParameterException("input parameter to recommender mapping cannot be found!");
-			}					
+			}
 			
 			List<String> apiURLs = (List<String>) mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
 			List<String> auxFields = (List<String>) mapping.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
