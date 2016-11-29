@@ -34,7 +34,7 @@ public class CompanyManager {
 							return _client.getCodeName(key);					
 						}
 						
-						public ListenableFuture<String> reload (final String key, String prevGraph) {
+						public ListenableFuture<String> reload (final String key, String oldVal) {
 							ListenableFuture<String> task = 
 								Utility.CacheRefreshLES.submit(new Callable<String>() {
 									public String call() throws Exception {
