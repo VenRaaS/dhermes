@@ -27,7 +27,7 @@ public class CompanyManager {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_company = CacheBuilder.newBuilder()
 				.maximumSize(Constant.CACHE_SIZE_10K)						
-				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_10_TIMEUNIT, TimeUnit.MINUTES)
+				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 				.build(
 					new CacheLoader<String, String>() {
 						public String load(String key) throws Exception {									
@@ -35,12 +35,14 @@ public class CompanyManager {
 						}
 						
 						public ListenableFuture<String> reload (final String key, String oldVal) {
+							//-- async call to get the value from source
 							ListenableFuture<String> task = 
-								Utility.CacheRefreshLES.submit(new Callable<String>() {
-									public String call() throws Exception {
-										return _client.getCodeName(key);
-									}
-								});
+								Utility.CacheRefreshLES.submit(
+									new Callable<String>() {
+										public String call() throws Exception {
+											return load(key);
+										}
+									});
 							
 			                return task;
 						}

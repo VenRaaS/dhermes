@@ -33,9 +33,7 @@ public class CompanyClient {
 		if (null == _apo) {
 			_apo = Apollo.getInstance();
 		}		
-	}
-	
-	public void reset() { }
+	}		
 
 	public String getCodeName(String token) throws Exception {
 		VEN_LOGGER.info("caching getCodeName({})", token);
