@@ -10,10 +10,10 @@
         <dependent-module archiveName="apollo-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/apollo/apollo">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="data_entity-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/data_entity/data_entity">
+        <dependent-module archiveName="app_context-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/app_context/app_context">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="app_context-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/app_context/app_context">
+        <dependent-module archiveName="data_entity-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/data_entity/data_entity">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="hermes"/>
