@@ -13,9 +13,12 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class Utility {
 	
@@ -52,4 +55,12 @@ public class Utility {
 		long secs = TimeUnit.MILLISECONDS.toSeconds(end.getTime() - beg.getTime());
 		return secs;		
 	}
+
+	static public <T> T json2instance(String jsonStr, Class<T> classOfT) throws JsonSyntaxException {
+		Gson g = new Gson();
+    	T obj = g.fromJson(jsonStr, classOfT);
+    	return obj;		
+	}
+
+
 }
