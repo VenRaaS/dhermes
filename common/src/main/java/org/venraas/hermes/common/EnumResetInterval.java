@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public enum EnumResetInterval {
 	
-	SECOND(Calendar.SECOND),
+		SECOND(Calendar.SECOND),
 	
 		MINUTE(Calendar.MINUTE),
 		
@@ -25,9 +25,6 @@ public enum EnumResetInterval {
 	public int get_enumCode() {
 		return _enumCode;
 	}
-
-	
-	
 
 
 }

@@ -1,6 +1,5 @@
 package org.venraas.hermes.apollo.hermes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.elasticsearch.action.index.IndexResponse;
@@ -174,7 +173,6 @@ public class ConfClient {
 	 * @param cacheField
 	 * @return
 	 */
-///	@Cacheable(value="cache_conf", key="{#codeName, #cacheField}")
 	public String get_http_forward_headers(String codeName, String cacheField) {
 		String jsonStr = "";
 		
@@ -197,7 +195,6 @@ public class ConfClient {
         return jsonStr;
 	}
 	
-///	@CachePut(value="cache_conf", key="{#codeName, #cacheField}")
 	public List<String> set_http_forward_headers(String codeName, String cacheField, List<String> headers) {
 		
 		VEN_LOGGER.info("update and caching set_http_forward_headers({})", codeName);		

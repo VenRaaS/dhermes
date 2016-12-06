@@ -10,12 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.common.Utility;
-import org.venraas.hermes.context.AppContext;
 import org.venraas.hermes.data_entity.Conf;
 
 import com.google.common.cache.CacheBuilder;
@@ -23,9 +21,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+
 
 public class ConfManager {
 
@@ -107,7 +104,12 @@ public class ConfManager {
 	}
 	
 	public EnumResetInterval set_routing_reset_interval(String codeName, EnumResetInterval enumInt) {
-		return _client.set_routing_reset_interval(codeName, EnumConf.routing_reset_interval.name(), enumInt);		
+		EnumResetInterval resetInterval = _client.set_routing_reset_interval(codeName, EnumConf.routing_reset_interval.name(), enumInt);
+		
+		String k = String.format("get_routing_reset_interval?%s&%s", codeName, EnumConf.routing_reset_interval.name());
+		_cache_conf.refresh(k);
+		
+		return resetInterval;
 	}
 	
 	public double get_traffic_percent_normal(String codeName) {
@@ -130,7 +132,8 @@ public class ConfManager {
 	}
 	
 	public double set_traffic_percent_normal(String codeName, double pct) {
-		_client.set_traffic_percent_normal(codeName, EnumConf.traffic_pct_normal.name(), pct);		
+		_client.set_traffic_percent_normal(codeName, EnumConf.traffic_pct_normal.name(), pct);
+		
 		String k = String.format("get_traffic_percent_normal?%s&%s", codeName, EnumConf.traffic_pct_normal.name());
 		_cache_conf.refresh(k);
 		
@@ -171,7 +174,7 @@ public class ConfManager {
 				for (String h : inHeaders) {
 			        headerSet.add(h);
 			    }
-				rsHeaders.addAll(headerSet);			
+				rsHeaders.addAll(headerSet);
 				rsHeaders = _client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), rsHeaders);
 			}
 			
@@ -186,7 +189,7 @@ public class ConfManager {
 		return rsHeaders;
 	}
 	
-	public boolean set_http_forward_headers(String codeName, String jsonArray) {			
+	public boolean set_http_forward_headers(String codeName, String jsonArray) {
 		boolean isSuccess = false;
 		
 		try {
