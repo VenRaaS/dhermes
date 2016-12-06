@@ -42,8 +42,7 @@ public class CacheConfig {
 							.maximumSize(Constant.CACHE_SIZE_10K)
 							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 							.build());
-			cache_list.add(cache_company);
-*/			
+			cache_list.add(cache_company);		
 			
 			GuavaCache cache_conf = 
 				new GuavaCache(
@@ -53,6 +52,7 @@ public class CacheConfig {
 						.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 						.build());
 			cache_list.add(cache_conf);
+*/			
 			
 			GuavaCache cache_param2recomder = 
 					new GuavaCache(

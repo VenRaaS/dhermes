@@ -34,5 +34,11 @@ public class Constant {
 	//-- HTTP header
 	public final static String COOOKIE = "Cookie";
 	
+	//-- delimiter
+	
+	public final static char FUNCTION_DELIMITER = '?';
+	
+	public final static char PARAM_DELIMITER = '&';
+	
 	
 }
