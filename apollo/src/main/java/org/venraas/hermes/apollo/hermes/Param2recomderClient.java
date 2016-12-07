@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 
-@Service
+///@Service
 public class Param2recomderClient {
 
 	final String TYPE_NAME = "param2recomder";
@@ -50,10 +50,10 @@ public class Param2recomderClient {
 		}
 	}
 	
-	@CacheEvict(value="cache_param2recomder", allEntries=true)
+///	@CacheEvict(value="cache_param2recomder", allEntries=true)
 	public void reset() { }
 	
-	@Cacheable(value="cache_param2recomder", key="{#codeName}")
+///	@Cacheable(value="cache_param2recomder", key="{#codeName}")
 	public List<String> getDistinctGroups (String codeName) {
 		
 		VEN_LOGGER.info("caching getDistinctGroups({})", codeName);
@@ -105,7 +105,7 @@ public class Param2recomderClient {
 		return grps;
 	}
 
-	@Cacheable(value="cache_param2recomder", key="{#root.methodName, #codeName, #grpKey}")
+///	@Cacheable(value="cache_param2recomder", key="{#root.methodName, #codeName, #grpKey}")
 	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
 		
 		VEN_LOGGER.info("caching getGroupMapping({},{})", codeName, grpKey);

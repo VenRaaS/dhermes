@@ -34,7 +34,7 @@ public class CacheConfig {
 		
 		try
 		{
-/*//			
+/*///			
 			GuavaCache cache_company = 
 					new GuavaCache(
 							"cache_company", 
@@ -52,7 +52,7 @@ public class CacheConfig {
 						.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 						.build());
 			cache_list.add(cache_conf);
-*/			
+
 			
 			GuavaCache cache_param2recomder = 
 					new GuavaCache(
@@ -62,6 +62,7 @@ public class CacheConfig {
 							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 							.build());
 			cache_list.add(cache_param2recomder);
+*/			
 			
 			GuavaCache cache_jumper = 
 					new GuavaCache(
