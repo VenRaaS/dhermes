@@ -140,7 +140,6 @@ public class HermesController {
 				resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
 			}
 		} catch(Exception ex) {
-///			String err = String.format("%s, input: %s", ex.getMessage(), new Gson().toJson(inParamMap));
 			String err = String.format("%s", ex.getMessage());
 			errMsg = new HashMap<String, Object>();
 			errMsg.put("input", inParamMap);
