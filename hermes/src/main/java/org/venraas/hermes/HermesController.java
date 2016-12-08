@@ -113,7 +113,7 @@ public class HermesController {
 			outParamMap.put(RoutingGroup.TRAFFIC_PCT, Float.parseFloat(targetGrp.getTraffic_pct()));
 			//  auxiliary key/value which are specified by registration mapping. 
 			for (String f : auxFields) {
-				String v = (String) mapping.get(f);
+				Object v = mapping.get(f);
 				outParamMap.put(f, v);
 			}
 			
