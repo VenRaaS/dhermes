@@ -113,7 +113,7 @@ public class Param2RestAPI {
 				Gson gg =  new Gson();
 				String body = gg.toJson(testingParam);				
 				if (! conn.isValidURL(url, body)) {
-					msg = String.format("Invalid input, \"%s\" can't be connected with POST body %s!", url, body);
+					msg = String.format("Invalid input, \"%s\" can't be connected with parameter json: %s!", url, body);
 					throw new IllegalArgumentException(msg);
 				}
 			}
