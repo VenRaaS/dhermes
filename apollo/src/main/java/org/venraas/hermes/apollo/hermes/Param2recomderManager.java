@@ -72,11 +72,7 @@ public class Param2recomderManager {
 	
 	static public Param2recomderManager getInstance() {	
 		return _mgr;
-	}
-	
-	public void reset() {
-		_client.reset();
-	}
+	}		
 	
 	public List<String> getDistinctGroups (String codeName) {
 		List<String> grps = new ArrayList<String>();
@@ -110,9 +106,9 @@ public class Param2recomderManager {
 		return grpMaps;
 	}
 	
-//	public List<Map<String, String>> getGroupMapping_keys2recomder (String codeName, String grpKey) {
-//		return _client.getGroupMapping_inKeys2recomder(codeName, grpKey);
-//	}
+	public List<Map<String, String>> getGroupMapping_keys2recomder (String codeName, String grpKey) {
+		return _client.getGroupMapping_inKeys2recomder(codeName, grpKey);
+	}
 	
 	public Map<String, Map<String, List<Object>>> ls_grp (String codeName) {
 		return _client.getAllMappings(codeName);

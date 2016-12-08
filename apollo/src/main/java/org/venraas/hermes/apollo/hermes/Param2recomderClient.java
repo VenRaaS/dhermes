@@ -22,9 +22,6 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Constant;
@@ -34,7 +31,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 
-///@Service
 public class Param2recomderClient {
 
 	final String TYPE_NAME = "param2recomder";
@@ -50,10 +46,6 @@ public class Param2recomderClient {
 		}
 	}
 	
-///	@CacheEvict(value="cache_param2recomder", allEntries=true)
-	public void reset() { }
-	
-///	@Cacheable(value="cache_param2recomder", key="{#codeName}")
 	public List<String> getDistinctGroups (String codeName) {
 		
 		VEN_LOGGER.info("caching getDistinctGroups({})", codeName);
@@ -105,7 +97,6 @@ public class Param2recomderClient {
 		return grps;
 	}
 
-///	@Cacheable(value="cache_param2recomder", key="{#root.methodName, #codeName, #grpKey}")
 	public List<Map<String, Object>> getGroupMapping (String codeName, String grpKey) {
 		
 		VEN_LOGGER.info("caching getGroupMapping({},{})", codeName, grpKey);
@@ -139,8 +130,7 @@ public class Param2recomderClient {
 		
 		return mappings;
 	}
-	
-	@Cacheable(value="cache_param2recomder", key="{#root.methodName, #codeName, #grpKey}")
+		
 	public List<Map<String, String>> getGroupMapping_inKeys2recomder (String codeName, String grpKey) {
 		
 		VEN_LOGGER.info("caching {},{})", codeName, grpKey);
