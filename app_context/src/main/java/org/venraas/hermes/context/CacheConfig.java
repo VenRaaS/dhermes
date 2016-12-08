@@ -61,8 +61,7 @@ public class CacheConfig {
 							.maximumSize(Constant.CACHE_SIZE_10K)
 							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.MINUTES)
 							.build());
-			cache_list.add(cache_param2recomder);
-*/			
+			cache_list.add(cache_param2recomder);		
 			
 			GuavaCache cache_jumper = 
 					new GuavaCache(
@@ -72,18 +71,9 @@ public class CacheConfig {
 							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_10_TIMEUNIT, TimeUnit.SECONDS)
 							.build());
 			cache_list.add(cache_jumper);			
-
+*/
 			
-/*///			
-			GuavaCache cache_goods = 
-					new GuavaCache(
-							"cache_goods", 
-							CacheBuilder.newBuilder()
-							.maximumSize(Constant.CACHE_SIZE_1000K)
-							.expireAfterWrite(Constant.CACHE_EXPIRE_AFTER_360_MINS, TimeUnit.MINUTES)
-							.build());
-			cache_list.add(cache_goods);
-			*/
+
 						
 			cacheManager.setCaches(cache_list);
 		}

@@ -10,10 +10,6 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.apollo.mappings.EnumJumper;
@@ -22,12 +18,12 @@ import org.venraas.hermes.data_entity.Jumper;
 
 import com.google.gson.Gson;
 
-@Service
+
 public class JumperClient {
 	
 	static private final String TYPE_NAME = "jumper"; 
 	
-	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(ConfClient.class);	
+	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(JumperClient.class);	
 	
 	private Apollo _apo = null;	
 
@@ -35,13 +31,9 @@ public class JumperClient {
 	public JumperClient() {
 		if (null == _apo) {
 			_apo = Apollo.getInstance();
-		}		
+		}
 	}
 	
-	@CacheEvict(value="cache_jumper", allEntries=true)
-	public void reset() { }
-
-	@Cacheable(value="cache_jumper", key="{#codeName, #uid}")	
 	public String get_group_key (String codeName, String uid) {
 		
 		String grpKey = "";
@@ -85,8 +77,7 @@ public class JumperClient {
         
         return grpKey;
 	}
-	
-	@CachePut(value="cache_jumper", key="{#codeName, #uid}")
+		
 	public boolean set_jumper (String codeName, String uid, String grpKey) {
 		
 		boolean isSuccess = false;
