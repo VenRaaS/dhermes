@@ -243,7 +243,7 @@ public class Param2recomderClient {
 			for (String grpK : grpMaps.keySet()) {
 				List<Object> mappings = grpMaps.get(grpK);
 				
-				if (grpK.equals(Constant.TRAFFIC_TYPE_NORMAL)) {
+				if ( grpK.equalsIgnoreCase(Constant.TRAFFIC_TYPE_NORMAL) ) {
 					trafficMaps.get(Constant.TRAFFIC_TYPE_NORMAL).put(grpK, mappings);
 				}
 				else {
