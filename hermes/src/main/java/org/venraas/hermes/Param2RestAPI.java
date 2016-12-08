@@ -14,6 +14,9 @@ import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 public class Param2RestAPI {
@@ -76,6 +79,8 @@ public class Param2RestAPI {
 			Type type = new TypeToken<Map<String, Object>>(){}.getType();
 			Map<String, Object> regMap = g.fromJson(regJson, type);
 			
+			JsonObject rootJO = g.fromJson(regJson, JsonObject.class);			
+
 			// "group_key"
 			String group_key = (String) regMap.getOrDefault(EnumParam2recomder.group_key.name(), "");
 			if ( group_key.isEmpty() && ! trafficType.equals(Constant.TRAFFIC_TYPE_NORMAL) ) {
@@ -95,6 +100,23 @@ public class Param2RestAPI {
 			
 			// "out_aux_params"
 			Map<String, String> testingParam = new HashMap<String, String>();
+			JsonArray outAuxParams = rootJO.get(EnumParam2recomder.out_aux_params.name()).getAsJsonArray();
+			for (JsonElement p : outAuxParams) {
+				String k = p.getAsString();
+				JsonElement e = rootJO.get(k);
+				if (null == e) {
+					msg = String.format("Invalid input, key \"%s\" in \"%s\" is unavailable or empty in the input Json!", k, EnumParam2recomder.out_aux_params.name());
+					throw new IllegalArgumentException(msg);
+				} 
+				else {
+					String v = g.toJson(e);
+					testingParam.put(k, v);
+				}
+				String s = g.toJson(e);
+				testingParam.put(k, s);				
+			}
+			
+/*///
 			List<String> outAuxParams = (List<String>) regMap.getOrDefault(EnumParam2recomder.out_aux_params.name(), new ArrayList<String>());
 			for (String k : outAuxParams){
 				String val = (String) regMap.getOrDefault(k, "");
@@ -105,6 +127,7 @@ public class Param2RestAPI {
 					testingParam.put(k, val);
 				}
 			}
+*/			
 			
 			// "valid api_url"
 			List<String> api_urls = (List<String>) regMap.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
