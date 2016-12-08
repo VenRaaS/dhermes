@@ -72,14 +72,21 @@ public class Param2recomderManager {
 	
 	static public Param2recomderManager getInstance() {	
 		return _mgr;
-	}		
+	}
 	
-	public List<String> getDistinctGroups (String codeName) {
+	public List<String> getDistinctGroups(String codeName) {
+		return getDistinctGroups(codeName, false);
+	}
+	
+	public List<String> getDistinctGroups (String codeName, boolean forceRefresh) {
 		List<String> grps = new ArrayList<String>();
 		
 		try
 		{
-			String k = String.format("getDistinctGroups?%s", codeName);
+			String k = String.format("getDistinctGroups?%s", codeName);			
+			if (forceRefresh) {
+				_cache_param2recomder.refresh(k);
+			}
 			grps = (List<String>) _cache_param2recomder.get(k);
 		}
 		catch (Exception ex) {

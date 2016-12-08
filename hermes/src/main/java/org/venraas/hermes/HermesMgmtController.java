@@ -211,14 +211,14 @@ public class HermesMgmtController {
 			}
 			
 			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
-			List<String> grps = p2rMgr.getDistinctGroups(codeName);
+			List<String> grps = p2rMgr.getDistinctGroups(codeName, true);
 			if ( ! grps.contains(grpkey)) {
-				msg = String.format("Warning, Invalid group key \"%s\", the group isn't available !", grpkey);
+				msg = String.format("Warning, Invalid group key \"%s\", the group isn't available! <br>"
+						+ "Notice, please wait a moment and try again latter if you did register just now.", grpkey);
 				throw new IllegalArgumentException(msg);
 			}
 			
-			JumperManager jumperMgr = JumperManager.getInstance();
-			
+			JumperManager jumperMgr = JumperManager.getInstance();			
 			boolean isSuccess = jumperMgr.set_jumper(codeName, uid, grpkey);
 			msg = (isSuccess) ? 
 					String.format("Ok, %s is jumping to group %s", uid, grpkey) : 
