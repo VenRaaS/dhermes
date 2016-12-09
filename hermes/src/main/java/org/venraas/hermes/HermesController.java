@@ -86,7 +86,7 @@ public class HermesController {
 			
 			//-- normal channel
 			Param2RestAPI n_p2r = new Param2RestAPI(codeName, Constant.NORMAL_GROUP_KEY);
-			Map<String, Object> n_mapping = p2r.getMapping(inParamMap);
+			Map<String, Object> n_mapping = n_p2r.getMapping(inParamMap);
 			List<String> n_apiURLs = (List<String>) n_mapping.getOrDefault(EnumParam2recomder.api_url.name(), new ArrayList<String>());
 			String n_apiURL = (n_apiURLs.isEmpty()) ? "" : n_apiURLs.get(0);
 			
