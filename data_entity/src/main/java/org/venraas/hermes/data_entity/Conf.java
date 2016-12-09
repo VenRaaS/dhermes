@@ -11,7 +11,7 @@ public class Conf {
 	
 	double traffic_pct_normal = Constant.TRAFFIC_PERCENT_NORMAL;
 
-	String routing_reset_interval = EnumResetInterval.HOUR.name();
+	String routing_reset_interval = EnumResetInterval.DAY.name();
 	
 	List<String> http_forward_headers = new ArrayList<String>();
 
