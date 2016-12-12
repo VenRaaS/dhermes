@@ -27,7 +27,7 @@ public class JumperManager {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_jumper = CacheBuilder.newBuilder()
 				.maximumSize(Constant.CACHE_SIZE_10K)						
-				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.SECONDS)
+				.refreshAfterWrite(Constant.NUM_TIMEUNIT_30, TimeUnit.SECONDS)
 				.build(
 					new CacheLoader<String, String>() {						
 						public String load(String key) throws Exception {

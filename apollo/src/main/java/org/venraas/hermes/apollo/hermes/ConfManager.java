@@ -36,7 +36,7 @@ public class ConfManager {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_conf = CacheBuilder.newBuilder()
 				.maximumSize(Constant.CACHE_SIZE_10K)						
-				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_10_TIMEUNIT, TimeUnit.MINUTES)
+				.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.MINUTES)
 				.build(
 					new CacheLoader<String, String>() {						
 						public String load(String key) throws Exception {
