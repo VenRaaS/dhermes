@@ -71,7 +71,7 @@ public class GroupRoute {
 					VEN_LOGGER.warn("{} (jumper) can't jump to group: {}, the group isn't existing", uid, jumpGrpKey);
 				}
 			}
-		}			
+		}
 		
 		int num_nonNormalGrps = (grps.contains(Constant.NORMAL_GROUP_KEY)) ? grps.size() - 1 : grps.size() ;
 		if (0 < num_nonNormalGrps) {

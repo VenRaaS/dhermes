@@ -27,7 +27,7 @@ public class JumperManager {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_jumper = CacheBuilder.newBuilder()
 				.maximumSize(Constant.CACHE_SIZE_10K)						
-				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_10_TIMEUNIT, TimeUnit.SECONDS)
+				.refreshAfterWrite(Constant.CACHE_EXPIRE_AFTER_30_TIMEUNIT, TimeUnit.SECONDS)
 				.build(
 					new CacheLoader<String, String>() {						
 						public String load(String key) throws Exception {
@@ -70,8 +70,8 @@ public class JumperManager {
 		String grpKey = "";
 		
 		try
-		{
-			String k = String.format("get_group_key?%s&%s", codeName, uid);
+		{			
+			String k = _cacheKey_get_group_key(codeName, uid);
 			grpKey = _cache_jumper.get(k);
 		}
 		catch (Exception ex) {
@@ -84,7 +84,17 @@ public class JumperManager {
 	
 	public boolean set_jumper(String codeName, String uid, String grpKey) {
 		boolean rt = _client.set_jumper(codeName, uid, grpKey);
+		
+		//-- refresh cache
+		String k = _cacheKey_get_group_key(codeName, uid);
+		_cache_jumper.refresh(k);
+		
 		return rt;
+	}
+	
+	private String _cacheKey_get_group_key(String codeName, String uid) {
+		String k = String.format("get_group_key?%s&%s", codeName, uid);
+		return k;
 	}
 	
 
