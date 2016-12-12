@@ -2,7 +2,6 @@ package org.venraas.hermes.context;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,7 @@ import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
-
-import com.google.common.cache.CacheBuilder;
 
 
 @Configuration
