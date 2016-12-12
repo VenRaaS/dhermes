@@ -233,6 +233,30 @@ public class HermesMgmtController {
 		return msg;
 	}
 	
+	/** 
+	 * usage:
+	 *     /hermes/mgmt/set_jumper_guid?token=&ven_guid=d0200dfe-3592-40fa-a25b-0c1804247fee.api-group-n9t320150813&grpkey=test-1
+	 */
+	@CrossOrigin
+	@RequestMapping(value = "/set_jumper_guid", method = RequestMethod.GET)
+	public String set_jumper_guid(String token, String ven_guid, String grpkey) {
+		String msg ="";
+		
+		try {
+			if (null == ven_guid || ven_guid.isEmpty()) {
+				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "ven_guid");
+				throw new IllegalArgumentException(msg);
+			}
+			
+			msg = set_jumper(token, ven_guid, grpkey);	
+		} catch (Exception ex) {
+			msg = ex.getMessage();
+			VEN_LOGGER.error(msg);
+		}
+		
+		return msg;				
+	}
+	
 	
 	/** 
 	 * usage:

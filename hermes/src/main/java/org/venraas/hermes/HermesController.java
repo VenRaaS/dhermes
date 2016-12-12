@@ -75,7 +75,10 @@ public class HermesController {
 				throw new InvalidParameterException(String.format("an invalid token: '%s' !", token));
 			}
 			
-			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), ""); 
+			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), "");
+			if (null == uid || uid.isEmpty()) {
+				uid = (String) inParamMap.getOrDefault(EnumOptionBase.ven_guid.name(), "");
+			}
 		
 			//-- routing to target group according to $clientID
 			GroupRoute gr = new GroupRoute();
