@@ -100,7 +100,7 @@ GET /hermes/mgmt/set_jumper?token=${token}&uid=u0806449&grpkey=test-1
 ```
   * ven_guid  
     ```
-GET /hermes/mgmt/set_jumper?token=${token}&guid=d4e1c2b3-aac9-4472-9223-f8dfa1dcb1b6.api-group-j4as20161214&grpkey=test-1
+GET /hermes/mgmt/set_jumper?token=${token}&guid=${ven_guid}&grpkey=test-1
 ```
 
 * ls_forward_headers
