@@ -94,8 +94,13 @@ DELETE /hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
 ```
 
 * set_jumper
-  ```
-GET /hermes/mgmt/set_jumper?token=${token}&uid=u0806449&grpkey=test-1
+  * uid  
+    ```
+GET /hermes/mgmt/set_jumper?token=${token}&grpkey=test-1&uid=${uid}
+```
+  * guid  
+    ```
+GET /hermes/mgmt/set_jumper_guid?token=${token}&grpkey=test-1&ven_guid=${ven_guid}
 ```
 
 * ls_forward_headers
