@@ -34,6 +34,8 @@ public class Constant {
 	//-- HTTP header
 	public final static String COOOKIE = "Cookie";
 	
+	public final static int MAX_SIZE_FORWARD_HEADERS = 10;
+	
 	//-- delimiter
 	
 	public final static char FUNCTION_DELIMITER = '?';

@@ -40,7 +40,10 @@ public class Conf {
 		return http_forward_headers;
 	}
 
-	public void setHttp_forward_headers(List<String> http_forward_headers) {
+	public void setHttp_forward_headers(List<String> http_forward_headers) {		
+		int s = http_forward_headers.size();
+		if (Constant.MAX_SIZE_FORWARD_HEADERS < s) http_forward_headers.subList(Constant.MAX_SIZE_FORWARD_HEADERS, s).clear();
+		
 		this.http_forward_headers = http_forward_headers;
 	}
 
