@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.common.Utility;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.data_entity.Conf;
 
@@ -242,7 +243,8 @@ public class ConfClient {
 		
     	IndexResponse indexResp = _apo.esClient().prepareIndex(indexName, TYPE_NAME)
         		.setSource(updateJson)
-        		.get();
+        		.execute()
+        		.actionGet(Constant.TIMEOUT_INDEX_MILLIS);
     	
     	return indexResp;
 	}
@@ -263,7 +265,7 @@ public class ConfClient {
                 .addSort(EnumConf.update_dt.name(), SortOrder.DESC)
                 .setSize(1)
                 .execute()
-                .actionGet();
+                .actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
 
 		return resp;
 	}

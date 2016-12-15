@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -78,7 +79,7 @@ public class Param2recomderClient {
 				.addAggregation(ab)				
 				.setSize(0);
 
-			SearchResponse resp = searchReq.execute().actionGet();			
+			SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);			
 			
 			if (0 < resp.getHits().getTotalHits()) {
 				Terms agg = resp.getAggregations().get(aggName);
@@ -202,7 +203,7 @@ public class Param2recomderClient {
 					.setSize(500);
 					;
 
-			SearchResponse resp = searchReq.execute().actionGet();
+			SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
 
 			if (0 < resp.getHits().getTotalHits()) {
 				SearchHit[] hits = resp.getHits().getHits();
@@ -340,7 +341,10 @@ public class Param2recomderClient {
 					new UpdateRequest(indexName, TYPE_NAME, mid)
 			        .doc(updateJson);						
 			
-			UpdateResponse resp = _apo.esClient().update(updateRequest).get();
+			UpdateResponse resp = _apo.esClient()
+					.update(updateRequest)
+					.get(Constant.TIMEOUT_INDEX_MILLIS, TimeUnit.MILLISECONDS);
+			
 			msg = resp.getId();
 			
 		} catch (Exception ex) {			
@@ -357,7 +361,8 @@ public class Param2recomderClient {
 	private IndexResponse _index_doc (String indexName, String jsonBody) {				
     	IndexResponse indexResp = _apo.esClient().prepareIndex(indexName, TYPE_NAME)
         		.setSource(jsonBody)
-        		.get();
+        		.execute()
+        		.actionGet(Constant.TIMEOUT_INDEX_MILLIS);
     	
     	return indexResp;
 	}
@@ -378,7 +383,7 @@ public class Param2recomderClient {
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				.setQuery(qb);
 
-		SearchResponse resp = searchReq.execute().actionGet();
+		SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
 		
 		return resp;
 	}

@@ -36,11 +36,15 @@ public class Constant {
 	
 	public final static int MAX_SIZE_FORWARD_HEADERS = 10;
 	
-	//-- delimiter
-	
+	//-- Local cache key delimiter	
 	public final static char FUNCTION_DELIMITER = '?';
 	
 	public final static char PARAM_DELIMITER = '&';
+
+	//-- ES timeout
+	public final static long TIMEOUT_SEARCH_MILLIS = 200;
+	
+	public final static long TIMEOUT_INDEX_MILLIS = 500;
 	
 	
 }

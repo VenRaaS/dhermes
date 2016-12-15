@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.apollo.mappings.EnumJumper;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.data_entity.Jumper;
 
@@ -60,7 +61,7 @@ public class JumperClient {
 	                .addSort(EnumConf.update_dt.name(), SortOrder.DESC)
 	                .setSize(1)
 	                .execute()
-	                .actionGet();
+	                .actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
 	        	        
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);	        		        	
@@ -117,14 +118,16 @@ public class JumperClient {
 	        	IndexResponse indexResp = 
 	        			_apo.esClient().prepareIndex(indexName, TYPE_NAME)
 	            		.setSource(updateJson)
-	            		.get();
+	            		.execute()
+	            		.actionGet(Constant.TIMEOUT_INDEX_MILLIS);
 	        	
 	        	VEN_LOGGER.info("a record of {}/{} is created: {}", indexName, TYPE_NAME, updateJson);
         	} else {
         		UpdateResponse updateResp =
         				_apo.esClient().prepareUpdate(indexName, TYPE_NAME, docID)
         				.setDoc(updateJson)
-        				.get();        		
+        				.execute()
+        				.actionGet(Constant.TIMEOUT_INDEX_MILLIS);
         		
         		VEN_LOGGER.info("a record of {}/{} is updated: {}", indexName, TYPE_NAME, updateJson);        	
         	}
@@ -155,7 +158,7 @@ public class JumperClient {
                 .addSort(EnumConf.update_dt.name(), SortOrder.DESC)
                 .setSize(1)
                 .execute()
-                .actionGet();
+                .actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
 		
 		return resp;		
 	}

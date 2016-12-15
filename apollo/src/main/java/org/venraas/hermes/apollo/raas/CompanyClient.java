@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.Com_pkgs;
+import org.venraas.hermes.common.Constant;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -52,7 +53,7 @@ public class CompanyClient {
                 .addSort(Com_pkgs.webServerTime, SortOrder.DESC)
                 .setSize(1)
                 .execute()
-                .actionGet();
+                .actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
         	        
         if (0 < resp.getHits().getTotalHits()) {
         	SearchHit h = resp.getHits().getAt(0);	        		        	
@@ -75,8 +76,7 @@ public class CompanyClient {
 		
         return codeName;
 	}
-	
-	@CachePut(value="cache_company", key="{#token}")
+		
 	public String updateCodeName(String token, String codeName) {		
 		return codeName;
 	}
