@@ -13,7 +13,7 @@
 			<maxIndex>9</maxIndex>
 		</rollingPolicy>
 		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>10MB</maxFileSize>
+			<maxFileSize>100MB</maxFileSize>
 		</triggeringPolicy>
 	</appender>
 	
