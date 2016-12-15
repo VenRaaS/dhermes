@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +20,10 @@ import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
 import org.venraas.hermes.common.EnumResetInterval;
+import org.venraas.hermes.common.ValidDocID;
+import org.venraas.hermes.common.ValidGroupKey;
+import org.venraas.hermes.common.ValidToken;
+import org.venraas.hermes.common.ValidUID;
 
 
 @RestController
@@ -32,9 +38,10 @@ public class HermesMgmtController {
 	 */	
 	@CrossOrigin
 	@RequestMapping(value = "/ls_forward_headers", method = RequestMethod.GET)
-	public String ls_http_forward_headers(String token) {		
+	public String ls_http_forward_headers(@Valid ValidToken vt) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 				
@@ -61,9 +68,10 @@ public class HermesMgmtController {
 	 */	
 	@CrossOrigin
 	@RequestMapping(value = "/add_forward_headers", method = RequestMethod.GET)
-	public String add_http_forward_headers(String token, String json) {		
+	public String add_http_forward_headers(@Valid ValidToken vt, String json) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 				
@@ -93,9 +101,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/set_forward_headers", method = RequestMethod.GET)
-	public String set_http_forward_headers(String token, String json) {		
+	public String set_http_forward_headers(@Valid ValidToken vt, String json) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 				
@@ -125,9 +134,10 @@ public class HermesMgmtController {
 	 */	
 	@CrossOrigin
 	@RequestMapping(value = "/set_traffic_pct_normal", method = RequestMethod.GET)
-	public String set_traffic_pct_normal_GET(String token, double pct) {		
+	public String set_traffic_pct_normal_GET(@Valid ValidToken vt, double pct) {		
 		String msg = "";
 
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 		
@@ -160,9 +170,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/set_routing_reset_interval", method = RequestMethod.GET)
-	public String set_routing_reset_interval_GET(String token, String interval) {		
+	public String set_routing_reset_interval_GET(@Valid ValidToken vt, String interval) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 						
@@ -193,9 +204,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/set_jumper", method = RequestMethod.GET)
-	public String set_jumper(String token, String uid, String grpkey) {		
+	public String set_jumper(@Valid ValidToken vt, @Valid ValidUID vu, @Valid ValidGroupKey vGK) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 						
@@ -205,16 +217,18 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
+			String uid = vu.getUid();
 			if (null == uid || uid.isEmpty()) {
 				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "uid");
 				throw new IllegalArgumentException(msg);
 			}
 			
+			String grpkey = vGK.getGrpkey();
 			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
 			List<String> grps = p2rMgr.getDistinctGroups(codeName, true);
 			if ( ! grps.contains(grpkey)) {
-				msg = String.format("Warning, Invalid group key \"%s\", the group isn't available! <br>"
-						+ "Notice, please wait a moment and try again latter if you did register just now.", grpkey);
+				msg = String.format("Warning, Invalid group key \"%s\", which isn't an available group! <br>"
+						+ "<small>Notice, please wait a moment and try again latter if you did register just now.</small>", grpkey);
 				throw new IllegalArgumentException(msg);
 			}
 			
@@ -239,16 +253,18 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/set_jumper_guid", method = RequestMethod.GET)
-	public String set_jumper_guid(String token, String ven_guid, String grpkey) {
+	public String set_jumper_guid(@Valid ValidToken vt, @Valid ValidUID vu, @Valid ValidGroupKey vGK) {
 		String msg ="";
 		
 		try {
+			String ven_guid = vu.getVen_guid();
 			if (null == ven_guid || ven_guid.isEmpty()) {
 				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "ven_guid");
 				throw new IllegalArgumentException(msg);
 			}
+			vu.setUid(ven_guid);
 			
-			msg = set_jumper(token, ven_guid, grpkey);	
+			msg = set_jumper(vt, vu, vGK);	
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);
@@ -283,9 +299,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/register_normal", method = RequestMethod.GET)
-	public String register_normal(String token, String json) {		
+	public String register_normal(@Valid ValidToken vt, String json) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 				
@@ -331,9 +348,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/register_test", method = RequestMethod.GET)
-	public String register_test(String token, String json) {		
+	public String register_test(@Valid ValidToken vt, String json) {		
 		String msg = "";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 				
@@ -362,11 +380,12 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/ls_grp", method = RequestMethod.GET)
-	public Object ls_grp(String token) {
+	public Object ls_grp(@Valid ValidToken vt) {
 		
 		Map<String, Map<String, List<Object>>> mappings = new HashMap<String, Map<String, List<Object>>> ();
 		String msg ="";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 		
@@ -396,9 +415,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/rm_grp", method = RequestMethod.DELETE)
-	public String rm_group(String token, String key) {
+	public String rm_group(@Valid ValidToken vt, @Valid ValidGroupKey vGK) {
 		String msg ="";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 		
@@ -408,11 +428,12 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
+			String key = vGK.getGrpkey();
 			if (null == key || key.isEmpty()) {
 				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "key");
 				throw new IllegalArgumentException(msg);
 			}
-			
+
 			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
 			List<String> update_ids = p2rMgr.rm_group(codeName, key);
 			
@@ -438,10 +459,10 @@ public class HermesMgmtController {
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/rm_mapping", method = RequestMethod.DELETE)
-	public String rm_mapping(String token, String mid) {
-				
+	public String rm_mapping(@Valid ValidToken vt, @Valid ValidDocID vID) {
 		String msg ="";
 		
+		String token = vt.getToken();
 		CompanyManager comMgr = CompanyManager.getInstance();
 		String codeName = comMgr.getCodeName(token);
 		
@@ -451,6 +472,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
+			String mid = vID.getMid();
 			if (null == mid || mid.isEmpty()) {
 				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "mid");
 				throw new IllegalArgumentException(msg);
@@ -459,7 +481,7 @@ public class HermesMgmtController {
 			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
 			String id = p2rMgr.rm_mapping(codeName, mid);
 			
-			msg = String.format("ok, mapping:%s is Unavailable now.", id);
+			msg = String.format("ok, mapping:%s has been Unavailable.", id);
 			
 		} catch (Exception ex) {
 			msg = ex.getMessage();
