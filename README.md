@@ -85,7 +85,7 @@ GET /hermes/mgmt/ls_grp?token=${token}
 
 * rm_grp
   ```
-DELETE /hermes/mgmt/rm_grp?token=${token}&key=${group_key}
+DELETE /hermes/mgmt/rm_grp?token=${token}&grpkey=${group_key}
 ```
 
 * rm_mapping
