@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
-	<property name="LOG_HOME" value="/var/log" />
+    <property name="LOG_HOME" value="log" />
 
 	<appender name="hermesLogFileAppender"	class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_HOME}/hermes.log</file>
@@ -14,7 +13,7 @@
 			<maxIndex>9</maxIndex>
 		</rollingPolicy>
 		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>1GB</maxFileSize>
+			<maxFileSize>10MB</maxFileSize>
 		</triggeringPolicy>
 	</appender>
 	
