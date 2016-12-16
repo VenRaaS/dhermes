@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_HOME" value="log" />
+    <property name="LOG_HOME" value="/var/log" />
 
 	<appender name="hermesLogFileAppender"	class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_HOME}/hermes.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>%d{yyyy-MM-dd HH:mm:ss}|%-5level|%logger - %msg%n</Pattern>
 		</encoder>
+		
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
 			<fileNamePattern>${LOG_HOME}/hermes_logs/hermes.%i.log</fileNamePattern>
 			<minIndex>0</minIndex>
 			<maxIndex>9</maxIndex>
 		</rollingPolicy>
+		
 		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
 			<maxFileSize>100MB</maxFileSize>
 		</triggeringPolicy>
