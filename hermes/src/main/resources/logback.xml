@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_HOME" value="/var/log" />
+    <property name="LOG_HOME" value="hermes" />
 
 	<appender name="hermesLogFileAppender"	class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_HOME}/hermes.log</file>
@@ -9,7 +9,7 @@
 		</encoder>
 		
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/hermes_logs/hermes.%i.log</fileNamePattern>
+			<fileNamePattern>${LOG_HOME}/history_logs/hermes.%i.log</fileNamePattern>
 			<minIndex>0</minIndex>
 			<maxIndex>9</maxIndex>
 		</rollingPolicy>
