@@ -76,8 +76,6 @@ public class CompanyClient {
 		
         return codeName;
 	}
-		
-	public String updateCodeName(String token, String codeName) {		
-		return codeName;
-	}
+
+
 }

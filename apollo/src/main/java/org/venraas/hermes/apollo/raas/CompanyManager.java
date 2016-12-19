@@ -26,12 +26,12 @@ public class CompanyManager {
 	static {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_company = CacheBuilder.newBuilder()
-				.maximumSize(Constant.CACHE_SIZE_10K)						
+				.maximumSize(Constant.CACHE_SIZE_10K)
 				.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.MINUTES)
 				.build(
 					new CacheLoader<String, String>() {
-						public String load(String key) throws Exception {									
-							return _client.getCodeName(key);					
+						public String load(String key) throws Exception {
+							return _client.getCodeName(key);
 						}
 						
 						public ListenableFuture<String> reload (final String key, String oldVal) {
