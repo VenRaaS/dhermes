@@ -44,37 +44,32 @@ public class JumperClient {
 		if (null == codeName || codeName.isEmpty() || 
 			null == uid || uid.isEmpty()) 
 			return grpKey;				
+							
+		String indexName = String.format("%s_hermes", codeName);			
 		
-		try {						
-			String indexName = String.format("%s_hermes", codeName);			
-			
-			QueryBuilder qb = 
-					QueryBuilders.boolQuery().filter(
-						QueryBuilders.termQuery(EnumJumper.uid.name(), uid)
-					);
+		QueryBuilder qb = 
+				QueryBuilders.boolQuery().filter(
+					QueryBuilders.termQuery(EnumJumper.uid.name(), uid)
+				);
 
-			SearchResponse resp = 
-					_apo.esClient().prepareSearch(indexName)
-	                .setTypes(TYPE_NAME)
-	                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-	                .setQuery(qb)	                	                
-	                .addSort(EnumConf.update_dt.name(), SortOrder.DESC)
-	                .setSize(1)
-	                .execute()
-	                .actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
-	        	        
-	        if (0 < resp.getHits().getTotalHits()) {
-	        	SearchHit h = resp.getHits().getAt(0);	        		        	
-	        	String jsonStr = h.getSourceAsString();	        
-	        	
-	        	Gson g = new Gson();	        	    	        		
-	        	Jumper jumper = g.fromJson(jsonStr, Jumper.class);
-	        	grpKey = jumper.getGroup_key();
-	        }
-		} catch(Exception ex) {
-			VEN_LOGGER.error(ex.getMessage());
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
-		} 
+		SearchResponse resp = 
+				_apo.esClient().prepareSearch(indexName)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(qb)	                	                
+                .addSort(EnumConf.update_dt.name(), SortOrder.DESC)
+                .setSize(1)
+                .execute()
+                .actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
+        	        
+        if (0 < resp.getHits().getTotalHits()) {
+        	SearchHit h = resp.getHits().getAt(0);
+        	String jsonStr = h.getSourceAsString();
+        	
+        	Gson g = new Gson();
+        	Jumper jumper = g.fromJson(jsonStr, Jumper.class);
+        	grpKey = jumper.getGroup_key();
+        }
         
         return grpKey;
 	}

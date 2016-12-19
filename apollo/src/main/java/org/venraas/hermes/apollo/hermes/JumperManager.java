@@ -29,7 +29,7 @@ public class JumperManager {
 				.maximumSize(Constant.CACHE_SIZE_10K)						
 				.refreshAfterWrite(Constant.NUM_TIMEUNIT_30, TimeUnit.SECONDS)
 				.build(
-					new CacheLoader<String, String>() {						
+					new CacheLoader<String, String>() {
 						public String load(String key) throws Exception {
 							String rt = null;
 							
@@ -62,7 +62,7 @@ public class JumperManager {
 				);
 	}
 	
-	static public JumperManager getInstance() {		
+	static public JumperManager getInstance() {
 		return _mgr;
 	}
 	
@@ -70,7 +70,7 @@ public class JumperManager {
 		String grpKey = "";
 		
 		try
-		{			
+		{
 			String k = _cacheKey_get_group_key(codeName, uid);
 			grpKey = _cache_jumper.get(k);
 		}
