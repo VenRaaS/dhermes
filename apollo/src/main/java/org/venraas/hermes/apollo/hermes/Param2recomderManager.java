@@ -1,6 +1,7 @@
 package org.venraas.hermes.apollo.hermes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -30,7 +31,8 @@ public class Param2recomderManager {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_param2recomder = CacheBuilder.newBuilder()
 				.maximumSize(Constant.CACHE_SIZE_10K)						
-				.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.MINUTES)
+//				.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.MINUTES)
+.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.SECONDS)
 				.build(
 					new CacheLoader<String, Object>() {						
 						public Object load(String key) throws Exception {
@@ -113,12 +115,23 @@ public class Param2recomderManager {
 		return grpMaps;
 	}
 	
-	public List<Map<String, String>> getGroupMapping_keys2recomder (String codeName, String grpKey) {
-		return _client.getGroupMapping_inKeys2recomder(codeName, grpKey);
-	}
+///	public List<Map<String, String>> getGroupMapping_keys2recomder (String codeName, String grpKey) {
+///		return _client.getGroupMapping_inKeys2recomder(codeName, grpKey);
+///	}
 	
 	public Map<String, Map<String, List<Object>>> ls_grp (String codeName) {
-		return _client.getAllMappings(codeName);
+		
+		Map<String, Map<String, List<Object>>> m = new HashMap<String, Map<String, List<Object>>>(); 
+		
+		try {		
+			m = _client.getAllMappings(codeName);
+		}
+		catch (Exception ex) {
+			VEN_LOGGER.error(ex.getMessage());
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));	
+		}
+		
+		return m;
 	}
 	
 	public String registerMapping (String codeName, String mappingJson) {

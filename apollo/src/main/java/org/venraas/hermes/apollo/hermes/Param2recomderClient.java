@@ -57,42 +57,35 @@ public class Param2recomderClient {
 						
 		String indexName = String.format("%s%s", codeName, Constant.HERMES_INDEX_SUFFIX);
 		String aggName = "group_key_count";
+		
+		//-- availability = 1 
+		QueryBuilder qb = 
+				QueryBuilders.boolQuery().filter(
+						QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
+				);
+		
+		//-- Terms Aggregation, 
+		//   https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/_bucket_aggregations.html#java-aggs-bucket-terms
+		AggregationBuilder ab = AggregationBuilders.terms(aggName).field(EnumParam2recomder.group_key.name());
 
-		try {
-			
-			//-- availability = 1 
-			QueryBuilder qb = 
-					QueryBuilders.boolQuery().filter(
-							QueryBuilders.termQuery(EnumParam2recomder.availability.name(), 1)
-					);
-			
-			//-- Terms Aggregation, 
-			//   https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/_bucket_aggregations.html#java-aggs-bucket-terms
-			AggregationBuilder ab = AggregationBuilders.terms(aggName).field(EnumParam2recomder.group_key.name());
+		SearchRequestBuilder searchReq = 		
+			_apo.esClient()
+			.prepareSearch(indexName)
+			.setTypes(TYPE_NAME)
+			.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+			.setQuery(qb)
+			.addAggregation(ab)				
+			.setSize(0);
 
-			SearchRequestBuilder searchReq = 		
-				_apo.esClient()
-				.prepareSearch(indexName)
-				.setTypes(TYPE_NAME)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setQuery(qb)
-				.addAggregation(ab)				
-				.setSize(0);
-
-			SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);			
-			
-			if (0 < resp.getHits().getTotalHits()) {
-				Terms agg = resp.getAggregations().get(aggName);
-				for (Terms.Bucket b : agg.getBuckets()) {
-					String k = b.getKeyAsString();
+		SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);			
+		
+		if (0 < resp.getHits().getTotalHits()) {
+			Terms agg = resp.getAggregations().get(aggName);
+			for (Terms.Bucket b : agg.getBuckets()) {
+				String k = b.getKeyAsString();
 //					long c = b.getDocCount();
-					grps.add(k);
-				}
+				grps.add(k);
 			}
-			
-		} catch (Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
 		}
 		
 		return grps;
@@ -107,26 +100,20 @@ public class Param2recomderClient {
 		if (codeName == null || codeName.isEmpty() || null == grpKey || grpKey.isEmpty()) return mappings;			
 
 		String indexName = String.format("%s%s", codeName, Constant.HERMES_INDEX_SUFFIX);
-
-		try {
-
-			SearchResponse resp = _query_group (indexName, grpKey);
-						
-			if (0 < resp.getHits().getTotalHits()) {
-				SearchHit[] hits = resp.getHits().getHits();
-				Gson gson = new Gson();
-				
-				for (SearchHit h : hits) {				
-					String json = h.getSourceAsString();			
-					Type type = new TypeToken<Map<String, Object>>(){}.getType();					
-					Map<String, Object> m = gson.fromJson(json, type);
+		
+		SearchResponse resp = _query_group (indexName, grpKey);
 					
-					if (null != m) mappings.add(m);
-				}				
-			}
-		} catch (Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
+		if (0 < resp.getHits().getTotalHits()) {
+			SearchHit[] hits = resp.getHits().getHits();
+			Gson gson = new Gson();
+			
+			for (SearchHit h : hits) {				
+				String json = h.getSourceAsString();			
+				Type type = new TypeToken<Map<String, Object>>(){}.getType();					
+				Map<String, Object> m = gson.fromJson(json, type);
+				
+				if (null != m) mappings.add(m);
+			}				
 		}
 		
 		return mappings;
@@ -140,9 +127,9 @@ public class Param2recomderClient {
 
 		if (codeName == null || codeName.isEmpty() || null == grpKey || grpKey.isEmpty()) return mappings;
 		
-		List<Map<String, Object>> grpMappings = getGroupMapping(codeName, grpKey);
-		
 		try {
+			List<Map<String, Object>> grpMappings = getGroupMapping(codeName, grpKey);
+			
 			for (Map<String, Object> m : grpMappings) {				
 				List<String> regFields = (List<String>) m.get(EnumParam2recomder.in_keys2recomder.name());
 				
