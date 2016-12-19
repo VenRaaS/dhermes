@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class Param2recomderManager {
 
 	private static Param2recomderClient _client = new Param2recomderClient();
-	private static Param2recomderManager _mgr = new Param2recomderManager();
+///	private static Param2recomderManager _mgr = new Param2recomderManager();
 	
 	static LoadingCache<String, Object> _cache_param2recomder;
 	
@@ -31,8 +31,7 @@ public class Param2recomderManager {
 		//-- Guava cache - https://github.com/google/guava/wiki/CachesExplained#refresh
 		_cache_param2recomder = CacheBuilder.newBuilder()
 				.maximumSize(Constant.CACHE_SIZE_10K)						
-//				.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.MINUTES)
-.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.SECONDS)
+				.refreshAfterWrite(Constant.NUM_TIMEUNIT_10, TimeUnit.MINUTES)
 				.build(
 					new CacheLoader<String, Object>() {						
 						public Object load(String key) throws Exception {
@@ -70,11 +69,7 @@ public class Param2recomderManager {
 				);
 	}
 	
-	private Param2recomderManager() {}
-	
-	static public Param2recomderManager getInstance() {	
-		return _mgr;
-	}
+	public Param2recomderManager() {}
 	
 	public List<String> getDistinctGroups(String codeName) {
 		return getDistinctGroups(codeName, false);

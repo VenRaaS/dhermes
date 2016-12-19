@@ -37,7 +37,7 @@ public class Param2RestAPI {
 		
 		Map<String, Object> rsMap = new HashMap<String, Object>();
 		
-		Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
+		Param2recomderManager p2rMgr = new Param2recomderManager();
 		
 		//-- list all available mappings with respect to $_codeName and $_grpKey
 		List<Map<String, Object>> regMaps = p2rMgr.getGroupMapping(_codeName, _grpKey);
@@ -129,7 +129,7 @@ public class Param2RestAPI {
 			rootJO.addProperty(EnumParam2recomder.traffic_type.name(), trafficType);			
 			rootJO.addProperty(EnumParam2recomder.update_dt.name(), Utility.now());
 			
-			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
+			Param2recomderManager p2rMgr = new Param2recomderManager();
 			String docID = p2rMgr.registerMapping(codeName, g.toJson(rootJO));	
 				
 			if (docID.isEmpty()) throw new RuntimeException("error, input mapping doesn't register to normal channel!");

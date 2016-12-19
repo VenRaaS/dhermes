@@ -54,13 +54,13 @@ public class GroupRoute {
 			return rGrp;
 		}		
 							
-		Param2recomderManager p2rMgr = Param2recomderManager.getInstance(); 
+		Param2recomderManager p2rMgr = new Param2recomderManager(); 
 		List<String> grps = p2rMgr.getDistinctGroups(codeName);
 		
 		//-- get jumping group, if a valid jumper
 		String jumpGrpKey = "";
 		if (! uid.isEmpty()) {
-			JumperManager jumperMgr = JumperManager.getInstance();
+			JumperManager jumperMgr = new JumperManager();
 			jumpGrpKey = jumperMgr.get_group_key(codeName, uid);
 			
 			if (! jumpGrpKey.isEmpty()) {				
@@ -75,7 +75,7 @@ public class GroupRoute {
 		
 		int num_nonNormalGrps = (grps.contains(Constant.NORMAL_GROUP_KEY)) ? grps.size() - 1 : grps.size() ;
 		if (0 < num_nonNormalGrps) {
-			ConfManager confMgr = ConfManager.getInstance();
+			ConfManager confMgr = new ConfManager();
 			double pctNormal = confMgr.get_traffic_percent_normal(codeName);
 			
 			//-- balance number of hashing indices between testing channels ($num_testHashIdx), and remains for normal channel

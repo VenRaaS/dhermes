@@ -42,7 +42,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 				
 		try {
@@ -51,7 +51,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			ConfManager confMgr = ConfManager.getInstance();
+			ConfManager confMgr = new ConfManager();
 			List<String> headers = confMgr.get_http_forward_headers(codeName);
 			msg = String.format("ok, \"%s\" : [%s]", EnumConf.http_forward_headers.name(), String.join(",", headers));			
 		} catch (Exception ex) {
@@ -72,7 +72,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 				
 		try {
@@ -81,7 +81,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			ConfManager confMgr = ConfManager.getInstance();
+			ConfManager confMgr = new ConfManager();
 			List<String> updateHeaders = confMgr.add_http_forward_headers(codeName, json);
 			msg = (updateHeaders.isEmpty()) 
 					? String.format("Invalid, Null or Empty input \"%s\" for \"%s\" setting", json, EnumConf.http_forward_headers.name())
@@ -105,7 +105,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 				
 		try {
@@ -114,7 +114,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			ConfManager confMgr = ConfManager.getInstance();
+			ConfManager confMgr = new ConfManager();
 			boolean isSuccess = confMgr.set_http_forward_headers(codeName, json);
 			msg = (isSuccess) 
 					? String.format("ok, update \"%s\" with %s", EnumConf.http_forward_headers.name(), String.join(",", json))
@@ -138,7 +138,7 @@ public class HermesMgmtController {
 		String msg = "";
 
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 		
 		try {
@@ -151,7 +151,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			else {
-				ConfManager confMgr = ConfManager.getInstance();
+				ConfManager confMgr = new ConfManager();
 				confMgr.set_traffic_percent_normal(codeName, pct);
 				msg = String.format("ok, %s's traffic percentage of normal channel is %s", codeName, pct);
 				VEN_LOGGER.info(msg);
@@ -174,7 +174,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 						
 		try {
@@ -185,7 +185,7 @@ public class HermesMgmtController {
 			
 			EnumResetInterval enumInt = EnumResetInterval.valueOf(interval);
 
-			ConfManager confMgr = ConfManager.getInstance();
+			ConfManager confMgr = new ConfManager();
 			confMgr.set_routing_reset_interval(codeName, enumInt);
 			msg = String.format("ok, %s's routing reset interval is %s", codeName, enumInt.name());
 			VEN_LOGGER.info(msg);
@@ -208,7 +208,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 						
 		try {
@@ -224,7 +224,7 @@ public class HermesMgmtController {
 			}
 			
 			String grpkey = vGK.getGrpkey();
-			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();
+			Param2recomderManager p2rMgr = new Param2recomderManager();
 			List<String> grps = p2rMgr.getDistinctGroups(codeName, true);
 			if ( ! grps.contains(grpkey)) {
 				msg = String.format("Warning, Invalid group key \"%s\", which isn't an available group! <br>"
@@ -232,7 +232,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			JumperManager jumperMgr = JumperManager.getInstance();			
+			JumperManager jumperMgr = new JumperManager();			
 			boolean isSuccess = jumperMgr.set_jumper(codeName, uid, grpkey);
 			msg = (isSuccess) ? 
 					String.format("Ok, %s is jumping to group %s", uid, grpkey) : 
@@ -303,7 +303,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 				
 		try {
@@ -352,7 +352,7 @@ public class HermesMgmtController {
 		String msg = "";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 				
 		try {
@@ -386,7 +386,7 @@ public class HermesMgmtController {
 		String msg ="";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 		
 		try {
@@ -395,7 +395,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
+			Param2recomderManager p2rMgr = new Param2recomderManager();			
 			mappings = p2rMgr.ls_grp (codeName);
 			
 		} catch (Exception ex) {
@@ -419,7 +419,7 @@ public class HermesMgmtController {
 		String msg ="";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 		
 		try {
@@ -434,7 +434,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 
-			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
+			Param2recomderManager p2rMgr = new Param2recomderManager();			
 			List<String> update_ids = p2rMgr.rm_group(codeName, key);
 			
 			msg = (0 < update_ids.size()) ? 
@@ -463,7 +463,7 @@ public class HermesMgmtController {
 		String msg ="";
 		
 		String token = vt.getToken();
-		CompanyManager comMgr = CompanyManager.getInstance();
+		CompanyManager comMgr = new CompanyManager();
 		String codeName = comMgr.getCodeName(token);
 		
 		try {
@@ -478,7 +478,7 @@ public class HermesMgmtController {
 				throw new IllegalArgumentException(msg);
 			}
 			
-			Param2recomderManager p2rMgr = Param2recomderManager.getInstance();			
+			Param2recomderManager p2rMgr = new Param2recomderManager();			
 			String id = p2rMgr.rm_mapping(codeName, mid);
 			
 			msg = String.format("ok, mapping:%s has been Unavailable.", id);

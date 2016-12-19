@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class CompanyManager {
 	
 	static CompanyClient _client = new CompanyClient();
-	static CompanyManager _mgr = new CompanyManager();
 	static LoadingCache<String, String> _cache_company;
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(CompanyManager.class);
@@ -50,11 +49,7 @@ public class CompanyManager {
 				);			
 	}
 	
-	private CompanyManager() {}
-	
-	static public CompanyManager getInstance() {
-		return _mgr;
-	}	
+	public CompanyManager() {}
 
 	public String getCodeName(String token) {	
 		String codeName = "";

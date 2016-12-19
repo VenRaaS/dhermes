@@ -27,7 +27,6 @@ import com.google.gson.reflect.TypeToken;
 public class ConfManager {
 
 	static ConfClient _client = new ConfClient();
-	static ConfManager _mgr = new ConfManager();
 	static LoadingCache<String, String> _cache_conf;
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(ConfManager.class);
@@ -77,11 +76,7 @@ public class ConfManager {
 				);			
 	}
 	
-	private ConfManager() {}
-	
-	static public ConfManager getInstance() {	
-		return _mgr;
-	}	
+	public ConfManager() {}	
 
 	public EnumResetInterval get_routing_reset_interval(String codeName) {
 		EnumResetInterval enumInt = EnumResetInterval.DAY;

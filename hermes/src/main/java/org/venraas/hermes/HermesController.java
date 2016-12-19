@@ -69,7 +69,7 @@ public class HermesController {
 		
 		try {
 			String token = (String)inParamMap.get(EnumOptionBase.token.name());
-			CompanyManager comMgr = CompanyManager.getInstance();
+			CompanyManager comMgr = new CompanyManager();
 			String codeName = comMgr.getCodeName(token);			
 			if (codeName.isEmpty()) {
 				throw new InvalidParameterException(String.format("an invalid token: '%s' !", token));
@@ -136,7 +136,7 @@ public class HermesController {
 			}
 			
 			if (! apiURL.isEmpty()) {
-				ConfManager confMgr = ConfManager.getInstance();
+				ConfManager confMgr = new ConfManager();
 				List<String> headers = confMgr.get_http_forward_headers(codeName);
 
 				APIConnector apiConn = APIConnector.getInstance();										

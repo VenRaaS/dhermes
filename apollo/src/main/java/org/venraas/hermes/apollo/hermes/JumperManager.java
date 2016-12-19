@@ -18,7 +18,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class JumperManager {
 	
 	static JumperClient _client = new JumperClient();
-	static JumperManager _mgr = new JumperManager();		
+	
 	static LoadingCache<String, String> _cache_jumper; 
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(JumperManager.class);	
@@ -61,10 +61,8 @@ public class JumperManager {
 					}
 				);
 	}
-	
-	static public JumperManager getInstance() {
-		return _mgr;
-	}
+		
+	public JumperManager() {}	
 	
 	public String get_group_key(String codeName, String uid) {
 		String grpKey = "";
