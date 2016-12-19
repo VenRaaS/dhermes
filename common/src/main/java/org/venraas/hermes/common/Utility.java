@@ -5,9 +5,10 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -26,13 +27,26 @@ public class Utility {
 	public static final ListeningExecutorService CacheRefreshLES;
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(Utility.class);
-	
+
 	
 	static {
 		ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("cacheRefresherThread - %d").setDaemon(true).build();
-		ExecutorService es = Executors.newSingleThreadExecutor(threadFactory);
+//		ExecutorService es = Executors.newSingleThreadExecutor(threadFactory);
+		ExecutorService es = newFixedThreadPoolWithQueueSize(1, 1000, threadFactory);
 		CacheRefreshLES = MoreExecutors.listeningDecorator(es);
 		VEN_LOGGER.info("cache refresher thread is creaded");
+	}
+
+	// -- http://stackoverflow.com/questions/2247734/executorservice-standard-way-to-avoid-to-task-queue-getting-too-full#answers-header
+	// -- http://www.cnblogs.com/622698abc/archive/2013/03/16/2962382.html
+	// -- http://dongxuan.iteye.com/blog/901689
+	// -- http://givemepass.blogspot.tw/2015/10/threadpool.html
+	private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize, ThreadFactory threadFactory) {
+		return new ThreadPoolExecutor(
+				nThreads, nThreads, 60L, TimeUnit.SECONDS, 
+				new ArrayBlockingQueue<Runnable>(queueSize, true), 
+				threadFactory,
+				new ThreadPoolExecutor.AbortPolicy());
 	}
 
 	static public String stackTrace2string(Exception ex) {
