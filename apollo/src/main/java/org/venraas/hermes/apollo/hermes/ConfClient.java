@@ -46,18 +46,13 @@ public class ConfClient {
 		String jsonStr = "";
 		
 		if (null == codeName || codeName.isEmpty()) return jsonStr;				
-		
-		try {						
-	        SearchResponse resp = _search_conf(codeName);
-	        	        
-	        if (0 < resp.getHits().getTotalHits()) {
-	        	SearchHit h = resp.getHits().getAt(0);	        		        	
-	        	jsonStr = h.getSourceAsString();        		        	
-	        }	        
-		} catch(Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
-		} 
+			
+        SearchResponse resp = _search_conf(codeName);
+        	        
+        if (0 < resp.getHits().getTotalHits()) {
+        	SearchHit h = resp.getHits().getAt(0);	        		        	
+        	jsonStr = h.getSourceAsString();        		        	
+        }
         
         return jsonStr;        
 	}
@@ -67,17 +62,17 @@ public class ConfClient {
 		VEN_LOGGER.info("update and caching set_routing_reset_interval({})", codeName);				
 		
 		if (null == codeName || codeName.isEmpty()) return enumInt;
-						
+
 		try {
-			Conf con = new Conf();	        
+			Conf con = new Conf();
 
 	        SearchResponse resp = _search_conf(codeName);
 	        if (0 < resp.getHits().getTotalHits()) {
 	        	SearchHit h = resp.getHits().getAt(0);
-//	        	String docID = h.getId();        	
-	        	String jsonStr = h.getSourceAsString();	        	
+//	        	String docID = h.getId();
+	        	String jsonStr = h.getSourceAsString();
 	        	Gson g = new Gson();
-	        	con = g.fromJson(jsonStr, Conf.class);	        	
+	        	con = g.fromJson(jsonStr, Conf.class);
 	        }
 	        
         	//-- updated json
@@ -109,19 +104,13 @@ public class ConfClient {
 		String jsonStr = "";
 	
 		if (null == codeName || codeName.isEmpty()) return jsonStr;	
+				
+		SearchResponse resp = _search_conf(codeName);
 		
-		try {
-			SearchResponse resp = _search_conf(codeName);
-			
-	        if (0 < resp.getHits().getTotalHits()) {
-	        	SearchHit h = resp.getHits().getAt(0);	        		        	
-	        	jsonStr = h.getSourceAsString();
-	        }
-	        
-		} catch(Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
-		} 
+        if (0 < resp.getHits().getTotalHits()) {
+        	SearchHit h = resp.getHits().getAt(0);	        		        	
+        	jsonStr = h.getSourceAsString();
+        }
         
         return jsonStr;
 	}
@@ -180,18 +169,13 @@ public class ConfClient {
 		VEN_LOGGER.info("get and caching get_http_forward_headers({})", codeName);
 
 		if (null == codeName || codeName.isEmpty()) return jsonStr;
+		
+        SearchResponse resp = _search_conf(codeName);
 
-		try {
-	        SearchResponse resp = _search_conf(codeName);
-
-	        if (0 < resp.getHits().getTotalHits()) {
-	        	SearchHit h = resp.getHits().getAt(0);	        		        	
-	        	jsonStr = h.getSourceAsString();
-	        }
-		} catch(Exception ex) {
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			VEN_LOGGER.error(ex.getMessage());
-		}
+        if (0 < resp.getHits().getTotalHits()) {
+        	SearchHit h = resp.getHits().getAt(0);	        		        	
+        	jsonStr = h.getSourceAsString();
+        }		
         
         return jsonStr;
 	}
@@ -212,9 +196,9 @@ public class ConfClient {
 	        	String jsonStr = h.getSourceAsString();	        	
 	        	Gson g = new Gson();
 	        	con = g.fromJson(jsonStr, Conf.class);	        	
-	        }	        	        
+	        }
 	        
-        	//-- updated Json	        
+        	//-- updated Json
 	        con.setHttp_forward_headers(headers);        	
         	con.setUpdate_dt(Utility.now());
         	Gson g = new Gson();
