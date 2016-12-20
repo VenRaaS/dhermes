@@ -8,7 +8,6 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CachePut;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.Com_pkgs;
 import org.venraas.hermes.common.Constant;

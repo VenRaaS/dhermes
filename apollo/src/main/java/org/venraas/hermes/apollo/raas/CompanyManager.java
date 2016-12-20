@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 public class CompanyManager {
 	
-	static CompanyClient _client = new CompanyClient();
 	static LoadingCache<String, String> _cache_company;
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(CompanyManager.class);
@@ -30,7 +29,8 @@ public class CompanyManager {
 				.build(
 					new CacheLoader<String, String>() {
 						public String load(String key) throws Exception {
-							return _client.getCodeName(key);
+							CompanyClient client = new CompanyClient();
+							return client.getCodeName(key);
 						}
 						
 						public ListenableFuture<String> reload (final String key, String oldVal) {

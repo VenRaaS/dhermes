@@ -25,8 +25,7 @@ import com.google.gson.reflect.TypeToken;
 
 
 public class ConfManager {
-
-	static ConfClient _client = new ConfClient();
+	
 	static LoadingCache<String, String> _cache_conf;
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(ConfManager.class);
@@ -45,15 +44,16 @@ public class ConfManager {
 							String funName = key.substring(0, qi);
 							String[] ps = key.substring(qi+1).split(String.valueOf(Constant.PARAM_DELIMITER));
 							
+							ConfClient client = new ConfClient();
 							switch (funName) {
 								case "get_routing_reset_interval":
-									rt = _client.get_routing_reset_interval(ps[0], ps[1]);
+									rt = client.get_routing_reset_interval(ps[0], ps[1]);
 									break;
 								case "get_traffic_percent_normal":
-									rt = _client.get_traffic_percent_normal(ps[0], ps[1]);
+									rt = client.get_traffic_percent_normal(ps[0], ps[1]);
 									break;
 								case "get_http_forward_headers":
-									rt = _client.get_http_forward_headers(ps[0], ps[1]);
+									rt = client.get_http_forward_headers(ps[0], ps[1]);
 									break;							
 							}
 							
@@ -99,7 +99,8 @@ public class ConfManager {
 	}
 	
 	public EnumResetInterval set_routing_reset_interval(String codeName, EnumResetInterval enumInt) {
-		EnumResetInterval resetInterval = _client.set_routing_reset_interval(codeName, EnumConf.routing_reset_interval.name(), enumInt);
+		ConfClient client = new ConfClient();
+		EnumResetInterval resetInterval = client.set_routing_reset_interval(codeName, EnumConf.routing_reset_interval.name(), enumInt);
 		
 		String k = String.format("get_routing_reset_interval?%s&%s", codeName, EnumConf.routing_reset_interval.name());
 		_cache_conf.refresh(k);
@@ -127,7 +128,8 @@ public class ConfManager {
 	}
 	
 	public double set_traffic_percent_normal(String codeName, double pct) {
-		_client.set_traffic_percent_normal(codeName, EnumConf.traffic_pct_normal.name(), pct);
+		ConfClient client = new ConfClient();
+		client.set_traffic_percent_normal(codeName, EnumConf.traffic_pct_normal.name(), pct);
 		
 		String k = String.format("get_traffic_percent_normal?%s&%s", codeName, EnumConf.traffic_pct_normal.name());
 		_cache_conf.refresh(k);
@@ -170,7 +172,9 @@ public class ConfManager {
 			        headerSet.add(h);
 			    }
 				rsHeaders.addAll(headerSet);
-				rsHeaders = _client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), rsHeaders);
+				
+				ConfClient client = new ConfClient();
+				rsHeaders = client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), rsHeaders);
 			}
 			
 			String k = String.format("get_http_forward_headers?%s&%s", codeName, EnumConf.http_forward_headers.name());			
@@ -193,7 +197,8 @@ public class ConfManager {
 			List<String> inHeaders = g.fromJson(jsonArray, listType);					
 			
 			if (null != inHeaders) {
-				_client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), inHeaders);
+				ConfClient client = new ConfClient();
+				client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), inHeaders);
 				isSuccess = true;
 				
 				String k = String.format("get_http_forward_headers?%s&%s", codeName, EnumConf.http_forward_headers.name());			

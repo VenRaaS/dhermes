@@ -18,10 +18,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.ListenableFuture;
 
 
-public class Param2recomderManager {
-
-	private static Param2recomderClient _client = new Param2recomderClient();
-///	private static Param2recomderManager _mgr = new Param2recomderManager();
+public class Param2recomderManager {	
 	
 	static LoadingCache<String, Object> _cache_param2recomder;
 	
@@ -41,12 +38,13 @@ public class Param2recomderManager {
 							String funName = key.substring(0, qi);
 							String[] ps = key.substring(qi+1).split(String.valueOf(Constant.PARAM_DELIMITER));
 							
+							Param2recomderClient client = new Param2recomderClient();
 							switch (funName) {
 								case "getDistinctGroups":
-									rt = _client.getDistinctGroups(ps[0]);
+									rt = client.getDistinctGroups(ps[0]);
 									break;
 								case "getGroupMapping":
-									rt = _client.getGroupMapping(ps[0], ps[1]);
+									rt = client.getGroupMapping(ps[0], ps[1]);
 									break;							
 							}
 							
@@ -118,8 +116,9 @@ public class Param2recomderManager {
 		
 		Map<String, Map<String, List<Object>>> m = new HashMap<String, Map<String, List<Object>>>(); 
 		
-		try {		
-			m = _client.getAllMappings(codeName);
+		try {
+			Param2recomderClient client = new Param2recomderClient();
+			m = client.getAllMappings(codeName);
 		}
 		catch (Exception ex) {
 			VEN_LOGGER.error(ex.getMessage());
@@ -130,15 +129,18 @@ public class Param2recomderManager {
 	}
 	
 	public String registerMapping (String codeName, String mappingJson) {
-		return _client.indexMapping(codeName, mappingJson);
+		Param2recomderClient client = new Param2recomderClient();
+		return client.indexMapping(codeName, mappingJson);
 	}
 	
 	public List<String> rm_group (String codeName, String grpKey) {
-		return _client.rm_group(codeName, grpKey);
+		Param2recomderClient client = new Param2recomderClient();
+		return client.rm_group(codeName, grpKey);
 	}
 	
 	public String rm_mapping (String codeName, String mid) {
-		return _client.rm_mapping(codeName, mid);
+		Param2recomderClient client = new Param2recomderClient();
+		return client.rm_mapping(codeName, mid);
 	}
 	
 	

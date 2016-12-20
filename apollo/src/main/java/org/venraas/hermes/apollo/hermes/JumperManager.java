@@ -17,8 +17,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 public class JumperManager {
 	
-	static JumperClient _client = new JumperClient();
-	
 	static LoadingCache<String, String> _cache_jumper; 
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(JumperManager.class);	
@@ -37,9 +35,10 @@ public class JumperManager {
 							String funName = key.substring(0, qi);
 							String[] ps = key.substring(qi+1).split(String.valueOf(Constant.PARAM_DELIMITER));
 							
+							JumperClient client = new JumperClient();
 							switch (funName) {
 								case "get_group_key":
-									rt = _client.get_group_key(ps[0], ps[1]);
+									rt = client.get_group_key(ps[0], ps[1]);
 									break;							
 							}
 							
@@ -81,7 +80,8 @@ public class JumperManager {
 	}
 	
 	public boolean set_jumper(String codeName, String uid, String grpKey) {
-		boolean rt = _client.set_jumper(codeName, uid, grpKey);
+		JumperClient client = new JumperClient();
+		boolean rt = client.set_jumper(codeName, uid, grpKey);
 		
 		//-- refresh cache
 		String k = _cacheKey_get_group_key(codeName, uid);
