@@ -187,7 +187,7 @@ public class Param2recomderClient {
 					.addSort(SortBuilders.fieldSort(EnumParam2recomder.traffic_type.name()).order(SortOrder.ASC))
 					.addSort(SortBuilders.fieldSort(EnumParam2recomder.group_key.name()))
 					.addSort(SortBuilders.fieldSort(EnumParam2recomder.update_dt.name()).order(SortOrder.DESC))
-					.setSize(500);
+					.setSize(Constant.DEFAULT_QUERY_SIZE);
 					;
 
 			SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
@@ -368,7 +368,9 @@ public class Param2recomderClient {
 				.prepareSearch(indexName)
 				.setTypes(TYPE_NAME)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setQuery(qb);
+				.setQuery(qb)
+				.setSize(Constant.DEFAULT_QUERY_SIZE)
+				;
 
 		SearchResponse resp = searchReq.execute().actionGet(Constant.TIMEOUT_SEARCH_MILLIS);
 		

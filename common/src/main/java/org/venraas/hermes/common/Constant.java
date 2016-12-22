@@ -46,5 +46,8 @@ public class Constant {
 	
 	public final static long TIMEOUT_INDEX_MILLIS = 500;
 	
+	//-- ES
+	public final static int DEFAULT_QUERY_SIZE = 1000;
+	
 	
 }
