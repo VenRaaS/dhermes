@@ -39,9 +39,10 @@ TODO...
 * register_normal  
   Note, all value should be Double-quoted as a String
   ```
-GET /hermes/mgmt/register_normal?token=${token}&json=
+POST /hermes/mgmt/register_normal
 
 {
+  "token":"${token}"
   "rec_pos":"categTop",
   "rec_code":"ClickStream",
   "rec_type":"cs",
@@ -54,9 +55,10 @@ GET /hermes/mgmt/register_normal?token=${token}&json=
 * register_test  
   Note, all value should be Double-quoted as a String
   ```
-GET /hermes/mgmt/register_test?token=${token}&json=
+POST /hermes/mgmt/register_test
 
 {
+  "token":"${token}"
   "group_key":"test-1",
   "rec_pos":"categTop",
   "rec_code":"ClickStream_COOC",
