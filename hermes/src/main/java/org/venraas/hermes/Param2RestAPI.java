@@ -76,7 +76,11 @@ public class Param2RestAPI {
 			//-- input validation
 			Gson g = new Gson();
 			
-			JsonObject rootJO = g.fromJson(regJson, JsonObject.class);			
+			JsonObject rootJO = g.fromJson(regJson, JsonObject.class);
+			if (null == rootJO) {
+				msg = String.format("Invalid input, \"%s\" is unavailable or empty!", "json");
+				throw new IllegalArgumentException(msg);
+			}
 
 			// "group_key"
 			JsonElement group_key = rootJO.get(EnumParam2recomder.group_key.name());

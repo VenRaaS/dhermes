@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +21,16 @@ import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
+import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.common.ValidDocID;
 import org.venraas.hermes.common.ValidGroupKey;
 import org.venraas.hermes.common.ValidToken;
 import org.venraas.hermes.common.ValidUID;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 
 @RestController
@@ -271,106 +278,132 @@ public class HermesMgmtController {
 		}
 		
 		return msg;				
-	}
-	
+	}	
 	
 	/** 
 	 * usage:
-	 * 		/hermes/mgmt/register_normal?token=&json=
-		    	{
-					"rec_pos":"categTop",
-				    "rec_code":"ClickStream",
-				    "rec_type":"cs",
-				    "api_url":[
-				        "http://140.96.83.32:8080/cupid/api/goods/rank"
-				    ],
-				    "in_keys2recomder":[
-				        "rec_pos"
-				    ],
-				    "out_aux_params":[
-				        "rec_code",
-				        "rec_type"
-				    ]
-				}
+	 * 		POST /hermes/mgmt/register_normal
+            {
+	    	    "token":${token},
+				"rec_pos":"categTop",
+			    "rec_code":"ClickStream",
+			    "rec_type":"cs",
+			    "api_url":[
+			        "http://140.96.83.32:8080/cupid/api/goods/rank"
+			    ],
+			    "in_keys2recomder":[
+			        "rec_pos"
+			    ],
+			    "out_aux_params":[
+			        "rec_code",
+			        "rec_type"
+			    ]
+			}
 	 *
-	 * @param token
-	 * @param json
 	 * @return
-	 */
-	@CrossOrigin
-	@RequestMapping(value = "/register_normal", method = RequestMethod.GET)
-	public String register_normal(@Valid ValidToken vt, String json) {		
-		String msg = "";
+	 */		
+	@RequestMapping(value = "/register_normal", method = RequestMethod.POST)	
+	public String register_normal_POST(@RequestBody String jsonStr, HttpServletRequest req) {
+		VEN_LOGGER.info(jsonStr);
 		
-		String token = vt.getToken();
-		CompanyManager comMgr = new CompanyManager();
-		String codeName = comMgr.getCodeName(token);
+		String msg = "";				
 				
 		try {
+			//-- input validation
+			Gson g = new Gson();			
+			JsonObject rootJO = g.fromJson(jsonStr, JsonObject.class);						
+			if (null == rootJO) {
+				msg = String.format("Invalid input, request body is unavailable or empty!");
+				throw new IllegalArgumentException(msg);
+			}
+			
+			//-- token validation
+			JsonElement tokenJE = rootJO.get(EnumOptionBase.token.name());
+			if (null == tokenJE) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, "null");
+				throw new IllegalArgumentException(msg);				
+			}
+			
+			String token = tokenJE.getAsString();
+			CompanyManager comMgr = new CompanyManager();
+			String codeName = comMgr.getCodeName(token);			
 			if (codeName.isEmpty()) {
 				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
 				throw new IllegalArgumentException(msg);
 			}
 			
 			Param2RestAPI p2api = new Param2RestAPI();
-			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_NORMAL, json);
+			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_NORMAL, jsonStr);
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);
 		}		
 		
-		return msg;
+		return msg;	
 	}
 		
 	/**
 	 * usage:
-	 * 		/hermes/mgmt/register_test?token=&json=
-				{
-				    "group_key":"test-1",
-				    "rec_pos":"categTop",
-				    "rec_code":"ClickStream",
-				    "rec_type":"cs",
-				    "api_url":[
-				        "http://140.96.83.32:8080/cupid/api/goods/rank"
-				    ],
-				    "in_keys2recomder":[
-				        "rec_pos"
-				    ],
-				    "out_aux_params":[
-				        "rec_code",
-				        "rec_type"
-				    ]
-				}
+	 * 		POST /hermes/mgmt/register_test
+			{
+			    "token":${token},
+			    "group_key":"test-1",
+			    "rec_pos":"categTop",
+			    "rec_code":"ClickStream",
+			    "rec_type":"cs",
+			    "api_url":[
+			        "http://140.96.83.32:8080/cupid/api/goods/rank"
+			    ],
+			    "in_keys2recomder":[
+			        "rec_pos"
+			    ],
+			    "out_aux_params":[
+			        "rec_code",
+			        "rec_type"
+			    ]
+			}
 	 *
-	 * @param token
-	 * @param json
 	 * @return
-	 */
-	@CrossOrigin
-	@RequestMapping(value = "/register_test", method = RequestMethod.GET)
-	public String register_test(@Valid ValidToken vt, String json) {		
-		String msg = "";
-		
-		String token = vt.getToken();
-		CompanyManager comMgr = new CompanyManager();
-		String codeName = comMgr.getCodeName(token);
+	 */	
+	@RequestMapping(value = "/register_test", method = RequestMethod.POST)	
+	public String register_test_POST(@RequestBody String jsonStr, HttpServletRequest req) {
+		String msg = "";		
 				
 		try {
+			//-- input validation
+			Gson g = new Gson();			
+			JsonObject rootJO = g.fromJson(jsonStr, JsonObject.class);						
+			if (null == rootJO) {
+				msg = String.format("Invalid input, request body is unavailable or empty!");
+				throw new IllegalArgumentException(msg);
+			}
+			
+			//-- token validation
+			JsonElement tokenJE = rootJO.get(EnumOptionBase.token.name());
+			if (null == tokenJE) {
+				msg = String.format(ConstantMsg.INVALID_TOKEN, "null");
+				throw new IllegalArgumentException(msg);				
+			}
+			
+			String token = tokenJE.getAsString();
+			CompanyManager comMgr = new CompanyManager();
+			String codeName = comMgr.getCodeName(token);
 			if (codeName.isEmpty()) {
 				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
 				throw new IllegalArgumentException(msg);
 			}
 			
 			Param2RestAPI p2api = new Param2RestAPI();
-			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_TEST, json);
+			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_TEST, jsonStr);
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);
 		}		
 		
 		return msg;
-	}	
+	}
 	
+
 	/**
 	 * usage:
 	 * 		/hermes/mgmt/ls_grp?token=
