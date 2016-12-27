@@ -9,7 +9,7 @@
 
 ## Overview
 DHermes is a distributed RESTful API A/B testing application.  
-It splits incoming traffic into pre-defined restful API group.  
+It splits incoming traffic into pre-defined restful API group with specified percentage.  
 An API group comprises a set of APIs which represents a service embodiment, e.g. recommendation APIs for an EC site.
 
 <img src="https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s" width=100%/>
