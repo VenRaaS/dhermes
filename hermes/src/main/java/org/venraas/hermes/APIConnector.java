@@ -169,12 +169,13 @@ public class APIConnector {
 	}
 	
 	public RequestConfig getTimeoutConfig() {
-		int timeout = Config.getInstance().getConn_timeout();		
+		int timeout = Config.getInstance().getConn_timeout();
+		
 		return RequestConfig.custom()
 				.setSocketTimeout(timeout)
-                .setConnectTimeout(timeout)
-                .setConnectionRequestTimeout(timeout)				
-				.build();		
+				.setConnectTimeout(timeout)
+				.setConnectionRequestTimeout(timeout)
+				.build();
 	}
 	
 	private void _connectFailHelper(String apiURL) {
