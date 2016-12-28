@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 public class ValidGroupKey {
 
 	@NotNull 
-	@Size(max = 32)
+	@Size(max = 64)
 	@Pattern(regexp = "[A-Za-z0-9_.\\-]*")
 	String grpkey;
 	
