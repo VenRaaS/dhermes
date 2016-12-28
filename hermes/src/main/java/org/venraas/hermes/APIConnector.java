@@ -40,35 +40,21 @@ public class APIConnector {
 	
 	private static CloseableHttpClient _httpClient = null;
 	
-	private static final APIConnector _conn = new APIConnector();
-	
 	private static final ConcurrentHashMap<String, APIStatus> _APIStatusMap = new ConcurrentHashMap<String, APIStatus>(); 
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
-	
-			
-	private APIConnector() { }
-	
-	public static APIConnector getInstance() {
-		
-		if (null == _httpClient) {
-			
-			synchronized (APIConnector.class) {
-				
-				if (null == _httpClient) { 
-					PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-				    cm.setMaxTotal(Constant.CONNECTION_POOL_MAX_TOTAL);
-				    
-				    _httpClient = HttpClients.custom()
-				    	.setConnectionManager(cm)
-				    	.setConnectionManagerShared(true)
-				    	.build();
-				}
-			}
-		}
-		
-		return _conn;
+
+	static {
+		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+	    cm.setMaxTotal(Constant.CONNECTION_POOL_MAX_TOTAL);
+	    
+	    _httpClient = HttpClients.custom()
+	    	.setConnectionManager(cm)
+	    	.setConnectionManagerShared(true)
+	    	.build();
 	}
+	
+	public APIConnector() { }		
 	
 	public String post(String apiURL, String apiURL_FO, String body, HttpServletRequest req, List<String> headers) {
 		String rs = ""; 
@@ -94,7 +80,7 @@ public class APIConnector {
 		if (null == apiURL || apiURL.isEmpty()) return resp;
 		
 		_APIStatusMap.putIfAbsent(apiURL, new APIStatus(apiURL));
-//TODO... $apiURL health check MAP and periodical resume polling
+
 		APIStatus status = _APIStatusMap.get(apiURL);		
 		if (status.isSuspending()) return resp;				
 			
@@ -185,7 +171,9 @@ public class APIConnector {
 	public RequestConfig getTimeoutConfig() {
 		int timeout = Config.getInstance().getConn_timeout();		
 		return RequestConfig.custom()
-				.setConnectTimeout(timeout)
+				.setSocketTimeout(timeout)
+                .setConnectTimeout(timeout)
+                .setConnectionRequestTimeout(timeout)				
 				.build();		
 	}
 	

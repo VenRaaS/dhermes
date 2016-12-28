@@ -115,7 +115,7 @@ public class Param2RestAPI {
 
 			// "valid api_url"
 			JsonArray api_urls = rootJO.getAsJsonArray(EnumParam2recomder.api_url.name());
-			APIConnector conn = APIConnector.getInstance();
+			APIConnector conn = new APIConnector();
 			for (JsonElement url : api_urls) {				
 				String body = g.toJson(testingParam);
 				String url_str = url.getAsString();

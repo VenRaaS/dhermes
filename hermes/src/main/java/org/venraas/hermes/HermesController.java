@@ -138,8 +138,8 @@ public class HermesController {
 			if (! apiURL.isEmpty()) {
 				ConfManager confMgr = new ConfManager();
 				List<String> headers = confMgr.get_http_forward_headers(codeName);
-
-				APIConnector apiConn = APIConnector.getInstance();										
+				
+				APIConnector apiConn = new APIConnector();										
 				resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
 			}
 		} catch(Exception ex) {
