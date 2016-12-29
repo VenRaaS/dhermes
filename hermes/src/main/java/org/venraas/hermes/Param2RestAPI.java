@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumTrafficType;
 import org.venraas.hermes.common.Utility;
 
 import com.google.gson.Gson;
@@ -68,7 +69,7 @@ public class Param2RestAPI {
 		return rsMap;
 	}
 	
-	public String regsiterMapping(String codeName, String trafficType, String regJson) {
+	public String regsiterMapping(String codeName, EnumTrafficType trafficType, String regJson) {
 		
 		String msg = "";
 		
@@ -84,7 +85,7 @@ public class Param2RestAPI {
 
 			// "group_key"
 			JsonElement group_key = rootJO.get(EnumParam2recomder.group_key.name());
-			if (null == group_key && ! trafficType.equals(Constant.TRAFFIC_TYPE_NORMAL) ) {
+			if (null == group_key && EnumTrafficType.Normal != trafficType) {
 				msg = String.format("Invalid input, \"%s\" is unavailable or empty in the input Json!", EnumParam2recomder.group_key.name());
 				throw new IllegalArgumentException(msg);				
 			}
@@ -127,10 +128,10 @@ public class Param2RestAPI {
 			
 			// add "availability", "group_key", "traffic_type", udpate_dt
 			rootJO.addProperty(EnumParam2recomder.availability.name(), 1);
-			if ( trafficType.equals(Constant.TRAFFIC_TYPE_NORMAL) ) {
+			if (EnumTrafficType.Normal == trafficType) {
 				rootJO.addProperty(EnumParam2recomder.group_key.name(), Constant.NORMAL_GROUP_KEY);
 			}
-			rootJO.addProperty(EnumParam2recomder.traffic_type.name(), trafficType);			
+			rootJO.addProperty(EnumParam2recomder.traffic_type.name(), trafficType.toString());			
 			rootJO.addProperty(EnumParam2recomder.update_dt.name(), Utility.now());
 			
 			Param2recomderManager p2rMgr = new Param2recomderManager();

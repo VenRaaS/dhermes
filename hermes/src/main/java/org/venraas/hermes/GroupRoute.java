@@ -12,6 +12,7 @@ import org.venraas.hermes.apollo.hermes.JumperManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumResetInterval;
+import org.venraas.hermes.common.EnumTrafficType;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
@@ -93,11 +94,11 @@ public class GroupRoute {
 				
 				if (jumpGrpKey.equalsIgnoreCase(Constant.NORMAL_GROUP_KEY))
 				{
-					rGrp.setTraffic_type(Constant.TRAFFIC_TYPE_NORMAL);
+					rGrp.setTraffic_type(EnumTrafficType.Normal);
 					rGrp.setTraffic_pct(normPCT);
 				}
 				else {
-					rGrp.setTraffic_type(Constant.TRAFFIC_TYPE_TEST);
+					rGrp.setTraffic_type(EnumTrafficType.Test);
 					rGrp.setTraffic_pct(testPCT);				
 				}
 			}
@@ -111,13 +112,13 @@ public class GroupRoute {
 
 				for (String grpKey : grps) {	
 					if (grpKey.equalsIgnoreCase(Constant.NORMAL_GROUP_KEY)) {
-						rGrp.setTraffic_type(Constant.TRAFFIC_TYPE_NORMAL);
+						rGrp.setTraffic_type(EnumTrafficType.Normal);
 						rGrp.setTraffic_pct(normPCT); 
 						
 						hash = hash - num_normHashIdx;
 					}
 					else { 
-						rGrp.setTraffic_type(Constant.TRAFFIC_TYPE_TEST);
+						rGrp.setTraffic_type(EnumTrafficType.Test);
 						rGrp.setTraffic_pct(testPCT);
 						
 						hash = hash - num_testHashIdx;

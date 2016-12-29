@@ -5,11 +5,7 @@ public class Constant {
 	public static final String HERMES_INDEX_SUFFIX = "_hermes";
 		
 	//-- 100%
-	public static final double TRAFFIC_PERCENT_NORMAL = 1.0;
-	
-	public static final String TRAFFIC_TYPE_NORMAL = "Normal";
-	
-	public static final String TRAFFIC_TYPE_TEST = "Test";
+	public static final double TRAFFIC_PERCENT_NORMAL = 1.0;	
 	
 	public static final int MAX_NUM_GROUPS = 100;
 	

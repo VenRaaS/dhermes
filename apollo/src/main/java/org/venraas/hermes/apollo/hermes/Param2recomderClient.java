@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.venraas.hermes.apollo.Apollo;
 import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumTrafficType;
 import org.venraas.hermes.common.Utility;
 
 import com.google.gson.Gson;
@@ -161,8 +162,8 @@ public class Param2recomderClient {
 		
 		//--  ${traffic_type}/${group_key}/${mappings} 
 		Map<String, Map<String, List<Object>>> trafficMaps = new HashMap<String, Map<String, List<Object>>> ();
-		trafficMaps.put(Constant.TRAFFIC_TYPE_NORMAL, new HashMap<String, List<Object>>());
-		trafficMaps.put(Constant.TRAFFIC_TYPE_TEST, new HashMap<String, List<Object>>());		
+		trafficMaps.put(EnumTrafficType.Normal.toString(), new HashMap<String, List<Object>>());
+		trafficMaps.put(EnumTrafficType.Test.toString(), new HashMap<String, List<Object>>());		
 		
 		//--  ${group_key}/${mappings}
 		Map<String, List<Object>> grpMaps = new HashMap<String, List<Object>> ();
@@ -221,11 +222,11 @@ public class Param2recomderClient {
 			for (String grpK : grpMaps.keySet()) {
 				List<Object> mappings = grpMaps.get(grpK);
 				
-				if ( grpK.equalsIgnoreCase(Constant.TRAFFIC_TYPE_NORMAL) ) {
-					trafficMaps.get(Constant.TRAFFIC_TYPE_NORMAL).put(grpK, mappings);
+				if ( grpK.equalsIgnoreCase(EnumTrafficType.Normal.toString()) ) {
+					trafficMaps.get(EnumTrafficType.Normal.toString()).put(grpK, mappings);
 				}
 				else {
-					trafficMaps.get(Constant.TRAFFIC_TYPE_TEST).put(grpK, mappings);
+					trafficMaps.get(EnumTrafficType.Test.toString()).put(grpK, mappings);
 				}
 			}
 		} catch (Exception ex) {

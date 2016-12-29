@@ -19,10 +19,10 @@ import org.venraas.hermes.apollo.hermes.JumperManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.apollo.raas.CompanyManager;
-import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.EnumResetInterval;
+import org.venraas.hermes.common.EnumTrafficType;
 import org.venraas.hermes.common.ValidDocID;
 import org.venraas.hermes.common.ValidGroupKey;
 import org.venraas.hermes.common.ValidToken;
@@ -333,7 +333,7 @@ public class HermesMgmtController {
 			}
 			
 			Param2RestAPI p2api = new Param2RestAPI();
-			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_NORMAL, jsonStr);
+			msg = p2api.regsiterMapping(codeName, EnumTrafficType.Normal, jsonStr);
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);
@@ -394,7 +394,7 @@ public class HermesMgmtController {
 			}
 			
 			Param2RestAPI p2api = new Param2RestAPI();
-			msg = p2api.regsiterMapping(codeName, Constant.TRAFFIC_TYPE_TEST, jsonStr);
+			msg = p2api.regsiterMapping(codeName, EnumTrafficType.Test, jsonStr);
 		} catch (Exception ex) {
 			msg = ex.getMessage();
 			VEN_LOGGER.error(msg);

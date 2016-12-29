@@ -95,8 +95,14 @@ public class HermesController {
 			
 			//-- redirect to Normal (default) Group, if input parameter doesn't match
 			if (! Constant.NORMAL_GROUP_KEY.equalsIgnoreCase(targetGrp.group_key) && mapping.isEmpty()) {
+				VEN_LOGGER.info("redirect to Normal Group due to there's no mapping match input parameter in {}", targetGrp.getGroup_key());				
 				p2r = n_p2r;
 				mapping = n_mapping;
+				
+				targetGrp = new RoutingGroup();
+				ConfManager confMgr = new ConfManager();
+				double pctNormal = confMgr.get_traffic_percent_normal(codeName);
+				targetGrp.setTraffic_pct(String.valueOf(pctNormal));								
 			}
 			
 			if (mapping.isEmpty()) {
@@ -112,7 +118,7 @@ public class HermesController {
 			// traffic info
 			HashMap<String, Object> outParamMap = new HashMap<String, Object> (inParamMap);
 			outParamMap.put(RoutingGroup.GROUP_KEY, targetGrp.getGroup_key());
-			outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type());
+			outParamMap.put(RoutingGroup.TRAFFIC_TYPE, targetGrp.getTraffic_type().toString());
 			outParamMap.put(RoutingGroup.TRAFFIC_PCT, Float.parseFloat(targetGrp.getTraffic_pct()));
 			//  auxiliary key/value which are specified by registration mapping. 
 			for (String f : auxFields) {
@@ -140,7 +146,7 @@ public class HermesController {
 				List<String> headers = confMgr.get_http_forward_headers(codeName);
 				
 				APIConnector apiConn = new APIConnector();										
-				resp = apiConn.post(apiURL, n_apiURL, outParam, req, headers);
+				resp = apiConn.post(targetGrp.getTraffic_type(), apiURL, n_apiURL, outParam, req, headers);
 			}
 		} catch(Exception ex) {
 			String err = String.format("%s", ex.getMessage());

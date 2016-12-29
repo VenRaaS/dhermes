@@ -3,7 +3,6 @@ package org.venraas.hermes;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-//import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Date;
@@ -21,7 +20,6 @@ import org.apache.http.ParseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -30,6 +28,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumTrafficType;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.context.Config;
 
@@ -56,16 +55,16 @@ public class APIConnector {
 	
 	public APIConnector() { }		
 	
-	public String post(String apiURL, String apiURL_FO, String body, HttpServletRequest req, List<String> headers) {
+	public String post(EnumTrafficType tt, String apiURL, String apiURL_FO, String body, HttpServletRequest req, List<String> headers) {
 		String rs = ""; 
 		
-		Map.Entry<Integer, String> resp = post(apiURL, body, req, headers);		
+		Map.Entry<Integer, String> resp = post(tt, apiURL, body, req, headers);		
 		int status = resp.getKey();
 		
 		//-- error apply normal 
 		if (status < 200 || 300 <= status) {
 			if (null != apiURL_FO && ! apiURL_FO.isEmpty()) {
-				resp = post(apiURL_FO, body, req, headers);
+				resp = post(tt, apiURL_FO, body, req, headers);
 			}
 		}
 		
@@ -73,7 +72,7 @@ public class APIConnector {
 		return rs;
 	}
 	
-	public Map.Entry<Integer, String> post(String apiURL, String body, HttpServletRequest req, List<String> headers) {
+	public Map.Entry<Integer, String> post(EnumTrafficType tt, String apiURL, String body, HttpServletRequest req, List<String> headers) {
 		
 		Map.Entry<Integer, String> resp = new AbstractMap.SimpleEntry<Integer, String>(-1, "");
 		
@@ -81,8 +80,10 @@ public class APIConnector {
 		
 		_APIStatusMap.putIfAbsent(apiURL, new APIStatus(apiURL));
 
-		APIStatus status = _APIStatusMap.get(apiURL);		
-		if (status.isSuspending()) return resp;				
+		//-- suspending only for Test channel
+		APIStatus status = _APIStatusMap.get(apiURL);
+		if (status.isSuspending() && EnumTrafficType.Test == tt) 
+			return resp;
 			
 		try {		
 			HttpPost post = new HttpPost(apiURL);

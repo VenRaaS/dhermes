@@ -1,6 +1,7 @@
 package org.venraas.hermes;
 
 import org.venraas.hermes.common.Constant;
+import org.venraas.hermes.common.EnumTrafficType;
 
 public class RoutingGroup {
 	
@@ -10,9 +11,10 @@ public class RoutingGroup {
 	
 	String group_key = Constant.NORMAL_GROUP_KEY;
 	
-	String traffic_type = Constant.TRAFFIC_TYPE_NORMAL;
+	EnumTrafficType traffic_type = EnumTrafficType.Normal;
 	
 	String traffic_pct = String.valueOf(Constant.TRAFFIC_PERCENT_NORMAL);
+	
 
 	public String getGroup_key() {
 		return group_key;
@@ -23,11 +25,11 @@ public class RoutingGroup {
 		return this;
 	}
 
-	public String getTraffic_type() {
+	public EnumTrafficType getTraffic_type() {
 		return traffic_type;
 	}
 
-	public RoutingGroup setTraffic_type(String traffic_type) {
+	public RoutingGroup setTraffic_type(EnumTrafficType traffic_type) {
 		this.traffic_type = traffic_type;
 		return this;
 	}
