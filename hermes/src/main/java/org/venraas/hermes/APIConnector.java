@@ -44,7 +44,7 @@ public class APIConnector {
 	
 	public APIConnector() { }		
 	
-	public String post(EnumTrafficType tt, String apiURL, String apiURL_FO, String body, HttpServletRequest req, List<String> headers) {
+	public String post(EnumTrafficType tt, String apiURL, String apiURL_failover, String body, HttpServletRequest req, List<String> headers) {
 		String rs = ""; 
 		
 		Map.Entry<Integer, String> resp = post(tt, apiURL, body, req, headers);		
@@ -52,8 +52,8 @@ public class APIConnector {
 		
 		//-- error apply normal 
 		if (status < 200 || 300 <= status) {
-			if (null != apiURL_FO && ! apiURL_FO.isEmpty()) {
-				resp = post(tt, apiURL_FO, body, req, headers);
+			if (null != apiURL_failover && ! apiURL_failover.isEmpty()) {
+				resp = post(EnumTrafficType.Normal, apiURL_failover, body, req, headers);
 			}
 		}
 		
