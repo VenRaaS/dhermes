@@ -46,7 +46,7 @@ public class Utility {
 				nThreads, nThreads, 60L, TimeUnit.SECONDS, 
 				new ArrayBlockingQueue<Runnable>(queueSize, true), 
 				threadFactory,
-				new ThreadPoolExecutor.AbortPolicy());
+				new ThreadPoolExecutor.DiscardPolicy());
 	}
 
 	static public String stackTrace2string(Exception ex) {
