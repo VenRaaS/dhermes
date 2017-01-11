@@ -20,7 +20,7 @@ An API group comprises a set of APIs which represents a service embodiment, e.g.
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
 ## A Hermes instance
-A Hermes instance is comprised of a RESTful web app and an ES node.
+A Hermes instance is comprised of a RESTful web app and an ES node.  
 The RESTful web app consists of following parts.
 * RestFul API: Invoked by upstream and configuration.
 * Routing Hash: dispatchs traffic into group (channel) as random as possible.
