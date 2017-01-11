@@ -2,6 +2,8 @@ package org.venraas.hermes.apollo.hermes;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +117,21 @@ public class Param2recomderClient {
 				
 				if (null != m) mappings.add(m);
 			}				
+		}
+		
+		try 
+		{
+			//-- Descending with size of in_keys2recomder field for Maximum matching according to in_keys
+			Collections.sort(mappings, new Comparator<Map<String, Object> > () {
+				public int compare(Map<String, Object> l, Map<String, Object> r) {
+					List<String> l_inKeys = (List<String>) l.getOrDefault(EnumParam2recomder.in_keys2recomder.name(), new ArrayList<String>());
+					List<String> r_inKeys = (List<String>) r.getOrDefault(EnumParam2recomder.in_keys2recomder.name(), new ArrayList<String>());				
+					return r_inKeys.size() - l_inKeys.size();
+				}
+			});			
+		} catch (Exception ex) {
+			VEN_LOGGER.error(ex.getMessage());
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 		}
 		
 		return mappings;
