@@ -20,10 +20,10 @@ An API group comprises a set of APIs which represents a service embodiment, e.g.
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
 ## A Hermes instance
-* RestFul API: Invoked by upstream and configuration
-* Routing Hash: dispatch traffic into testing channel as random as possible
-* Local Cache: acceleration of mapping query
-* Mappings: 
+* RestFul API: Invoked by upstream and configuration.
+* Routing Hash: dispatchs traffic into group (channel) as random as possible.
+* Local Cache: acceleration of mapping query.
+* Mappings: tables for linking input parameters and destination api url.
 
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtaWU1Z0FVYWVJSUk)
 
