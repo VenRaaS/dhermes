@@ -99,10 +99,11 @@ public class HermesController {
 				p2r = n_p2r;
 				mapping = n_mapping;
 				
-				targetGrp = new RoutingGroup();
-				ConfManager confMgr = new ConfManager();
-				double pctNormal = confMgr.get_traffic_percent_normal(codeName);
-				targetGrp.setTraffic_pct(String.valueOf(pctNormal));								
+				//-- reserve the testing $targetGrp while traffic redirect to normal due to non of mapping for input parameters
+///				targetGrp = new RoutingGroup();				
+///				ConfManager confMgr = new ConfManager();
+///				double pctNormal = confMgr.get_traffic_percent_normal(codeName);
+///				targetGrp.setTraffic_pct(String.valueOf(pctNormal));								
 			}
 			
 			if (mapping.isEmpty()) {
