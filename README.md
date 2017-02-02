@@ -19,7 +19,7 @@ An API group comprises a set of APIs which represents a service embodiment, e.g.
 
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
-## High Availibliy by Distributed mapping table
+## High Availability by Distributed mapping table
 
 <img src= https://drive.google.com/uc?id=0B78KhWqVkVmtN2NVVkhoZGQtUDA width=100%/>
 
