@@ -14,14 +14,14 @@ An API group comprises a set of APIs which represents a service embodiment, e.g.
 
 <img src="https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s" width=100%/>
 
-## Overview - Service Tier
+## Overview - Service Tiers
 <img src= https://drive.google.com/uc?id=0B78KhWqVkVmtS0poNkJUZ2N0OGc width=100%/>
 
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
 ## High Availability by Distributed mapping table
 
-<img src= https://drive.google.com/uc?id=0B78KhWqVkVmtN2NVVkhoZGQtUDA width=100%/>
+<img src= https://drive.google.com/uc?id=0B78KhWqVkVmteFFhSDBMMm1nV2s width=100%/>
 
 ## A Hermes instance
 A Hermes instance is comprised of a RESTful web app and an ES node.  
