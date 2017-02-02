@@ -43,6 +43,9 @@ The RESTful web app consists of following parts.
 * Output = $long_integer => $GroupID
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtbWNrbXFIeW5qX0E)
 
+### Mapping 
+TODO...
+
 #### Reference
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
 
