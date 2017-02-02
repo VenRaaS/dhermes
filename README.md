@@ -33,12 +33,13 @@ The RESTful web app consists of following parts.
 
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtaWU1Z0FVYWVJSUk)
 
-## Routing & Mapping Overview
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtRlJ5OHFSbkFNOTg)
-
+## Routing & Mapping 
 ### Routing - Traffic Unit
 * client_id = $token + $ven_guid + $ven_session
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtcXcycUdjTmZMZjQ)
+
+### Routing Hash
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtbWNrbXFIeW5qX0E)
 
 #### Reference
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
