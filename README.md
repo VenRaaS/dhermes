@@ -41,6 +41,7 @@ The RESTful web app consists of following parts.
 ### Routing Hash
 * Input = client_id + interval(current_datetime)
 * Output = $long_integer => $GroupID
+
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtbWNrbXFIeW5qX0E)
 
 ### Mapping 
