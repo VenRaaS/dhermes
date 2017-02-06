@@ -45,6 +45,9 @@ The RESTful web app consists of following parts.
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtbWNrbXFIeW5qX0E)
 
 ### Mapping 
+* Input = parameters generatied by client (consumber browser)
+* Output = service URL and auxiliary parameters for the destination API
+
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtd0pFaUdRUllOMk0)
 
 #### Reference
