@@ -3,7 +3,7 @@
 * [Overview](#overview)
 * [Service Tier](#overview---service-tier)
 * [A Hermes instance](#a-hermes-instance)
-* [Routing Hash](#routing-hash)
+* [Routing & Mapping](#routing--mapping)
 * Usage Guide
   * [restFul APIs](#usage-guide---restful-apis)
 
