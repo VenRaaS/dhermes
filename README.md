@@ -7,7 +7,7 @@
  * [routing - traffic unit](#routing---traffic-unit)
  * [routing - routing hash](#routing-hash)
  * [mapping](#mapping)
-* [Usage Guide - restFul APIs](#usage-guide)
+* [Usage Guide - restFul APIs](#usage-guide---restful-apis)
 
 
 ## Overview
