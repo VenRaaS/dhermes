@@ -7,8 +7,8 @@
  * [routing - traffic unit](#routing---traffic-unit)
  * [routing - routing hash](#routing-hash)
  * [mapping](#mapping)
-* Usage Guide
-  * [restFul APIs](#usage-guide---restful-apis)
+* [Usage Guide](#usage-guide)
+
 
 ## Overview
 DHermes is a distributed RESTful API A/B testing application.  
