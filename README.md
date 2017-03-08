@@ -4,6 +4,7 @@
 * [Service Tier](#overview---service-tier)
 * [A Hermes instance](#a-hermes-instance)
 * [Routing & Mapping](#routing--mapping)
+ * [routing - traffic unit](#routing---traffic-unit)
 * Usage Guide
   * [restFul APIs](#usage-guide---restful-apis)
 
