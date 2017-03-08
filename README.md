@@ -2,7 +2,7 @@
 ## TOC
 * [Overview](#overview)
 * [Service Tiers](#overview---service-tiers)
-* [High Availability]()
+* [High Availability](#high-availability-by-distributed-mapping-table)
 * [A Hermes instance](#a-hermes-instance)
 * [Routing & Mapping](#routing--mapping)
  * [routing - traffic unit](#routing---traffic-unit)
