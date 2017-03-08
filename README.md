@@ -1,7 +1,7 @@
 
 ## TOC
 * [Overview](#overview)
-* [Service Tier](#overview---service-tiers)
+* [Service Tiers](#overview---service-tiers)
 * [A Hermes instance](#a-hermes-instance)
 * [Routing & Mapping](#routing--mapping)
  * [routing - traffic unit](#routing---traffic-unit)
