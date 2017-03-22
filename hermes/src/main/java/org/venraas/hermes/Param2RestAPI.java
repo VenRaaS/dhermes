@@ -137,7 +137,7 @@ public class Param2RestAPI {
 			Param2recomderManager p2rMgr = new Param2recomderManager();
 			String docID = p2rMgr.registerMapping(codeName, g.toJson(rootJO));	
 				
-			if (docID.isEmpty()) throw new RuntimeException("error, input mapping doesn't register to normal channel!");
+			if (docID.isEmpty()) throw new RuntimeException("error, timeout or other problem occurs, please re-register again if the input mapping doesn't exist!");
 			
 			msg = String.format("ok, the input been registered to %s channel with ID: %s", trafficType, docID); 				  
 		}
