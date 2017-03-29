@@ -62,89 +62,89 @@ The RESTful web app consists of following parts.
 * register_normal  
   Note, all value should be Double-quoted as a String
   ```
-POST /hermes/mgmt/register_normal
+  POST /hermes/mgmt/register_normal
 
-{
-  "token":"${token}"
-  "rec_pos":"categTop",
-  "rec_code":"ClickStream",
-  "rec_type":"cs",
-  "api_url":["http://104.199.205.141/cupid/api/showinputparam"],
-  "in_keys2recomder":["rec_pos"],
-  "out_aux_params":["rec_code", "rec_type"]
-}
-```
+  {
+    "token":"${token}"
+    "rec_pos":"categTop",
+    "rec_code":"ClickStream",
+    "rec_type":"cs",
+    "api_url":["http://104.199.205.141/cupid/api/showinputparam"],
+    "in_keys2recomder":["rec_pos"],
+    "out_aux_params":["rec_code", "rec_type"]
+  }
+  ```
 
 * register_test  
   Note, all value should be Double-quoted as a String
   ```
-POST /hermes/mgmt/register_test
-
-{
-  "token":"${token}"
-  "group_key":"test-1",
-  "rec_pos":"categTop",
-  "rec_code":"ClickStream_COOC",
-  "rec_type":"ClickStream",
-  "page_type":"1",
-  "api_url":["http://fake-cupid/cupid/api/showinputparam"],
-  "in_keys2recomder":["page_type"],
-  "out_aux_params":["rec_code","rec_pos", "rec_type"]
-}
-```
+  POST /hermes/mgmt/register_test
+  
+  {
+    "token":"${token}"
+    "group_key":"test-1",
+    "rec_pos":"categTop",
+    "rec_code":"ClickStream_COOC",
+    "rec_type":"ClickStream",
+    "page_type":"1",
+    "api_url":["http://fake-cupid/cupid/api/showinputparam"],
+    "in_keys2recomder":["page_type"],
+    "out_aux_params":["rec_code","rec_pos", "rec_type"]
+  }
+  ```
 
 * set_traffic_pct_normal
   ```
-GET /hermes/mgmt/set_traffic_pct_normal?token=${token}&pct=0.66
-```
+  GET /hermes/mgmt/set_traffic_pct_normal?token=${token}&pct=0.66
+  ```
 
 * set_routing_reset_interval
   ```
-GET /hermes/mgmt/set_routing_reset_interval?token=${token}&interval=HOUR
-```
+  GET /hermes/mgmt/set_routing_reset_interval?token=${token}&interval=HOUR
+  ```
 
 * ls_grp
   ```
-GET /hermes/mgmt/ls_grp?token=${token}
-```
+  GET /hermes/mgmt/ls_grp?token=${token}
+  ```
 
 * rm_grp
   ```
-DELETE /hermes/mgmt/rm_grp?token=${token}&grpkey=${group_key}
-```
+  DELETE /hermes/mgmt/rm_grp?token=${token}&grpkey=${group_key}
+  ```
 
 * rm_mapping
   ```
-DELETE /hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
-```
+  DELETE /hermes/mgmt/rm_mapping?token=${token}&mid=${_id}
+  ```
 
 * set_jumper
   * uid  
     ```
-GET /hermes/mgmt/set_jumper?token=${token}&grpkey=test-1&uid=${uid}
-```
+    GET /hermes/mgmt/set_jumper?token=${token}&grpkey=test-1&uid=${uid}
+    ```
   * guid  
     ```
-GET /hermes/mgmt/set_jumper_guid?token=${token}&grpkey=test-1&ven_guid=${ven_guid}
-```
+    GET /hermes/mgmt/set_jumper_guid?token=${token}&grpkey=test-1&ven_guid=${ven_guid}
+    ```
 
 * ls_forward_headers
   ```
-GET /hermes/mgmt/ls_forward_headers?token=${token}
-```
+  GET /hermes/mgmt/ls_forward_headers?token=${token}
+  ```
 
 * add_forward_headers  
   The input json should be a JsonArray.  
   Note, empty input isn't acceptably, i.e. [].
   ```
-GET /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
-```
+  GET /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
+  ```
 
 * set_forward_headers  
   The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].
   ```
-GET /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
-```
+  GET /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
+  ```
 
 ### Request bypass APIs (/hermes/api/)
 
