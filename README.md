@@ -16,16 +16,16 @@ DHermes is a distributed RESTful API A/B testing application.
 It splits incoming traffic into pre-defined restful API group with specified percentage.  
 An API group comprises a set of APIs which represents a service embodiment, e.g. recommendation APIs for an EC site.
 
-<img src="https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s" width=100%/>
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s)
 
 ## Overview - Service Tiers
-<img src= https://drive.google.com/uc?id=0B78KhWqVkVmtRUh3RV9oRmE2Mk0 width=100%/>
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtRUh3RV9oRmE2Mk0)
 
 In the right side tier, a recommender is represented by a restful API, i.e. http://
 
 ## High Availability by Distributed mapping table
 
-<img src= https://drive.google.com/uc?id=0B78KhWqVkVmteFFhSDBMMm1nV2s width=100%/>
+![](https://drive.google.com/uc?id=0B78KhWqVkVmteFFhSDBMMm1nV2s)
 
 ## A Hermes instance
 A Hermes instance is comprised of a RESTful web app and an ES node.  
