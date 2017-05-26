@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,14 @@ import com.twitter.jsr166e.ThreadLocalRandom;
 public class HermesController {
 	
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(HermesController.class);
+	
+	@CrossOrigin
+	@RequestMapping(value = "/{type:\\w+}/{api:\\w+}", method = RequestMethod.GET)
+	public Object updateGoods(@PathVariable("type") String type, @PathVariable("api") String api, HttpServletRequest httpResp) {
+//TODO...		
+		
+		return new Object();
+	}
 	
 	@CrossOrigin
 	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)	
@@ -172,7 +181,12 @@ public class HermesController {
 		return respMap;	
 	}	
 	
-	
+	@CrossOrigin
+	@RequestMapping(value = "/status", method = RequestMethod.GET)
+	public String status()
+	{
+		return "\"Good\"";
+	}
 
 	@CrossOrigin
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)
