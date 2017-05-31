@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,8 @@ public class Utility {
 	static {
 		ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("cacheRefresherThread - %d").setDaemon(true).build();
 //		ExecutorService es = Executors.newSingleThreadExecutor(threadFactory);
-		ExecutorService es = newFixedThreadPoolWithQueueSize(1, 1000, threadFactory);
+		ExecutorService es = Executors.newFixedThreadPool(5, threadFactory);
+//		ExecutorService es = newFixedThreadPoolWithQueueSize(1, 1000, threadFactory);		
 		CacheRefreshLES = MoreExecutors.listeningDecorator(es);
 		VEN_LOGGER.info("cache refresher thread is creaded");
 	}

@@ -37,16 +37,13 @@ public class HermesController {
 	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(HermesController.class);
 	
 	@CrossOrigin
-	@RequestMapping(value = "/{type:\\w+}/{api:\\w+}", method = RequestMethod.GET)
-	public Object updateGoods(@PathVariable("type") String type, @PathVariable("api") String api, HttpServletRequest httpResp) {
-//TODO...		
-		
-		return new Object();
-	}
-	
-	@CrossOrigin
-	@RequestMapping(value = "/goods/rank", method = RequestMethod.GET)	
-	public Object get_goods_rank_GET(@RequestParam Map<String, Object> paramMap, HttpServletRequest req) {
+	@RequestMapping(value = "/{subject:\\w+}/{action:\\w+}", method = RequestMethod.GET)
+	public Object get_goods_rank_GET(
+			@PathVariable("subject") String subject, 
+			@PathVariable("action") String action, 
+			@RequestParam Map<String, Object> paramMap,
+			HttpServletRequest req) 
+	{
 		Gson gson = new Gson();
 		VEN_LOGGER.info(gson.toJson(paramMap));
 		
@@ -54,7 +51,7 @@ public class HermesController {
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value = "/goods/rank", method = RequestMethod.POST)	
+	@RequestMapping(value = "/{subject:\\w+}/{action:\\w+}", method = RequestMethod.POST)
 	public Object get_goods_rank_POST(@RequestBody String jsonStr, HttpServletRequest req) {
 		VEN_LOGGER.info(jsonStr);
 		
@@ -63,9 +60,7 @@ public class HermesController {
 		Map<String, Object> paramMap = gson.fromJson(jsonStr, type);
 		
 		return get_goods_rank(paramMap, req);
-	}
-	
-	
+	}	
 	
 	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap, HttpServletRequest req) {
 		Map<String, Object> errMsg = null;
