@@ -61,7 +61,9 @@ The RESTful web app consists of following parts.
 ## Usage Guide - restFul APIs
 ### Management APIs
 * root path
-  `/hermes/mgmt/`
+  ```
+  /hermes/mgmt/
+  ```
 
 * register_normal  
   Note, all value should be Double-quoted as a String
