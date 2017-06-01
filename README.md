@@ -147,5 +147,6 @@ The RESTful web app consists of following parts.
   ```
 
 ### Request bypass APIs (/hermes/api/${subject}/${action})
-* ${subject} and ${action} are able to be customized and in line with the regular expression, i.e. `[0-9A-Za-z_]+`
-
+* ${subject} and ${action} are able to be customized according to the regular expression, i.e. `[0-9A-Za-z_]+`
+  * /hermes/api/goods/rank
+  * /hermes/api/category/rank
