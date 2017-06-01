@@ -9,7 +9,8 @@
   * [routing - routing hash](#routing-hash)
   * [mapping](#mapping)
 * [Usage Guide - restFul APIs](#usage-guide---restful-apis)
- * [Request bypass APIs](#request-bypass-apis)
+  * [Management APIs](#management-apis)
+  * [Request bypass APIs](#request-bypass-apis)
 
 ## Overview
 DHermes is a distributed RESTful API A/B/n testing application.  
@@ -150,10 +151,11 @@ The RESTful web app consists of following parts.
   ```
 
 ### Request bypass APIs 
-* Syntax
+* root path and syntax
   ```
   /hermes/api/${subject}/${action}
   ```
+  
 * `${subject}` and `${action}` are able to be customized according to the regular expression, i.e. `[0-9A-Za-z_]+`
   * /hermes/api/`goods/rank`
   * /hermes/api/`category/rank`
