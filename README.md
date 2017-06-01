@@ -58,7 +58,10 @@ The RESTful web app consists of following parts.
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
 
 ## Usage Guide - restFul APIs
-### Management APIs (/hermes/mgmt/)
+### Management APIs
+* root path
+  `/hermes/mgmt/`
+
 * register_normal  
   Note, all value should be Double-quoted as a String
   ```
@@ -149,7 +152,7 @@ The RESTful web app consists of following parts.
 ### Request bypass APIs 
 * Syntax
   ```
-  /hermes/api/`${subject}/${action}`
+  /hermes/api/${subject}/${action}
   ```
 * `${subject}` and `${action}` are able to be customized according to the regular expression, i.e. `[0-9A-Za-z_]+`
   * /hermes/api/`goods/rank`
