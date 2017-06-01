@@ -146,5 +146,6 @@ The RESTful web app consists of following parts.
   GET /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
   ```
 
-### Request bypass APIs (/hermes/api/)
+### Request bypass APIs (/hermes/api/${subject}/${action})
+* ${subject} and ${action} are able to be customized and in line with the regular expression, i.e. `[0-9A-Za-z_]+`
 
