@@ -12,7 +12,7 @@
 
 
 ## Overview
-DHermes is a distributed RESTful API A/B testing application.  
+DHermes is a distributed RESTful API A/B/n testing application.  
 It splits incoming traffic into pre-defined restful API group with specified percentage.  
 An API group comprises a set of APIs which represents a service embodiment, e.g. recommendation APIs for an EC site.
 
