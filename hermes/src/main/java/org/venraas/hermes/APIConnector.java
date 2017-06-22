@@ -50,10 +50,12 @@ public class APIConnector {
 		Map.Entry<Integer, String> resp = post(tt, apiURL, body, req, headers);		
 		int status = resp.getKey();
 		
-		//-- error apply normal 
-		if (status < 200 || 300 <= status) {
-			if (null != apiURL_failover && ! apiURL_failover.isEmpty()) {
-				resp = post(EnumTrafficType.Normal, apiURL_failover, body, req, headers);
+		//-- error apply normal
+		if (EnumTrafficType.Normal != tt) {
+			if (status < 200 || 300 <= status) {
+				if (null != apiURL_failover && ! apiURL_failover.isEmpty()) {
+					resp = post(EnumTrafficType.Normal, apiURL_failover, body, req, headers);
+				}
 			}
 		}
 		
@@ -71,7 +73,7 @@ public class APIConnector {
 
 		//-- suspending only for Test channel
 		APIStatus status = _APIStatusMap.get(apiURL);
-		if (status.isSuspending() && EnumTrafficType.Test == tt) 
+		if (EnumTrafficType.Normal != tt && status.isSuspending()) 
 			return resp;
 			
 		try {		
@@ -99,7 +101,13 @@ public class APIConnector {
 		} catch (Exception ex) {
 			VEN_LOGGER.error("{} on {}",  ex.getMessage(), apiURL);
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));
-			_connectFailHelper(apiURL);
+			
+			if (EnumTrafficType.Normal == tt) {
+				VEN_LOGGER.error(String.format("Normal channge %s timeout or connection fail.", apiURL));
+			} 
+			else {
+				_connectFailHelper(apiURL);
+			}			
 		}
 		finally {
 			try {
