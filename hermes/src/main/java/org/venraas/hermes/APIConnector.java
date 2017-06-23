@@ -33,7 +33,10 @@ public class APIConnector {
 
 	static {
 		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+		//-- total connection limit
 	    cm.setMaxTotal(Constant.CONNECTION_POOL_MAX_TOTAL);
+	    //-- connection limit per host
+	    cm.setDefaultMaxPerRoute(Constant.CONNECTION_POOL_MAX_PER_ROUTE);
 	    
 	    _httpClient = HttpClients.custom()
 	    	.setConnectionManager(cm)
@@ -121,14 +124,14 @@ public class APIConnector {
 		return resp;
 	}
 	
-	public boolean isSuspending(String apiURL) {				
-		if (null == apiURL || apiURL.isEmpty()) return true;
-			
-		APIStatus status = _APIStatusMap.get(apiURL);
-		if (null == status) return true;
-		
-		return status.isSuspending();
-	}
+///	public boolean isSuspending(String apiURL) {				
+///		if (null == apiURL || apiURL.isEmpty()) return true;
+///			
+///		APIStatus status = _APIStatusMap.get(apiURL);
+///		if (null == status) return true;
+///		
+///		return status.isSuspending();
+///	}
 	
 	public boolean isValidURL(String apiURL, String body) {
 						

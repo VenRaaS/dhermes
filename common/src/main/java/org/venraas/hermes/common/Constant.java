@@ -9,9 +9,7 @@ public class Constant {
 	
 	public static final int MAX_NUM_GROUPS = 100;
 	
-	public static final String NORMAL_GROUP_KEY = "normal";
-	
-	public static final int HTTP_REQUEST_TIMEOUT = 2 * 1000;
+	public static final String NORMAL_GROUP_KEY = "normal";		
 	
 	
 	public final static long CACHE_SIZE_10K = 10 * 1000;
@@ -25,7 +23,8 @@ public class Constant {
 	public final static long NUM_TIMEUNIT_30 = 30;
 	
 	
-	public final static int CONNECTION_POOL_MAX_TOTAL = 200;
+	public final static int CONNECTION_POOL_MAX_TOTAL = 300;
+	public final static int CONNECTION_POOL_MAX_PER_ROUTE = 300;
 	
 	//-- HTTP header
 	public final static String COOOKIE = "Cookie";
