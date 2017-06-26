@@ -23,8 +23,9 @@ public class Constant {
 	public final static long NUM_TIMEUNIT_30 = 30;
 	
 	
-	public final static int CONNECTION_POOL_MAX_TOTAL = 300;
-	public final static int CONNECTION_POOL_MAX_PER_ROUTE = 300;
+	public final static int CONNECTION_POOL_MAX_TOTAL = 1024;
+	public final static int CONNECTION_POOL_MAX_PER_ROUTE = 1000;
+	public final static int CONNECTION_WAIT_TO_EVICATION_MS = 10000;
 	
 	//-- HTTP header
 	public final static String COOOKIE = "Cookie";

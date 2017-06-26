@@ -27,9 +27,9 @@ public class APIConnector {
 	
 	private static CloseableHttpClient _httpClient = null;
 	
-	private static final ConcurrentHashMap<String, APIStatus> _APIStatusMap = new ConcurrentHashMap<String, APIStatus>(); 
+	private static final ConcurrentHashMap<String, APIStatus> _APIStatusMap = new ConcurrentHashMap<String, APIStatus>();
 	
-	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
+	private static final ConnectionEvictionMonitor _cem;		
 
 	static {
 		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
@@ -42,7 +42,12 @@ public class APIConnector {
 	    	.setConnectionManager(cm)
 	    	.setConnectionManagerShared(true)
 	    	.build();
+	    
+	    _cem = new ConnectionEvictionMonitor(cm); 
+	    _cem.start();
 	}
+	
+	private static final Logger VEN_LOGGER = LoggerFactory.getLogger(APIConnector.class);
 	
 	
 	public APIConnector() { }		
