@@ -4,10 +4,14 @@ public enum EnumOptionBase {
 
 	token,
 	
-	ven_guid,
+	ven_guid,	
 	
 	ven_session,
 	
-	uid
+	uid,
+	
+	cc_guid,
+	
+	cc_session
 	
 }

@@ -23,6 +23,7 @@ import org.venraas.hermes.apollo.mappings.EnumParam2recomder;
 import org.venraas.hermes.apollo.raas.CompanyManager;
 import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.EnumOptionBase;
+import org.venraas.hermes.common.OptionUtility;
 import org.venraas.hermes.common.Utility;
 
 import com.google.gson.Gson;
@@ -65,7 +66,10 @@ public class HermesController {
 	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap, HttpServletRequest req) {
 		Map<String, Object> errMsg = null;
 		String resp = "";
-
+		
+		OptionUtility opt = new OptionUtility();
+		inParamMap = opt.cp_cc2ven(inParamMap);
+		
 		String clientID = String.format("%s_%s_%s", 
 				inParamMap.get(EnumOptionBase.token.name()), 
 				inParamMap.get(EnumOptionBase.ven_guid.name()), 
