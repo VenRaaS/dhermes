@@ -39,6 +39,9 @@ The RESTful web app consists of following parts.
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtaWU1Z0FVYWVJSUk)
 
 ## Routing & Mapping 
+### Routing - Overview
+![](https://drive.google.com/uc?id=0B78KhWqVkVmtTGl6QjdXSE1sMkk)
+
 ### Routing - Traffic Unit
 * client_id = $token + $ven_guid + $ven_session
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtcXcycUdjTmZMZjQ)
