@@ -5,6 +5,7 @@
 * [High Availability](#high-availability-by-distributed-mapping-table)
 * [A Hermes instance](#a-hermes-instance)
 * [Routing & Mapping](#routing--mapping)
+  * [routing - overview](#routing---overview)
   * [routing - traffic unit](#routing---traffic-unit)
   * [routing - routing hash](#routing-hash)
   * [mapping](#mapping)
