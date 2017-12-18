@@ -34,6 +34,7 @@ public class AppProperty {
 			cfg.setConn_fail_cond_interval(Integer.valueOf(env.getProperty("conn.fail.cond.interval_sec")));
 			cfg.setConn_fail_cond_count(Integer.valueOf(env.getProperty("conn.fail.cond.count")));
 			cfg.setConn_fail_resume_interval(Integer.valueOf(env.getProperty("conn.fail.resume.interval_sec")));
+			cfg.setEs_host_westernwall(env.getProperty("es.host.westernwall"));
 		}
 		catch (Exception ex) {
 			VEN_LOGGER.error(Utility.stackTrace2string(ex));

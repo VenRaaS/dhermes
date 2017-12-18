@@ -45,6 +45,11 @@
 			<artifactId>gson</artifactId>			
 		</dependency>
 		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+		<dependency>
 			<groupId>org.venraas.hermes.context</groupId>
 			<artifactId>app_context</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -53,7 +58,7 @@
 			<groupId>org.venraas.hermes.data_entity</groupId>
 			<artifactId>data_entity</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency>		
 	</dependencies>
 	
 	<build>

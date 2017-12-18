@@ -11,11 +11,11 @@ public class Config {
 	
 	int conn_fail_resume_interval;
 	
+	String es_host_westernwall;	
+
+	static Config _conf = new Config();	
 	
-		
-	static Config _conf = new Config();
-	
-	
+
 	private Config() { }
 
 	static public Config getInstance() {		
@@ -53,6 +53,13 @@ public class Config {
 	public void setConn_fail_resume_interval(int conn_fail_resume_interval) {
 		this.conn_fail_resume_interval = conn_fail_resume_interval;
 	}
+	
+	public String getEs_host_westernwall() {
+		return es_host_westernwall;
+	}
 
-//	
+	public void setEs_host_westernwall(String es_host_westernwall) {
+		this.es_host_westernwall = es_host_westernwall;
+	}
+	
 }
