@@ -80,7 +80,7 @@ public class HermesController {
 			CompanyManager comMgr = new CompanyManager();
 			String codeName = comMgr.getCodeName(token);			
 			if (codeName.isEmpty()) {
-				throw new InvalidParameterException(String.format("an invalid token: '%s' !", token));
+				throw new InvalidParameterException(String.format("an invalid token: '%s', or mapping isn't undefined yet!", token));
 			}
 			
 			String uid = (String) inParamMap.getOrDefault(EnumOptionBase.uid.name(), "");
