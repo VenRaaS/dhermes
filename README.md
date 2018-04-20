@@ -137,15 +137,15 @@ The RESTful web app consists of following parts.
     GET /hermes/mgmt/set_jumper_guid?token=${token}&grpkey=test-1&ven_guid=${ven_guid}
     ```
 
-* ls_forward_headers
-  Shows the setting http headers which forwards to the the backend API, e.g. cookie, origin, referer ...
+* ls_forward_headers  
+  Shows the setting http headers which forwards to the the backend API, e.g. cookie, origin, referer ...  
   ```
   GET /hermes/mgmt/ls_forward_headers?token=${token}
   ```  
 
 * add_forward_headers  
-  Add the http header keys which would be forwarded to the backend API, e.g. cookie, origin, referer ...
-  The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].
+  Add the http header keys which would be forwarded to the backend API, e.g. cookie, origin, referer ...  
+  The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].  
   ```
   GET /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
   ```
