@@ -138,13 +138,14 @@ The RESTful web app consists of following parts.
     ```
 
 * ls_forward_headers
+  Shows the setting http headers which forwards to the the backend API, e.g. cookie, origin, referer ...
   ```
   GET /hermes/mgmt/ls_forward_headers?token=${token}
-  ```
+  ```  
 
 * add_forward_headers  
-  The input json should be a JsonArray.  
-  Note, empty input isn't acceptably, i.e. [].
+  Add the http header keys which would be forwarded to the backend API, e.g. cookie, origin, referer ...
+  The input json should be a JsonArray and allow empty for clearing this setting, i.e. [].
   ```
   GET /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
   ```
