@@ -33,7 +33,7 @@ public class CompanyClient {
         
         String codeName = "";
         
-        if (null == token || token.isEmpty()) return codeName;        
+        if (null == token || token.isEmpty()) return codeName;
 
         try {            
             Config conf = Config.getInstance();
@@ -45,8 +45,7 @@ public class CompanyClient {
             //   https://www.elastic.co/guide/en/elasticsearch/reference/1.7/search-uri-request.html#search-uri-request
             //   e.g. qUri = "http://${hostPath}/_search?q=${tokenKV}&sort=update_dt:desc";
             String hostPath = String.format("http://%s:9200/%s/%s/_search?", hostname_es_ww, VENRAAS_INDEX_NAME, TYPE_NAME);
-            String tokenKV = String.format("%s:%s", String.join(".", Com_pkgs.companies, Com_pkgs.token), token);            
-            String query= String.format("q=%s&sort=%s:desc&size=1", tokenKV, Com_pkgs.update_dt);
+            String query= String.format("sort=%s:desc&size=1", Com_pkgs.update_dt);
             String qUri = hostPath + query;
             
             Content content = Request.Get(qUri)
@@ -65,8 +64,11 @@ public class CompanyClient {
             
            for (JsonElement v : comps) {
                JsonObject c = (JsonObject)v;
-               String tok = c.get(Com_pkgs.token).getAsString();
+               JsonElement je = c.get(Com_pkgs.token);
+               if (null == je) 
+            	   continue;
                
+               String tok = je.getAsString();               
                if (0 == tok.compareToIgnoreCase(token)) {
                    codeName = c.get(Com_pkgs.code_name).getAsString();
                    break;
