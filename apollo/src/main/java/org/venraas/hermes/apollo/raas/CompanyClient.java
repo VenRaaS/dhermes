@@ -7,8 +7,11 @@ import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.context.Config;
 import java.net.InetAddress;
+
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.conn.ConnectTimeoutException;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -49,9 +52,10 @@ public class CompanyClient {
             String qUri = hostPath + query;
             
             Content content = Request.Get(qUri)
-            		.connectTimeout((int)Constant.TIMEOUT_SEARCH_MILLIS)
+            		.connectTimeout((int)Constant.TIMEOUT_SEARCH_MILLIS)            		
             		.execute()
             		.returnContent();
+            
             String jsonStr = content.asString();            
             JsonParser jp = new JsonParser();
             JsonObject obj = jp.parse(jsonStr).getAsJsonObject();
@@ -74,11 +78,14 @@ public class CompanyClient {
                    break;
                }
            }
-
-        } catch(Exception ex) {
+        }
+        catch (ConnectTimeoutException ex) {
+        	throw new ConnectTimeoutException("propagates timeout exception to reuse catch value");        	
+        }
+        catch (Exception ex) {        	
             VEN_LOGGER.error(Utility.stackTrace2string(ex));
             VEN_LOGGER.error(ex.getMessage());
-        }    
+        }              
         
         return codeName;
     }
