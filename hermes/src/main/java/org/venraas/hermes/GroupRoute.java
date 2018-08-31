@@ -60,7 +60,7 @@ public class GroupRoute {
 		
 		//-- get jumping group, if a valid jumper
 		String jumpGrpKey = "";
-		if (! uid.isEmpty()) {
+		if (null != uid && !uid.isEmpty()) {
 			JumperManager jumperMgr = new JumperManager();
 			jumpGrpKey = jumperMgr.get_group_key(codeName, uid);
 			
