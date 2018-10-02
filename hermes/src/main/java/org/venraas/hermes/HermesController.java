@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,27 +44,36 @@ public class HermesController {
 			@PathVariable("subject") String subject, 
 			@PathVariable("action") String action, 
 			@RequestParam Map<String, Object> paramMap,
-			HttpServletRequest req) 
+			HttpServletRequest servletReq,
+			HttpServletResponse servletResp) 
 	{
 		Gson gson = new Gson();
 		VEN_LOGGER.info(gson.toJson(paramMap));
 		
-		return get_goods_rank(paramMap, req);
+		return get_goods_rank(paramMap, servletReq, servletResp);
 	}
 	
 	@CrossOrigin
 	@RequestMapping(value = "/{subject:\\w+}/{action:\\w+}", method = RequestMethod.POST)
-	public Object get_goods_rank_POST(@RequestBody String jsonStr, HttpServletRequest req) {
+	public Object get_goods_rank_POST(
+			@RequestBody String jsonStr, 
+			HttpServletRequest servletReq, 
+			HttpServletResponse servletResp) 
+	{
 		VEN_LOGGER.info(jsonStr);
 		
 		Gson gson = new Gson();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		Map<String, Object> paramMap = gson.fromJson(jsonStr, type);
 		
-		return get_goods_rank(paramMap, req);
+		return get_goods_rank(paramMap, servletReq, servletResp);
 	}	
 	
-	private Map<String, Object> get_goods_rank(Map<String, Object> inParamMap, HttpServletRequest req) {
+	private Map<String, Object> get_goods_rank(
+			Map<String, Object> inParamMap, 
+			HttpServletRequest servletReq, 
+			HttpServletResponse servletResp) 
+	{
 		Map<String, Object> errMsg = null;
 		String resp = "";
 		
@@ -149,7 +159,7 @@ public class HermesController {
 				List<String> headers = confMgr.get_http_forward_headers(codeName);
 				
 				APIConnector apiConn = new APIConnector();										
-				resp = apiConn.post(targetGrp.getTraffic_type(), apiURL, n_apiURL, outParam, req, headers);
+				resp = apiConn.post(targetGrp.getTraffic_type(), apiURL, n_apiURL, outParam, servletReq, headers);
 			}
 		} catch(Exception ex) {
 			String err = String.format("%s", ex.getMessage());
@@ -166,13 +176,17 @@ public class HermesController {
 			Gson g = new Gson();
 			Type type = new TypeToken<Map<String, Object>>(){}.getType();
 			respMap = g.fromJson(resp, type);
+			
+			if (null == resp || resp.isEmpty()) {
+				servletResp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+			}
 		}
 		else {
 			respMap = errMsg;
 		}
 		
 		return respMap;	
-	}	
+	}
 	
 	@CrossOrigin
 	@RequestMapping(value = "/status", method = RequestMethod.GET)

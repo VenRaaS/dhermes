@@ -10,7 +10,7 @@ public class ValidUID {
 	@Pattern(regexp = "[A-Za-z0-9_.\\-=/+]*")
 	String uid;
 		
-	@Size(max = 64)
+	@Size(max = 128)
 	@Pattern(regexp = "[A-Za-z0-9_.\\-]*")
 	String ven_guid;
 	
