@@ -128,7 +128,7 @@ The RESTful web app consists of following parts.
   ```
 
 * set_jumper
-  * uid  
+  * uid (uid will be priority consideration if user is login.)
     ```
     GET /hermes/mgmt/set_jumper?token=${token}&grpkey=test-1&uid=${uid}
     ```
