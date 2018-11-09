@@ -74,7 +74,8 @@ public class HermesController {
 			HttpServletRequest servletReq, 
 			HttpServletResponse servletResp) 
 	{
-		Map<String, Object> errMsg = null;
+		Map<String, Object> respMap = null;
+///		Map<String, Object> errMsg = null;
 		String resp = "";
 		
 		OptionUtility opt = new OptionUtility();
@@ -160,29 +161,26 @@ public class HermesController {
 				
 				APIConnector apiConn = new APIConnector();										
 				resp = apiConn.post(targetGrp.getTraffic_type(), apiURL, n_apiURL, outParam, servletReq, headers);
+				
+				Type type = new TypeToken<Map<String, Object>>(){}.getType();
+				respMap = new Gson().fromJson(resp, type);
+				
+				//-- set HTTP status code with 204 if content is empty
+				if (null == resp || resp.isEmpty()) {
+					servletResp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				}				
 			}
 		} catch(Exception ex) {
 			String err = String.format("%s", ex.getMessage());
-			errMsg = new HashMap<String, Object>();
-			errMsg.put("input", inParamMap);
-			errMsg.put("error", err);
-			
+			respMap = new HashMap<String, Object>();
+			respMap.put("error", err);
+			respMap.put("input", inParamMap);
+			respMap.put("back-end response", resp);			
+						
 			VEN_LOGGER.error(err);
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));			
-		}
-
-		Map<String, Object> respMap = null;
-		if (null == errMsg) {
-			Gson g = new Gson();
-			Type type = new TypeToken<Map<String, Object>>(){}.getType();
-			respMap = g.fromJson(resp, type);
-			
-			if (null == resp || resp.isEmpty()) {
-				servletResp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-			}
-		}
-		else {
-			respMap = errMsg;
+			VEN_LOGGER.error("input: %s", new Gson().toJson(inParamMap));
+			VEN_LOGGER.error("back-end response: %s", resp);
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
 		}
 		
 		return respMap;	
