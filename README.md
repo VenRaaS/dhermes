@@ -45,18 +45,18 @@ The RESTful web app consists of following parts.
 
 ### Routing - Traffic Unit
 * client_id = $token + $ven_guid + $ven_session
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtcXcycUdjTmZMZjQ)
+![](https://storage.googleapis.com/venraas-github/img/hermes_traffic_unit.PNG)
 
 ### Routing Hash
 * Input = client_id + interval(current_datetime)
 * Output = $long_integer => $GroupID
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtZDlXMS15Nm0zYjA)
+![](https://storage.googleapis.com/venraas-github/img/hermes_routing_hash.PNG)
 
 ### Mapping 
 * Input = parameters given by client (consumber browser)
 * Output = service URL and auxiliary parameters for the destination API
 
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtd0pFaUdRUllOMk0)
+![](https://storage.googleapis.com/venraas-github/img/hermes_params_mapping.PNG)
 
 #### Reference
 * [State of the hash functions](http://blog.reverberate.org/2012/01/state-of-hash-functions-2012.html)
