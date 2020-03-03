@@ -18,7 +18,7 @@ DHermes is a distributed RESTful API A/B/n testing application.
 It splits incoming traffic into pre-defined restful API group with the specified percentage.  
 An API group comprises a set of APIs which represents a service embodiment, e.g. recommendation APIs for an EC site.
 
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtNnZidTZLZkdPY2s)
+![](https://storage.cloud.google.com/venraas-github/img/hermes_overview.PNG?supportedpurview=project)
 
 ## Overview - Service Tiers
 ![](https://drive.google.com/uc?id=0B78KhWqVkVmtRUh3RV9oRmE2Mk0)
