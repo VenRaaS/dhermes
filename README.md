@@ -37,11 +37,11 @@ The RESTful web app consists of following parts.
 * Local Cache: acceleration of mapping query.
 * Mappings: tables for linking input parameters and destination api url.
 
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtaWU1Z0FVYWVJSUk)
+![](https://storage.googleapis.com/venraas-github/img/hermes_an_instance_z150.PNG)
 
 ## Routing & Mapping 
 ### Routing - Overview
-![](https://drive.google.com/uc?id=0B78KhWqVkVmtTGl6QjdXSE1sMkk)
+![](https://storage.googleapis.com/venraas-github/img/hermes_routing_overview.PNG)
 
 ### Routing - Traffic Unit
 * client_id = $token + $ven_guid + $ven_session
