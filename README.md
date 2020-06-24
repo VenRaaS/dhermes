@@ -1,3 +1,7 @@
+<!--
+<meta property='og:image' content='https://storage.googleapis.com/venraas-github/img/hermes_service_tier.PNG"/>
+-->
+
 ## TOC
 * [Overview](#overview)
 * [Service Tiers](#overview---service-tiers)
