@@ -96,7 +96,7 @@ public class APIConnector {
 				}
 			}
 
-			StringEntity body_entity = new StringEntity(body);
+			StringEntity body_entity = new StringEntity(body, "UTF-8");
 			body_entity.setContentType("application/json");
 			post.setEntity(body_entity);						
 			post.setConfig(getTimeoutConfig());
@@ -145,7 +145,7 @@ public class APIConnector {
 		try {
 			new URL(apiURL);
 			
-			StringEntity body_entity = new StringEntity(body);
+			StringEntity body_entity = new StringEntity(body, "UTF-8");
 			body_entity.setContentType("application/json");
 			
 			HttpPost post = new HttpPost(apiURL);
