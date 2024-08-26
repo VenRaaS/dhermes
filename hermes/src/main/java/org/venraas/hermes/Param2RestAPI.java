@@ -69,86 +69,86 @@ public class Param2RestAPI {
 		return rsMap;
 	}
 	
-	public String regsiterMapping(String codeName, EnumTrafficType trafficType, String regJson) {
-		
-		String msg = "";
-		
-		try {
-			//-- input validation
-			Gson g = new Gson();
-			
-			JsonObject rootJO = g.fromJson(regJson, JsonObject.class);
-			if (null == rootJO) {
-				msg = String.format("Invalid input, \"%s\" is unavailable or empty!", "json");
-				throw new IllegalArgumentException(msg);
-			}
-
-			// "group_key"
-			JsonElement group_key = rootJO.get(EnumParam2recomder.group_key.name());
-			if (null == group_key && EnumTrafficType.Normal != trafficType) {
-				msg = String.format("Invalid input, \"%s\" is unavailable or empty in the input Json!", EnumParam2recomder.group_key.name());
-				throw new IllegalArgumentException(msg);				
-			}
-			
-			// "in_keys2recomder"
-			JsonArray inKeys = rootJO.getAsJsonArray(EnumParam2recomder.in_keys2recomder.name());
-			for (JsonElement inKey : inKeys) {
-				String k = inKey.getAsString();
-				if (null == rootJO.get(k)) {
-					msg = String.format("Invalid input, key \"%s\" in \"%s\" is unavailable or empty in the input Json!", k, EnumParam2recomder.in_keys2recomder.name());
-					throw new IllegalArgumentException(msg);
-				}
-			}
-			
-			// "out_aux_params"
-			Map<String, JsonElement> testingParam = new HashMap<String, JsonElement>();
-			JsonArray outAuxParams = rootJO.get(EnumParam2recomder.out_aux_params.name()).getAsJsonArray();
-			for (JsonElement op : outAuxParams) {
-				String k = op.getAsString();
-				JsonElement e = rootJO.get(k);
-				if (null == e) {
-					msg = String.format("Invalid input, key \"%s\" in \"%s\" is unavailable or empty in the input Json!", k, EnumParam2recomder.out_aux_params.name());
-					throw new IllegalArgumentException(msg);
-				} 
-
-				testingParam.put(k, e);
-			}
-
-			// "valid api_url"
-			JsonArray api_urls = rootJO.getAsJsonArray(EnumParam2recomder.api_url.name());
-			APIConnector conn = new APIConnector();
-			for (JsonElement url : api_urls) {				
-				String body = g.toJson(testingParam);
-				String url_str = url.getAsString();
-				if (! conn.isValidURL(url_str, body)) {
-					msg = String.format("Invalid input, \"%s\" can't be connected with Json parameter: %s!", url, body);
-					throw new IllegalArgumentException(msg);
-				}
-			}
-			
-			// add "availability", "group_key", "traffic_type", udpate_dt
-			rootJO.addProperty(EnumParam2recomder.availability.name(), 1);
-			if (EnumTrafficType.Normal == trafficType) {
-				rootJO.addProperty(EnumParam2recomder.group_key.name(), Constant.NORMAL_GROUP_KEY);
-			}
-			rootJO.addProperty(EnumParam2recomder.traffic_type.name(), trafficType.toString());			
-			rootJO.addProperty(EnumParam2recomder.update_dt.name(), Utility.now());
-			
-			Param2recomderManager p2rMgr = new Param2recomderManager();
-			String docID = p2rMgr.registerMapping(codeName, g.toJson(rootJO));	
-				
-			if (docID.isEmpty()) throw new RuntimeException("error, timeout or other problem occurs, please re-register again if the input mapping doesn't exist!");
-			
-			msg = String.format("ok, the input been registered to %s channel with ID: %s", trafficType, docID); 				  
-		}
-		catch (Exception ex) {
-			msg = ex.getMessage();
-			VEN_LOGGER.error(msg);
-		}
-		
-		return msg;
-		
-	}
+//	public String regsiterMapping(String codeName, EnumTrafficType trafficType, String regJson) {
+//		
+//		String msg = "";
+//		
+//		try {
+//			//-- input validation
+//			Gson g = new Gson();
+//			
+//			JsonObject rootJO = g.fromJson(regJson, JsonObject.class);
+//			if (null == rootJO) {
+//				msg = String.format("Invalid input, \"%s\" is unavailable or empty!", "json");
+//				throw new IllegalArgumentException(msg);
+//			}
+//
+//			// "group_key"
+//			JsonElement group_key = rootJO.get(EnumParam2recomder.group_key.name());
+//			if (null == group_key && EnumTrafficType.Normal != trafficType) {
+//				msg = String.format("Invalid input, \"%s\" is unavailable or empty in the input Json!", EnumParam2recomder.group_key.name());
+//				throw new IllegalArgumentException(msg);				
+//			}
+//			
+//			// "in_keys2recomder"
+//			JsonArray inKeys = rootJO.getAsJsonArray(EnumParam2recomder.in_keys2recomder.name());
+//			for (JsonElement inKey : inKeys) {
+//				String k = inKey.getAsString();
+//				if (null == rootJO.get(k)) {
+//					msg = String.format("Invalid input, key \"%s\" in \"%s\" is unavailable or empty in the input Json!", k, EnumParam2recomder.in_keys2recomder.name());
+//					throw new IllegalArgumentException(msg);
+//				}
+//			}
+//			
+//			// "out_aux_params"
+//			Map<String, JsonElement> testingParam = new HashMap<String, JsonElement>();
+//			JsonArray outAuxParams = rootJO.get(EnumParam2recomder.out_aux_params.name()).getAsJsonArray();
+//			for (JsonElement op : outAuxParams) {
+//				String k = op.getAsString();
+//				JsonElement e = rootJO.get(k);
+//				if (null == e) {
+//					msg = String.format("Invalid input, key \"%s\" in \"%s\" is unavailable or empty in the input Json!", k, EnumParam2recomder.out_aux_params.name());
+//					throw new IllegalArgumentException(msg);
+//				} 
+//
+//				testingParam.put(k, e);
+//			}
+//
+//			// "valid api_url"
+//			JsonArray api_urls = rootJO.getAsJsonArray(EnumParam2recomder.api_url.name());
+//			APIConnector conn = new APIConnector();
+//			for (JsonElement url : api_urls) {				
+//				String body = g.toJson(testingParam);
+//				String url_str = url.getAsString();
+//				if (! conn.isValidURL(url_str, body)) {
+//					msg = String.format("Invalid input, \"%s\" can't be connected with Json parameter: %s!", url, body);
+//					throw new IllegalArgumentException(msg);
+//				}
+//			}
+//			
+//			// add "availability", "group_key", "traffic_type", udpate_dt
+//			rootJO.addProperty(EnumParam2recomder.availability.name(), 1);
+//			if (EnumTrafficType.Normal == trafficType) {
+//				rootJO.addProperty(EnumParam2recomder.group_key.name(), Constant.NORMAL_GROUP_KEY);
+//			}
+//			rootJO.addProperty(EnumParam2recomder.traffic_type.name(), trafficType.toString());			
+//			rootJO.addProperty(EnumParam2recomder.update_dt.name(), Utility.now());
+//			
+//			Param2recomderManager p2rMgr = new Param2recomderManager();
+//			String docID = p2rMgr.registerMapping(codeName, g.toJson(rootJO));	
+//				
+//			if (docID.isEmpty()) throw new RuntimeException("error, timeout or other problem occurs, please re-register again if the input mapping doesn't exist!");
+//			
+//			msg = String.format("ok, the input been registered to %s channel with ID: %s", trafficType, docID); 				  
+//		}
+//		catch (Exception ex) {
+//			msg = ex.getMessage();
+//			VEN_LOGGER.error(msg);
+//		}
+//		
+//		return msg;
+//		
+//	}
 	
 	
 }
