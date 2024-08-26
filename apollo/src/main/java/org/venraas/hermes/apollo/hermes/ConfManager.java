@@ -154,39 +154,39 @@ public class ConfManager {
 		return headers;
 	}
 	
-	public List<String> add_http_forward_headers(String codeName, String jsonArray) {
-		
-		List<String> rsHeaders = new ArrayList<String>();
-		
-		try {
-			Gson g = new Gson();
-			Type listType = new TypeToken<List<String>>() {}.getType();
-			List<String> inHeaders = g.fromJson(jsonArray, listType);
-			
-			if (null != inHeaders && ! inHeaders.isEmpty()) {
-				List<String> orgHeaders = get_http_forward_headers(codeName);
-			
-				//-- combine input and original headers without duplication
-				Set<String> headerSet = new HashSet<String>(orgHeaders);
-				for (String h : inHeaders) {
-			        headerSet.add(h);
-			    }
-				rsHeaders.addAll(headerSet);
-				
-				ConfClient client = new ConfClient();
-				rsHeaders = client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), rsHeaders);
-			}
-			
-			String k = String.format("get_http_forward_headers?%s&%s", codeName, EnumConf.http_forward_headers.name());			
-			_cache_conf.refresh(k);
-		} 
-		catch (Exception ex) {
-			VEN_LOGGER.error(ex.getMessage());
-			VEN_LOGGER.error(Utility.stackTrace2string(ex));	
-		}
-		
-		return rsHeaders;
-	}
+//	public List<String> add_http_forward_headers(String codeName, String jsonArray) {
+//		
+//		List<String> rsHeaders = new ArrayList<String>();
+//		
+//		try {
+//			Gson g = new Gson();
+//			Type listType = new TypeToken<List<String>>() {}.getType();
+//			List<String> inHeaders = g.fromJson(jsonArray, listType);
+//			
+//			if (null != inHeaders && ! inHeaders.isEmpty()) {
+//				List<String> orgHeaders = get_http_forward_headers(codeName);
+//			
+//				//-- combine input and original headers without duplication
+//				Set<String> headerSet = new HashSet<String>(orgHeaders);
+//				for (String h : inHeaders) {
+//			        headerSet.add(h);
+//			    }
+//				rsHeaders.addAll(headerSet);
+//				
+//				ConfClient client = new ConfClient();
+//				rsHeaders = client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), rsHeaders);
+//			}
+//			
+//			String k = String.format("get_http_forward_headers?%s&%s", codeName, EnumConf.http_forward_headers.name());			
+//			_cache_conf.refresh(k);
+//		} 
+//		catch (Exception ex) {
+//			VEN_LOGGER.error(ex.getMessage());
+//			VEN_LOGGER.error(Utility.stackTrace2string(ex));	
+//		}
+//		
+//		return rsHeaders;
+//	}
 	
 	public boolean set_http_forward_headers(String codeName, String jsonArray) {
 		boolean isSuccess = false;
@@ -198,11 +198,11 @@ public class ConfManager {
 			
 			if (null != inHeaders) {
 				ConfClient client = new ConfClient();
-				client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), inHeaders);
-				isSuccess = true;
+				List<String> rtHeaders = client.set_http_forward_headers(codeName, EnumConf.http_forward_headers.name(), inHeaders);
+				isSuccess = (null != rtHeaders);
 				
 				String k = String.format("get_http_forward_headers?%s&%s", codeName, EnumConf.http_forward_headers.name());			
-				_cache_conf.refresh(k);				
+				if(isSuccess) _cache_conf.refresh(k);				
 			}
 		} 
 		catch (Exception ex) {
