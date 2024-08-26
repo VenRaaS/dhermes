@@ -128,20 +128,20 @@ public class Param2recomderManager {
 		return m;
 	}
 	
-	public String registerMapping (String codeName, String mappingJson) {
-		Param2recomderClient client = new Param2recomderClient();
-		return client.indexMapping(codeName, mappingJson);
-	}
+//	public String registerMapping (String codeName, String mappingJson) {
+//		Param2recomderClient client = new Param2recomderClient();
+//		return client.indexMapping(codeName, mappingJson);
+//	}
 	
-	public List<String> rm_group (String codeName, String grpKey) {
-		Param2recomderClient client = new Param2recomderClient();
-		return client.rm_group(codeName, grpKey);
-	}
+//	public List<String> rm_group (String codeName, String grpKey) {
+//		Param2recomderClient client = new Param2recomderClient();
+//		return client.rm_group(codeName, grpKey);
+//	}
 	
-	public String rm_mapping (String codeName, String mid) {
-		Param2recomderClient client = new Param2recomderClient();
-		return client.rm_mapping(codeName, mid);
-	}
+//	public String rm_mapping (String codeName, String mid) {
+//		Param2recomderClient client = new Param2recomderClient();
+//		return client.rm_mapping(codeName, mid);
+//	}
 	
 	
 }
