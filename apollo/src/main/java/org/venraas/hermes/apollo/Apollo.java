@@ -52,7 +52,7 @@ public class Apollo {
 	            	.put("cluster.name", "hermes-cluster")
 	            	.build();	       	        
 
-	        String hostname = "es-node-01.venraas.private"; //InetAddress.getLocalHost().getHostName();	        
+	        String hostname = "es-comp.venraas.private"; //InetAddress.getLocalHost().getHostName();	        
 	        client = TransportClient.builder().settings(settings).build()
 					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(hostname), 9300));	        
 		} catch(Exception ex) {
