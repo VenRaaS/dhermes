@@ -40,9 +40,9 @@ public class Constant {
 	public final static char PARAM_DELIMITER = '&';
 
 	//-- ES timeout
-	public final static long TIMEOUT_SEARCH_MILLIS = 200;
+	public final static int TIMEOUT_SEARCH_MILLIS = 200;
 	
-	public final static long TIMEOUT_INDEX_MILLIS = 1000;
+	public final static int TIMEOUT_INDEX_MILLIS = 1000;
 	
 	//-- ES
 	public final static int DEFAULT_QUERY_SIZE = 1000;
