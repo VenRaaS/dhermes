@@ -85,7 +85,7 @@ public class JumperManager {
 		
 		//-- refresh cache
 		String k = _cacheKey_get_group_key(codeName, uid);
-		_cache_jumper.refresh(k);
+		if(rt) _cache_jumper.refresh(k);
 		
 		return rt;
 	}
