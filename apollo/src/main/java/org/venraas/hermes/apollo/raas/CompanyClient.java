@@ -7,6 +7,7 @@ import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.context.Config;
 import java.net.InetAddress;
+import java.util.Base64;
 
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
@@ -39,24 +40,23 @@ public class CompanyClient {
         if (null == token || token.isEmpty()) return codeName;
 
         try {            
-            Config conf = Config.getInstance();
-            String hostname_es_ww = conf.getEs_host_westernwall();
-            if (null == hostname_es_ww) 
-                hostname_es_ww = InetAddress.getLocalHost().getHostName();
-            
-            //-- query $code_name based on given $token
-            //   https://www.elastic.co/guide/en/elasticsearch/reference/1.7/search-uri-request.html#search-uri-request
-            //   e.g. qUri = "http://${hostPath}/_search?q=${tokenKV}&sort=update_dt:desc";
-            String hostPath = String.format("http://%s:9200/%s/%s/_search?", hostname_es_ww, VENRAAS_INDEX_NAME, TYPE_NAME);
-            String query= String.format("sort=%s:desc&size=1", Com_pkgs.update_dt);
-            String qUri = hostPath + query;
-            
-            Content content = Request.Get(qUri)
-            		.connectTimeout((int)Constant.TIMEOUT_SEARCH_MILLIS)            		
-            		.execute()
-            		.returnContent();
-            
-            String jsonStr = content.asString();            
+
+    		String username = "elastic";
+    		String password = System.getenv("ES_COMP_PWD");
+    		String auth = username + ":" + password;
+    		String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+    		String authHeader = "Basic " + encodedAuth;
+
+            String qUri = "http://es-comp.venraas.private:9200/venraas_com_pkgs/_search?q=*&sort=update_dt:desc&size=1";
+
+    		Content content = Request.Get(qUri)
+    				.connectTimeout((int)Constant.TIMEOUT_SEARCH_MILLIS)
+    				.socketTimeout(Constant.TIMEOUT_SEARCH_MILLIS)
+    				.setHeader("Authorization", authHeader)
+    				.execute()
+    				.returnContent();
+    		String jsonStr = content.asString();
+
             JsonParser jp = new JsonParser();
             JsonObject obj = jp.parse(jsonStr).getAsJsonObject();
             JsonArray comps = obj.getAsJsonObject("hits")
@@ -65,13 +65,13 @@ public class CompanyClient {
                     .getAsJsonObject()
                     .getAsJsonObject("_source")
                     .getAsJsonArray(Com_pkgs.companies);
-            
+
            for (JsonElement v : comps) {
                JsonObject c = (JsonObject)v;
                JsonElement je = c.get(Com_pkgs.token);
                if (null == je) 
             	   continue;
-               
+
                String tok = je.getAsString();               
                if (0 == tok.compareToIgnoreCase(token)) {
                    codeName = c.get(Com_pkgs.code_name).getAsString();
