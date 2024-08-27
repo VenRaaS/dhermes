@@ -1,5 +1,8 @@
 package org.venraas.hermes;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +10,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.http.client.fluent.Content;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,10 +25,12 @@ import org.venraas.hermes.apollo.hermes.JumperManager;
 import org.venraas.hermes.apollo.hermes.Param2recomderManager;
 import org.venraas.hermes.apollo.mappings.EnumConf;
 import org.venraas.hermes.apollo.raas.CompanyManager;
+import org.venraas.hermes.common.Constant;
 import org.venraas.hermes.common.ConstantMsg;
 import org.venraas.hermes.common.EnumOptionBase;
 import org.venraas.hermes.common.EnumResetInterval;
 import org.venraas.hermes.common.EnumTrafficType;
+import org.venraas.hermes.common.Utility;
 import org.venraas.hermes.common.ValidDocID;
 import org.venraas.hermes.common.ValidGroupKey;
 import org.venraas.hermes.common.ValidToken;
@@ -31,6 +39,7 @@ import org.venraas.hermes.common.ValidUID;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 @RestController
@@ -72,32 +81,33 @@ public class HermesMgmtController {
 	/** 
 	 * usage:
 	 *     /hermes/mgmt/add_forward_headers?token=${token}&json=["Cookie"]
+	 *     /hermes/mgmt/add_forward_headers?token=${token}&json=%5B"Cookie"%5D
 	 */	
 	@CrossOrigin
 	@RequestMapping(value = "/add_forward_headers", method = RequestMethod.GET)
 	public String add_http_forward_headers(@Valid ValidToken vt, String json) {		
-		String msg = "";
+		String msg = "API '/add_forward_headers' is deprecated. Use API '/set_forward_headers' to update forward_headers.";
 		
-		String token = vt.getToken();
-		CompanyManager comMgr = new CompanyManager();
-		String codeName = comMgr.getCodeName(token);
-				
-		try {
-			if (codeName.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			ConfManager confMgr = new ConfManager();
-			List<String> updateHeaders = confMgr.add_http_forward_headers(codeName, json);
-			msg = (updateHeaders.isEmpty()) 
-					? String.format("Invalid, Null or Empty input \"%s\" for \"%s\" setting", json, EnumConf.http_forward_headers.name())
-					: String.format("ok, update \"%s\" with [%s]", EnumConf.http_forward_headers.name(), String.join(",", updateHeaders));
-			
-		} catch (Exception ex) {
-			msg = ex.getMessage();
-			VEN_LOGGER.error(msg);
-		}
+//		String token = vt.getToken();
+//		CompanyManager comMgr = new CompanyManager();
+//		String codeName = comMgr.getCodeName(token);
+//				
+//		try {
+//			if (codeName.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			ConfManager confMgr = new ConfManager();
+//			List<String> updateHeaders = confMgr.add_http_forward_headers(codeName, json);
+//			msg = (updateHeaders.isEmpty()) 
+//					? String.format("failed, update \"%s\" with [%s]", EnumConf.http_forward_headers.name(), String.join(",", updateHeaders))
+//					: String.format("ok, update \"%s\" with [%s]", EnumConf.http_forward_headers.name(), String.join(",", updateHeaders));
+//			
+//		} catch (Exception ex) {
+//			msg = ex.getMessage();
+//			VEN_LOGGER.error(msg);
+//		}
 		
 		return msg;
 	}
@@ -105,6 +115,7 @@ public class HermesMgmtController {
 	/** 
 	 * usage:
 	 *     /hermes/mgmt/set_forward_headers?token=${token}&json=["Referer"]
+	 *     /hermes/mgmt/set_forward_headers?token=${token}&json=%5B"Referer"%5D
 	 */
 	@CrossOrigin
 	@RequestMapping(value = "/set_forward_headers", method = RequestMethod.GET)
@@ -125,7 +136,7 @@ public class HermesMgmtController {
 			boolean isSuccess = confMgr.set_http_forward_headers(codeName, json);
 			msg = (isSuccess) 
 					? String.format("ok, update \"%s\" with %s", EnumConf.http_forward_headers.name(), String.join(",", json))
-					: String.format("Invalid or Null input \"%s\" for \"%s\" setting", json, EnumConf.http_forward_headers.name());
+					: String.format("failed, update \"%s\" with %s", EnumConf.http_forward_headers.name(), String.join(",", json));
 			
 		} catch (Exception ex) {
 			msg = ex.getMessage();
@@ -261,7 +272,7 @@ public class HermesMgmtController {
 	@CrossOrigin
 	@RequestMapping(value = "/set_jumper_guid", method = RequestMethod.GET)
 	public String set_jumper_guid(@Valid ValidToken vt, @Valid ValidUID vu, @Valid ValidGroupKey vGK) {
-		String msg ="";
+		String msg = "";
 		
 		try {
 			String ven_guid = vu.getVen_guid();
@@ -278,7 +289,53 @@ public class HermesMgmtController {
 		}
 		
 		return msg;				
-	}	
+	}
+	
+	/** 
+	 * usage:
+	 *     /hermes/mgmt/remove_expired_jumpers?expiration_min=30
+	 */	
+	@CrossOrigin
+	@RequestMapping(value = "/remove_expired_jumpers", method = RequestMethod.GET)
+	public String remove_expired_jumpers(int expiration_min) {
+		String jsonStr = "";
+
+		try {
+			String username = "elastic";
+			String password = System.getenv("ES_COMP_PWD");
+			String auth = username + ":" + password;
+			String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+			String authHeader = "Basic " + encodedAuth;
+			
+			
+			String dateTimeString = Utility.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); 
+			LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter); 
+			LocalDateTime thirtyMinutesAgo = dateTime.minusMinutes(expiration_min); 
+			String formattedDateTime = thirtyMinutesAgo.format(formatter);
+
+			String post_query = " { \"query\": { \"range\": { \"update_dt\": { \"lte\": \""+ formattedDateTime + "\" } } }} ";
+			
+			
+			String indexName = "*_hermes_jumper";
+			Content content = Request.Post("http://es-comp.venraas.private:9200/" + indexName + "/_delete_by_query")
+					.connectTimeout(30000).socketTimeout(30000)
+					.setHeader("Authorization", authHeader).bodyString(post_query, ContentType.APPLICATION_JSON)
+					.execute().returnContent();
+			jsonStr = content.asString();
+
+//			JsonParser jp = new JsonParser();
+//			resp = jp.parse(jsonStr).getAsJsonObject();
+
+		} catch (Exception ex) {
+			VEN_LOGGER.error(Utility.stackTrace2string(ex));
+			VEN_LOGGER.error(ex.getMessage());
+			
+			jsonStr = ex.getMessage();
+		}
+
+		return jsonStr;
+	}
 	
 	/** 
 	 * usage:
@@ -306,38 +363,38 @@ public class HermesMgmtController {
 	public String register_normal_POST(@RequestBody String jsonStr, HttpServletRequest req) {
 		VEN_LOGGER.info(jsonStr);
 		
-		String msg = "";				
+		String msg = "API '/register_normal' is deprecated. Use PV-Console to register normal.";				
 				
-		try {
-			//-- input validation
-			Gson g = new Gson();			
-			JsonObject rootJO = g.fromJson(jsonStr, JsonObject.class);						
-			if (null == rootJO) {
-				msg = String.format("Invalid input, request body is unavailable or empty!");
-				throw new IllegalArgumentException(msg);
-			}
-			
-			//-- token validation
-			JsonElement tokenJE = rootJO.get(EnumOptionBase.token.name());
-			if (null == tokenJE) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, "null");
-				throw new IllegalArgumentException(msg);				
-			}
-			
-			String token = tokenJE.getAsString();
-			CompanyManager comMgr = new CompanyManager();
-			String codeName = comMgr.getCodeName(token);			
-			if (codeName.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			Param2RestAPI p2api = new Param2RestAPI();
-			msg = p2api.regsiterMapping(codeName, EnumTrafficType.Normal, jsonStr);
-		} catch (Exception ex) {
-			msg = ex.getMessage();
-			VEN_LOGGER.error(msg);
-		}		
+//		try {
+//			//-- input validation
+//			Gson g = new Gson();			
+//			JsonObject rootJO = g.fromJson(jsonStr, JsonObject.class);						
+//			if (null == rootJO) {
+//				msg = String.format("Invalid input, request body is unavailable or empty!");
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			//-- token validation
+//			JsonElement tokenJE = rootJO.get(EnumOptionBase.token.name());
+//			if (null == tokenJE) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, "null");
+//				throw new IllegalArgumentException(msg);				
+//			}
+//			
+//			String token = tokenJE.getAsString();
+//			CompanyManager comMgr = new CompanyManager();
+//			String codeName = comMgr.getCodeName(token);			
+//			if (codeName.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			Param2RestAPI p2api = new Param2RestAPI();
+//			msg = p2api.regsiterMapping(codeName, EnumTrafficType.Normal, jsonStr);
+//		} catch (Exception ex) {
+//			msg = ex.getMessage();
+//			VEN_LOGGER.error(msg);
+//		}		
 		
 		return msg;	
 	}
@@ -367,38 +424,38 @@ public class HermesMgmtController {
 	 */	
 	@RequestMapping(value = "/register_test", method = RequestMethod.POST)	
 	public String register_test_POST(@RequestBody String jsonStr, HttpServletRequest req) {
-		String msg = "";		
-				
-		try {
-			//-- input validation
-			Gson g = new Gson();			
-			JsonObject rootJO = g.fromJson(jsonStr, JsonObject.class);						
-			if (null == rootJO) {
-				msg = String.format("Invalid input, request body is unavailable or empty!");
-				throw new IllegalArgumentException(msg);
-			}
-			
-			//-- token validation
-			JsonElement tokenJE = rootJO.get(EnumOptionBase.token.name());
-			if (null == tokenJE) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, "null");
-				throw new IllegalArgumentException(msg);				
-			}
-			
-			String token = tokenJE.getAsString();
-			CompanyManager comMgr = new CompanyManager();
-			String codeName = comMgr.getCodeName(token);
-			if (codeName.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			Param2RestAPI p2api = new Param2RestAPI();
-			msg = p2api.regsiterMapping(codeName, EnumTrafficType.Test, jsonStr);
-		} catch (Exception ex) {
-			msg = ex.getMessage();
-			VEN_LOGGER.error(msg);
-		}		
+		String msg = "API '/register_test' is deprecated. Use PV-Console to register test.";		
+		
+//		try {
+//			//-- input validation
+//			Gson g = new Gson();			
+//			JsonObject rootJO = g.fromJson(jsonStr, JsonObject.class);						
+//			if (null == rootJO) {
+//				msg = String.format("Invalid input, request body is unavailable or empty!");
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			//-- token validation
+//			JsonElement tokenJE = rootJO.get(EnumOptionBase.token.name());
+//			if (null == tokenJE) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, "null");
+//				throw new IllegalArgumentException(msg);				
+//			}
+//			
+//			String token = tokenJE.getAsString();
+//			CompanyManager comMgr = new CompanyManager();
+//			String codeName = comMgr.getCodeName(token);
+//			if (codeName.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			Param2RestAPI p2api = new Param2RestAPI();
+//			msg = p2api.regsiterMapping(codeName, EnumTrafficType.Test, jsonStr);
+//		} catch (Exception ex) {
+//			msg = ex.getMessage();
+//			VEN_LOGGER.error(msg);
+//		}		
 		
 		return msg;
 	}
@@ -449,35 +506,35 @@ public class HermesMgmtController {
 	@CrossOrigin
 	@RequestMapping(value = "/rm_grp", method = RequestMethod.DELETE)
 	public String rm_group(@Valid ValidToken vt, @Valid ValidGroupKey vGK) {
-		String msg ="";
+		String msg = "API '/rm_grp' is deprecated. Use PV-Console to remove group.";
 		
-		String token = vt.getToken();
-		CompanyManager comMgr = new CompanyManager();
-		String codeName = comMgr.getCodeName(token);
-		
-		try {
-			if (codeName.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			String key = vGK.getGrpkey();
-			if (null == key || key.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "key");
-				throw new IllegalArgumentException(msg);
-			}
-
-			Param2recomderManager p2rMgr = new Param2recomderManager();			
-			List<String> update_ids = p2rMgr.rm_group(codeName, key);
-			
-			msg = (0 < update_ids.size()) ? 
-					String.format("ok, all group mapping: \"%s\" are Unavailable now.", key) :
-					String.format("warn, group: \"%s\" isn't available!", key);
-			
-		} catch (Exception ex) {
-			msg = ex.getMessage();
-			VEN_LOGGER.error(msg);
-		}
+//		String token = vt.getToken();
+//		CompanyManager comMgr = new CompanyManager();
+//		String codeName = comMgr.getCodeName(token);
+//		
+//		try {
+//			if (codeName.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			String key = vGK.getGrpkey();
+//			if (null == key || key.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "key");
+//				throw new IllegalArgumentException(msg);
+//			}
+//
+//			Param2recomderManager p2rMgr = new Param2recomderManager();			
+//			List<String> update_ids = p2rMgr.rm_group(codeName, key);
+//			
+//			msg = (0 < update_ids.size()) ? 
+//					String.format("ok, all group mapping: \"%s\" are Unavailable now.", key) :
+//					String.format("warn, group: \"%s\" isn't available!", key);
+//			
+//		} catch (Exception ex) {
+//			msg = ex.getMessage();
+//			VEN_LOGGER.error(msg);
+//		}
 		
 		return msg;
 	}
@@ -493,33 +550,33 @@ public class HermesMgmtController {
 	@CrossOrigin
 	@RequestMapping(value = "/rm_mapping", method = RequestMethod.DELETE)
 	public String rm_mapping(@Valid ValidToken vt, @Valid ValidDocID vID) {
-		String msg ="";
+		String msg ="API '/rm_mapping' is deprecated. Use PV-Console to remove mapping.";
 		
-		String token = vt.getToken();
-		CompanyManager comMgr = new CompanyManager();
-		String codeName = comMgr.getCodeName(token);
-		
-		try {
-			if (codeName.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			String mid = vID.getMid();
-			if (null == mid || mid.isEmpty()) {
-				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "mid");
-				throw new IllegalArgumentException(msg);
-			}
-			
-			Param2recomderManager p2rMgr = new Param2recomderManager();			
-			String id = p2rMgr.rm_mapping(codeName, mid);
-			
-			msg = String.format("ok, mapping:%s has been Unavailable.", id);
-			
-		} catch (Exception ex) {
-			msg = ex.getMessage();
-			VEN_LOGGER.error(msg);
-		}
+//		String token = vt.getToken();
+//		CompanyManager comMgr = new CompanyManager();
+//		String codeName = comMgr.getCodeName(token);
+//		
+//		try {
+//			if (codeName.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_TOKEN, token);
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			String mid = vID.getMid();
+//			if (null == mid || mid.isEmpty()) {
+//				msg = String.format(ConstantMsg.INVALID_INPUT_PARAMETER, "mid");
+//				throw new IllegalArgumentException(msg);
+//			}
+//			
+//			Param2recomderManager p2rMgr = new Param2recomderManager();			
+//			String id = p2rMgr.rm_mapping(codeName, mid);
+//			
+//			msg = String.format("ok, mapping:%s has been Unavailable.", id);
+//			
+//		} catch (Exception ex) {
+//			msg = ex.getMessage();
+//			VEN_LOGGER.error(msg);
+//		}
 		
 		return msg;
 	}
